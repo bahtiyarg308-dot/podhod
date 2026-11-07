@@ -770,6 +770,209 @@ body.resting .main{padding-bottom:calc(200px + env(safe-area-inset-bottom,0px))}
 label.btn{cursor:pointer}
 body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 @media (min-width:960px){body.resting .composer{bottom:92px}}
+/* gear & stages: items use tones of the profile colour, so they read on a body of the same colour */
+.ch,.thumb{--ca:color-mix(in oklab, var(--cm, var(--accent)) 58%, #101114);--cb:color-mix(in oklab, var(--cm, var(--accent)) 34%, #000)}
+.ch .g-a{fill:var(--ca)}
+.ch .g-b{fill:var(--cb)}
+.ch .g-w{fill:#FFFFFF}
+.ch .g-k{fill:#1C1D21}
+.ch .g-cy{fill:#2EF2E6}
+.ch .g-y{fill:#FFD23F}
+.ch .g-gold{fill:#F2C230}
+.ch .g-gold2{fill:#C8940C}
+.ch .g-gem{fill:var(--cm);stroke:#8A6206;stroke-width:.8}
+.ch .g-silver{fill:#D3D8DF}
+.ch .g-silver2{fill:#AEB5C0}
+.ch .g-lens{fill:#121317;opacity:.9}
+.ch .g-glass{fill:#DDF3FF;opacity:.28}
+.ch .g-leaf{fill:#4FA35B}
+.ch .g-hl{fill:none;stroke:#fff;stroke-width:1.3;stroke-linecap:round;opacity:.75}
+.ch .g-sd{fill:none;stroke:var(--cb);stroke-linecap:round;stroke-linejoin:round}
+.ch .g-sm{fill:none;stroke:var(--ca);stroke-linecap:round;stroke-linejoin:round}
+.ch .g-belt{fill:#1C1D21}
+.ch .g-paw{fill:var(--cm);stroke:var(--cd);stroke-width:1.2}
+.ch .g-abs{fill:none;stroke:var(--cd);stroke-width:1.9;stroke-linecap:round}
+.ch .g-aura{opacity:.9}
+.ch.st-4 .g-aura{animation:aura 3.2s ease-in-out infinite}
+@keyframes aura{50%{opacity:.55}}
+.chbg{position:absolute;inset:0;width:100%;height:100%;display:block;--cm:var(--accent)}
+.chbg .b-0{fill:var(--cm);opacity:.14}
+.chbg .b-1{fill:var(--cm);opacity:.3}
+.chbg .b-2{fill:color-mix(in oklab, var(--cm) 42%, #121318)}
+.chbg .b-3{fill:color-mix(in oklab, var(--cm) 30%, #0C0D10)}
+.chbg .b-snow{fill:#fff;opacity:.7}
+.chbg .b-dark{fill:#0B0B14}
+.chbg .b-y{fill:#FFD23F;opacity:.85}
+.chbg .b-lane{fill:none;stroke:var(--cm);stroke-width:1;opacity:.55}
+.chbg .b-neon{fill:none;stroke:var(--cm);stroke-width:1.6}
+.chbg .b-neon.w{stroke-width:.8;opacity:.6}
+.chbg .b-neon.g{stroke-width:7;opacity:.25}
+.chbg .b-star{fill:#F2C230}
+.sil *{fill:var(--line)!important;stroke:var(--line)!important;opacity:1!important}
+.sil .g-halo,.sil .g-aura,.thumb .g-paw{display:none}
+.mate{position:relative;display:grid;place-items:center;overflow:hidden;background:var(--surface-2)}
+.mate>.ch{position:relative}
+/* chest */
+.chest{width:100%;height:auto;display:block;overflow:visible}
+.chest .k-body{fill:#3A3D45}
+.chest .k-band{fill:var(--accent)}
+.chest .k-gold{fill:#F2C230}
+.chest .k-gold2{fill:#C8940C}
+.chest .k-inner{fill:#121316}
+.chest .k-dark{fill:#000}
+.chest .k-lock{fill:#E3E6EB}
+.chest .k-key{fill:#3A3D45}
+.chest .k-shadow{fill:#000;opacity:.25}
+.chest .k-glow{fill:var(--rc);opacity:.2}
+.chest .k-light{fill:var(--rc);opacity:.9}
+.chest .k-rays path{fill:var(--rc);opacity:.2}
+.chest .k-rays{transform-origin:60px 40px;animation:spin 14s linear infinite}
+.chest.open .k-burst{animation:burst .5s var(--out) both}
+.chest.shake{animation:kshake .45s ease-in-out 3;transform-origin:60px 90px}
+@keyframes kshake{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+@keyframes burst{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* ---------- 2.2: companion card ---------- */
+.hero{grid-template-columns:104px minmax(0,1fr)}
+.ch-btn.mate{position:relative;width:104px;height:104px;border-radius:24px;overflow:hidden}
+.ch-btn.mate .ch{position:relative;width:92px;height:92px}
+.ch-btn.mate.has-bg{background:var(--surface-2)}
+.ch-btn.eat .ch .c-hop{animation:eat .9s var(--out) 2!important}
+.yum{position:absolute;left:50%;top:10px;z-index:2;transform:translateX(-50%);padding:3px 8px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font:700 11px/1.2 var(--f-body);white-space:nowrap;pointer-events:none;animation:yum 2.4s var(--out) both}
+.sat-row{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:end}
+.sat{min-width:0}
+.sat-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font:500 10px/1.3 var(--f-mono);text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.sat-top b{font:600 14px/1 var(--f-display);color:var(--ink);font-variant-numeric:tabular-nums}
+.sat-bar{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden;margin-top:6px}
+.sat-bar i{display:block;height:100%;border-radius:4px;background:var(--good);transform-origin:left;transition:width .6s var(--out)}
+.sat-bar i.mid{background:var(--gold-fill)}
+.sat-bar i.low{background:var(--bad)}
+.sat-bar i.frz{background:#7CC8F2}
+.stg{display:grid;justify-items:end;text-align:right;font:600 14px/1.15 var(--f-display);text-transform:uppercase;color:var(--ink);padding:2px 0}
+.stg small{font:500 10px/1.3 var(--f-mono);text-transform:none;color:var(--muted);margin-top:3px;white-space:nowrap}
+.chestbtn{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:8px 12px 8px 8px;border-radius:16px;background:var(--accent-soft);border:1px solid color-mix(in oklab, var(--accent) 35%, transparent);font-weight:600;text-align:left;color:var(--ink)}
+.chestbtn .chest{width:46px;flex:none}
+.chestbtn span{flex:1;min-width:0;display:grid;gap:2px}
+.chestbtn small{font-size:12px;font-weight:400;color:var(--ink-2)}
+.chestbtn>.ic{color:var(--muted)}
+.chest.idle,.chestbtn .chest{animation:kbob 2.6s ease-in-out infinite;transform-origin:60px 90px}
+.calm{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:var(--surface);border:1px solid var(--line);font-size:13.5px;line-height:1.4;color:var(--ink-2);margin-bottom:12px}
+.calm .ic{color:var(--accent);margin-top:1px}
+.calm b{color:var(--ink)}
+/* wardrobe, shop, chest reveal */
+.mate-l{width:132px;height:132px;border-radius:24px;flex:none}
+.mate-l .ch{width:116px;height:116px}
+.mate-r{width:150px;height:150px;border-radius:26px}
+.mate-r .ch{width:132px;height:132px}
+.mate-g{width:156px;height:156px;border-radius:28px;margin:0 auto}
+.mate-g .ch{width:138px;height:138px}
+.mate-f{width:140px;height:140px;border-radius:26px;margin:0 auto}
+.mate-f .ch{width:124px;height:124px}
+.wardtop{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;align-items:center}
+.wt-main{min-width:0}
+.wstat b{display:block;font:600 28px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.wstat span{display:block;font:500 10px var(--f-mono);text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:4px}
+.wbar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden;margin:8px 0 10px}
+.wbar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.spark{display:flex;align-items:center;gap:6px;font:600 15px var(--f-display);margin-bottom:8px}
+.spark .ic,.sheet-head .eyebrow .ic{width:16px;height:16px;color:var(--gold-fill);vertical-align:-3px}
+.wt-main .row{display:flex;flex-wrap:wrap;gap:6px}
+.slots{display:flex;gap:6px;overflow-x:auto;margin:14px -2px 12px;padding:2px;scrollbar-width:none}
+.slots::-webkit-scrollbar{display:none}
+.slots .chip{flex:none}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.tile{position:relative;display:grid;justify-items:center;align-content:start;gap:4px;padding:10px 3px 8px;border-radius:14px;background:var(--bg);border:2px solid transparent;font-size:10.5px;font-weight:600;line-height:1.15;text-align:center;color:var(--ink-2);min-width:0;overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
+.tile span{max-width:100%}
+.tile .thumb{width:54px;height:40px;overflow:visible;position:static}
+.tile .bgthumb{width:56px;height:40px;border-radius:8px;display:block}
+.tile .rd{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--rc)}
+.tile.on{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.tile.lock{color:var(--muted)}
+.tile small{font:500 9px/1.2 var(--f-mono);text-transform:uppercase;color:var(--muted)}
+.hint2{font-size:12.5px;color:var(--muted);margin-top:14px;line-height:1.45}
+.reveal{display:grid;justify-items:center;gap:10px;text-align:center;padding:4px 0 6px}
+.reveal .chest{width:150px;margin-bottom:-28px;position:relative;z-index:1}
+.reveal .big-title{margin-top:2px}
+.reveal p{color:var(--ink-2);font-size:14px;max-width:34ch}
+.reveal .eyebrow{margin-top:6px}
+.chest-tap{display:block;width:180px;padding:10px 0 0}
+.chest-tap .chest{width:180px;margin:0}
+.chest-tap.busy{pointer-events:none}
+.rch{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font:600 11px var(--f-mono);text-transform:uppercase;letter-spacing:.04em;background:color-mix(in oklab, var(--rc) 20%, transparent);color:var(--rc)}
+.rch::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--rc)}
+:root[data-theme="light"] .rch{color:color-mix(in oklab, var(--rc) 70%, #000)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .rch{color:color-mix(in oklab, var(--rc) 70%, #000)}}
+.reveal.rr-l .mate{box-shadow:0 0 0 2px #F2C230,0 0 28px rgba(242,194,48,.35)}
+.reveal.rr-r .mate{box-shadow:0 0 0 2px #4CC3FF}
+.grow-hero .xp-chip{margin-top:4px}
+.chest-why{font-size:13px;color:var(--ink-2);margin-top:10px}
+.done-chest{display:flex;align-items:center;gap:12px;margin-top:14px;padding:10px 12px;border-radius:16px;background:var(--surface-2);font-size:13px;color:var(--ink-2)}
+.done-chest .chest{width:48px;flex:none}
+.done-chest b{display:block;color:var(--ink);font-size:14px}
+/* partner */
+.pair-who .ch{width:38px;height:38px;margin:-4px 0}
+.fr-top{display:grid;grid-template-columns:140px minmax(0,1fr);gap:14px;align-items:center;margin:-4px 0 12px}
+.fr-top .sat{margin-bottom:10px}
+.fr-top .stg{justify-items:start;text-align:left;margin-bottom:8px}
+/* supplements */
+.sup-chips{display:flex;flex-wrap:wrap;gap:8px}
+.sup-chip{display:flex;align-items:center;gap:8px;min-height:44px;padding:7px 12px 7px 9px;border-radius:14px;background:var(--surface);border:1px solid var(--line);text-align:left;font-weight:600;font-size:13.5px;color:var(--ink);max-width:100%}
+.sup-chip span{display:grid;min-width:0}
+.sup-chip small{font-weight:400;font-size:11.5px;color:var(--muted)}
+.sup-chip .ic{width:18px;height:18px;color:var(--muted);flex:none}
+.sup-chip.on{background:var(--accent-soft);border-color:color-mix(in oklab, var(--accent) 45%, transparent)}
+.sup-chip.on .ic{color:var(--accent)}
+.sup-low{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;color:var(--gold)}
+.sup-low .ic{width:16px;height:16px}
+.sup-day{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:8px;margin:2px 0 12px;text-align:center}
+.sup-day b{font:600 15px var(--f-display);text-transform:uppercase;letter-spacing:.02em}
+.sup-sum{padding:14px}
+.sup-sum-top{display:flex;gap:18px;flex-wrap:wrap}
+.sup-sum .q-bar{margin-top:12px}
+.sup-sum.full .q-bar i{background:var(--good)}
+.sup-done{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:var(--good)}
+.sup-done .ic{width:16px;height:16px}
+.sup-done.muted{color:var(--muted)}
+.sup-list{padding:2px 12px}
+.sup-row{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.sup-row:last-child{border-bottom:0}
+.sup-check{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;border:2px solid var(--line);color:transparent;transition:background-color .2s,border-color .2s,color .2s}
+.sup-check .ic{width:20px;height:20px}
+.sup-row.on .sup-check{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);animation:pop .35s var(--out)}
+.sup-row.off .sup-check{border-style:dashed;color:var(--muted)}
+.sup-row.off .sup-check .ic{width:16px;height:16px}
+.sup-main{display:grid;gap:2px;min-width:0;padding:4px 0;text-align:left}
+.sup-main b{font-weight:600;font-size:15px;overflow-wrap:anywhere}
+.sup-main small{font-size:12.5px;color:var(--muted);line-height:1.35}
+.sup-row.on .sup-main b{color:var(--ink-2)}
+.sup-actions{display:flex;gap:8px;margin-top:16px}
+.sup-actions .btn-add{flex:1;margin:0}
+.sup-quick{display:flex;flex-wrap:wrap;gap:8px}
+.sup-quick .chip small{color:var(--muted);font-weight:400;margin-left:2px}
+.sup-quick .chip .ic{width:14px;height:14px}
+.sup-ord{display:grid;grid-template-columns:24px minmax(0,1fr) 40px 40px;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.sup-ord:last-child{border-bottom:0}
+.sup-ord-n{font:600 12px var(--f-mono);color:var(--muted)}
+.sup-ord-t{display:grid;min-width:0}
+.sup-ord-t b{font-weight:600}
+.sup-ord-t small{font-size:12px;color:var(--muted)}
+.sup-dose{display:grid;gap:12px;margin-top:12px}
+.sup-course{display:grid;gap:12px;margin-top:4px}
+.chips.wrap{flex-wrap:wrap;overflow:visible}
+.sup-empty{padding-top:6px}
+/* debug panel (?debug=1 only) */
+.dbg{display:grid;gap:8px;margin-bottom:12px;padding:12px;border-radius:16px;border:1px dashed var(--gold);font-size:12.5px;color:var(--ink-2)}
+.dbg b{color:var(--gold);font:600 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em}
+.dbg .row{display:flex;flex-wrap:wrap;gap:6px}
+/* six tabs fit on a 320px phone */
+.tabbar{grid-template-columns:repeat(6,minmax(0,1fr))}
+.tab{font-size:10.5px;padding:8px 1px 7px;min-width:0}
+.tab span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:360px){.tab{font-size:9.5px;letter-spacing:-.01em}.tab .ic{width:21px;height:21px}}
+@media (max-width:370px){.hero{grid-template-columns:92px minmax(0,1fr)}.ch-btn.mate{width:92px;height:92px}.ch-btn.mate .ch{width:82px;height:82px}.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.wardtop{grid-template-columns:112px minmax(0,1fr)}.mate-l{width:112px;height:112px}.mate-l .ch{width:98px;height:98px}.fr-top{grid-template-columns:112px minmax(0,1fr)}.mate-f{width:112px;height:112px}.mate-f .ch{width:98px;height:98px}}
+@keyframes eat{0%,100%{transform:none}20%{transform:translateY(-10px) scale(1.06,.94)}40%{transform:translateY(0) scale(.95,1.05)}60%{transform:translateY(-4px)}80%{transform:scale(1.03,.97)}}
+@keyframes yum{0%{opacity:0;transform:translate(-50%,8px) scale(.8)}15%{opacity:1;transform:translate(-50%,0) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-14px)}}
+@keyframes kbob{0%,100%{transform:rotate(0)}6%{transform:rotate(-4deg)}12%{transform:rotate(4deg)}18%{transform:rotate(0)}}
 /* iPhone zooms the page into any field with text smaller than 16px — keep fields at 16px on touch screens */
 @media (pointer:coarse){input.field,select.field,textarea.field,.set-in,.composer textarea,input[type="search"]{font-size:16px}}
 @keyframes sh{to{background-position:-200% 0}}
@@ -812,6 +1015,7 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><radialGradient id="pd-gold"><stop offset="0" stop-color="#FFE07A" stop-opacity=".6"/><stop offset=".6" stop-color="#F2C230" stop-opacity=".16"/><stop offset="1" stop-color="#F2C230" stop-opacity="0"/></radialGradient></defs></svg>
 <div class="app">
   <nav class="rail" aria-label="Разделы">
     <div class="brand"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><circle class="lp-r" cx="16" cy="16" r="12.5" fill="none" stroke-width="3.4"/><path class="lp-s" d="M16 3.5a12.5 12.5 0 0 1 12.5 12.5" fill="none" stroke-width="3.4" stroke-linecap="round"/><path class="lp-s" d="M10.6 16.4l3.6 3.6 7-7.4" fill="none" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Подход</div>
@@ -829,7 +1033,7 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.1.0';
+const APP_VERSION = '2.2.0';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -941,6 +1145,13 @@ const ICONS = {
   key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l2 2M14 9l2 2"/>',
   chat:'<path d="M5 5h14a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 17h-8.5L6 20.5V17H5a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 5 5z"/><path d="M8 10h8M8 13h5"/>',
   send:'<path d="M4.5 11.8L20 4.5l-6.2 15.5-2.6-6.6z"/><path d="M11.2 13.4L20 4.5"/>',
+  pill:'<path d="M10.2 4.9a4.6 4.6 0 0 1 6.5 6.5l-5.3 5.3a4.6 4.6 0 0 1-6.5-6.5z"/><path d="M7.6 7.5l6.5 6.5"/>',
+  shirt:'<path d="M8.5 4L4 6.8l1.9 3.7 2.1-1V20h8V9.5l2.1 1L20 6.8 15.5 4c-.6 1.5-1.9 2.4-3.5 2.4S9.1 5.5 8.5 4z"/>',
+  chest:'<path d="M4 11V9a4.5 4.5 0 0 1 4.5-4.5h7A4.5 4.5 0 0 1 20 9v2"/><rect x="3.5" y="11" width="17" height="9" rx="2"/><path d="M10.5 11v3.5h3V11"/>',
+  spark:'<path d="M12 3.2l2.1 6.7 6.7 2.1-6.7 2.1L12 20.8l-2.1-6.7L3.2 12l6.7-2.1z"/>',
+  snow:'<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.6 4.6L12 7l2.4-2.4M9.6 19.4L12 17l2.4 2.4"/>',
+  box:'<path d="M4 7.8l8-4 8 4v8.4l-8 4-8-4z"/><path d="M4 7.8l8 4 8-4M12 11.8v8.4"/>',
+  back:'<path d="M14.5 6l-6 6 6 6"/>',
 };
 const icon = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`;
 const LOGO = '<svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><circle class="lp-r" cx="16" cy="16" r="12.5" fill="none" stroke-width="3.4"/><path class="lp-s" d="M16 3.5a12.5 12.5 0 0 1 12.5 12.5" fill="none" stroke-width="3.4" stroke-linecap="round"/><path class="lp-s" d="M10.6 16.4l3.6 3.6 7-7.4" fill="none" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -1003,13 +1214,177 @@ function charFace(f, mood) {
   }
   return eyes + blush + mouth;
 }
+/* ================= companion: growth stages, gear, backgrounds, chest art ================= */
+const STAGES = [
+  { k:0, name:'Малыш', f:'Малышка', from:0 },
+  { k:1, name:'Юный', f:'Юная', from:5 },
+  { k:2, name:'Взрослый', f:'Взрослая', from:20 },
+  { k:3, name:'Атлет', f:'Атлет', from:60 },
+  { k:4, name:'Легенда', f:'Легенда', from:150 },
+];
+const stageOf = n => STAGES.reduce((a, s) => n >= s.from ? s : a, STAGES[0]);
+const tfm = (sx, sy, dy = 0, ox = 50, oy = 97) => `translate(${ox} ${oy + dy}) scale(${sx} ${sy}) translate(${-ox} ${-oy})`;
+const STAGE_T = [ // characters with a separate torso
+  { all:tfm(.86, .86), torso:tfm(.7, .7), head:tfm(1, 1, -2) },
+  { all:'', torso:'', head:'' },
+  { all:tfm(1.03, 1.03), torso:tfm(1.26, 1.08), head:'' },
+  { all:tfm(1.05, 1.05), torso:tfm(1.36, 1.13), head:'' },
+  { all:tfm(1.05, 1.05), torso:tfm(1.36, 1.13), head:'' },
+];
+const STAGE_T1 = [ // one-piece characters (owl, plate)
+  { all:tfm(.8, .8), head:'' },
+  { all:'', head:'' },
+  { all:tfm(1.03, 1.03), head:tfm(1.1, 1) },
+  { all:tfm(1.05, 1.05), head:tfm(1.16, 1.02) },
+  { all:tfm(1.05, 1.05), head:tfm(1.16, 1.02) },
+];
+/* anchor points in the 100×100 viewBox: top = crown, hr = head radius (hats are drawn for 27),
+   eye = [x, y, half distance between eyes], neck / waist / hand on the torso, ns = neck item scale */
+const ANCH = {
+  cat:   { top:[50,22.5], hr:27.5, eye:[50,47,11], neck:[50,74], waist:[50,89], hand:[75,86], abs:[50,88] },
+  fox:   { top:[50,24.5], hr:28,   eye:[50,44,12], neck:[50,75], waist:[50,89], hand:[75,86], abs:[50,88] },
+  panda: { top:[50,22.5], hr:27.5, eye:[50,48,12], neck:[50,75], waist:[50,89], hand:[75,86], abs:[50,88] },
+  owl:   { top:[50,20],   hr:28,   eye:[50,44,13], neck:[50,62], waist:[50,85], hand:[83,75], abs:[50,76] },
+  dog:   { top:[50,23.5], hr:26.5, eye:[50,46,11], neck:[50,74], waist:[50,89], hand:[75,86], abs:[50,88] },
+  dragon:{ top:[50,24.5], hr:27,   eye:[50,45,12], neck:[50,73], waist:[50,89], hand:[75,86], abs:[50,88] },
+  plate: { top:[50,15.5], hr:31,   eye:[50,43,11], neck:[50,80], ns:.78, waist:[50,83], hand:[86,74], hs:1, abs:[50,80], round:1 },
+};
+const CH_FEM = { fox:1, panda:1, owl:1 };
+const vb = (kind, m, f) => CH_FEM[kind] ? f : m;
+const stName = (st, kind) => st ? (CH_FEM[kind] ? st.f : st.name) : '';
+const TORSO_RE = /^(<ellipse class="c-main" cx="50" cy="84" rx="22" ry="12\.5"\/>(?:<ellipse class="c-light" cx="50" cy="86\.5" rx="11\.5" ry="7\.5"\/>)?(?:<path d="M41 80[^>]*\/>)?)/;
+const PARTS = {};
+function partsOf(kind) {
+  if (PARTS[kind]) return PARTS[kind];
+  const c = CHARS[kind] || CHARS.cat, m = c.body.match(TORSO_RE);
+  return (PARTS[kind] = m ? { torso:m[1], head:c.body.slice(m[1].length) } : { torso:'', head:c.body });
+}
+
+/* ---- 60 items: 5 slots × (8 common, 3 rare, 1 legendary) ---- */
+const RAR = { c:{ n:'Обычная', s:'Обычная', col:'#9AA1AD' }, r:{ n:'Редкая', s:'Редкая', col:'#4CC3FF' }, l:{ n:'Легендарная', s:'Легенда', col:'#F2C230' } };
+const SLOTS = { head:'Голова', eyes:'Глаза', neck:'Шея и корпус', hand:'В руке', bg:'Фон' };
+const SLOT_ORDER = ['head', 'eyes', 'neck', 'hand', 'bg'];
+const HALO = (cx, cy, rx, ry) => `<ellipse class="g-halo" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#pd-gold)"/>`;
+const PAW = (x, y) => `<circle class="g-paw" cx="${x}" cy="${y}" r="4.4"/>`;
+const LEAF = (x, y, a) => `<ellipse class="g-leaf" cx="${x}" cy="${y}" rx="4.4" ry="2" transform="rotate(${a} ${x} ${y})"/>`;
+const CHAIN = [[-13,-1.5,30],[-9.5,2.5,-30],[-5,5,15],[0,6,-10],[5,5,-15],[9.5,2.5,30],[13,-1.5,-30]].map(([x, y, a]) => `<ellipse class="g-sm" style="stroke-width:1.8" cx="${x}" cy="${y}" rx="2.7" ry="1.6" transform="rotate(${a} ${x} ${y})"/>`).join('');
+const RAYS = (x, y) => `<path class="g-gold" d="M${x} ${y - 9}l1.6 3.7 3.7 1.6-3.7 1.6L${x} ${y + 2.6}l-1.6-3.7L${x - 5.3} ${y - 3.7}l3.7-1.6z"/>`;
+const ITEMS = [
+  /* head: origin = crown, drawn for head radius 27, +y down */
+  { id:'cap', s:'head', t:-15, r:'c', n:'Кепка', d:'<path class="g-a" d="M-22 8 Q-23 -12 0 -12.5 Q23 -12 22 8Z"/><path class="g-sd" style="stroke-width:1.2;opacity:.55" d="M0 -12 V7 M-11 -9.5 Q-13.5 -1 -13 7.5 M11 -9.5 Q13.5 -1 13 7.5"/><circle class="g-b" cx="0" cy="-12.6" r="2.3"/><path class="g-b" d="M-23 6.5 Q0 12 23 6.5 Q28 9 25 12.5 Q0 18.5 -25 12.5 Q-28 9 -23 6.5Z"/>' },
+  { id:'beanie', s:'head', t:-23.5, r:'c', n:'Шапка-бини', d:'<path class="g-a" d="M-21.5 9 Q-23 -16 0 -16.5 Q23 -16 21.5 9Z"/><rect class="g-b" x="-23.5" y="3" width="47" height="10" rx="5"/><path class="g-sm" style="stroke-width:1.5;opacity:.6" d="M-17 5.5v5 M-11 5.5v5 M-5 5.5v5 M1 5.5v5 M7 5.5v5 M13 5.5v5 M19 5.5v5"/><circle class="g-b" cx="0" cy="-17.5" r="5.5"/>' },
+  { id:'headband', s:'head', t:3, r:'c', n:'Повязка на лоб', d:'<path class="g-a" d="M-24.5 8.5 Q0 3 24.5 8.5 L24.5 15 Q0 9.5 -24.5 15Z"/><path class="g-sd" style="stroke-width:1.1;opacity:.6" d="M-24 11.8 Q0 6.3 24 11.8"/><path class="g-b" d="M22.5 10 L31 6 L30.5 13.2Z M22.5 12.5 L29.5 19.5 L25.5 20.5Z"/>' },
+  { id:'visor', s:'head', t:1.5, r:'c', n:'Козырёк', d:'<path class="g-a" d="M-24.5 7 Q0 1.5 24.5 7 L24.5 12.5 Q0 7 -24.5 12.5Z"/><path class="g-b" d="M-17 10.5 Q0 7 17 10.5 Q15 14 0 15 Q-15 14 -17 10.5Z"/>' },
+  { id:'bandana', s:'head', t:-13, r:'c', n:'Бандана', d:'<path class="g-a" d="M-23.5 10 Q-24 -12 0 -12.5 Q24 -12 23.5 10 Q0 3.5 -23.5 10Z"/><circle class="g-b" cx="-12" cy="-3" r="1.6"/><circle class="g-b" cx="-2" cy="-8" r="1.6"/><circle class="g-b" cx="9" cy="-4" r="1.6"/><circle class="g-b" cx="-5" cy="3" r="1.6"/><circle class="g-b" cx="14" cy="3.5" r="1.6"/><path class="g-a" d="M21.5 6 L32 3.5 L29 11Z M21.5 8.5 L30 15.5 L25 15.5Z"/>' },
+  { id:'bucket', s:'head', t:-14.5, r:'c', n:'Панама', d:'<path class="g-a" d="M-17 4 Q-16 -14 0 -14 Q16 -14 17 4Z"/><path class="g-sd" style="stroke-width:1.2;opacity:.6" d="M-16.5 0 Q0 -3 16.5 0"/><path class="g-b" d="M-30 7 Q0 -1 30 7 Q29 13 0 13 Q-29 13 -30 7Z"/>' },
+  { id:'phones', s:'head', t:-13.5, r:'c', n:'Наушники', d:'<path class="g-sm" style="stroke-width:4.5" d="M-25 20 Q-27 -11 0 -11 Q27 -11 25 20"/><rect class="g-b" x="-32" y="14" width="10" height="17" rx="4.5"/><rect class="g-b" x="22" y="14" width="10" height="17" rx="4.5"/><rect class="g-a" x="-30" y="17" width="6" height="11" rx="3"/><rect class="g-a" x="24" y="17" width="6" height="11" rx="3"/>' },
+  { id:'bike', s:'head', t:-15.5, r:'c', n:'Велошлем', d:'<path class="g-a" d="M-25 10 Q-25 -15 2 -15.5 Q26 -15 26.5 4 L22 10.5 Q0 4.5 -25 10Z"/><path class="g-b" d="M-15 -6 Q-11 -12 -6.5 -6.5Z M-3 -8.5 Q1 -14 5 -8.5Z M9 -7.5 Q13 -11.5 16.5 -5.5Z"/><path class="g-b" d="M-25 10 Q0 4.5 22 10.5 L23 13 Q0 7.5 -24.5 12.5Z"/>' },
+  { id:'boxhelm', s:'head', t:-14.5, r:'r', n:'Боксёрский шлем', d:'<path class="g-a" d="M-28.5 26 Q-31 -14 0 -14.5 Q31 -14 28.5 26 L21 26 Q22.5 4 0 4 Q-22.5 4 -21 26Z"/><path class="g-w" d="M-28.5 26 L-21 26 Q-21.5 16 -19 9 L-27.5 8.5Z M28.5 26 L21 26 Q21.5 16 19 9 L27.5 8.5Z"/><path class="g-w" d="M-14 -11.5 Q0 -15 14 -11.5 L13 -7 Q0 -10 -13 -7Z"/>' },
+  { id:'coachcap', s:'head', t:-12.5, r:'r', n:'Кепка «Тренер»', d:'<path class="g-a" d="M-22 8 Q-23 -12 0 -12.5 Q23 -12 22 8Z"/><path class="g-w" d="M-12.5 8 Q-13.5 -10 0 -12.2 Q13.5 -10 12.5 8Z"/><path class="g-a" d="M-6 0 L0 -5 L6 0 L6 3 L0 -2 L-6 3Z"/><path class="g-b" d="M-23 6.5 Q0 12 23 6.5 Q28 9 25 12.5 Q0 18.5 -25 12.5 Q-28 9 -23 6.5Z"/>' },
+  { id:'laurel', s:'head', t:-9.5, r:'r', n:'Лавровый венок', d:LEAF(-24, 12, 75) + LEAF(-23, 5.5, 60) + LEAF(-20, -.5, 40) + LEAF(-15, -5, 22) + LEAF(-8.5, -7.2, 8) + LEAF(24, 12, -75) + LEAF(23, 5.5, -60) + LEAF(20, -.5, -40) + LEAF(15, -5, -22) + LEAF(8.5, -7.2, -8) + '<path class="g-a" d="M-25 15 L-30 23 L-25.5 21.5 L-23 25Z M25 15 L30 23 L25.5 21.5 L23 25Z"/>' },
+  { id:'crown', s:'head', t:-23.5, r:'l', n:'Корона чемпиона', d:HALO(0, -5, 30, 20) + '<path class="g-gold" d="M-19 6 L-21.5 -15 L-10.5 -5 L0 -19.5 L10.5 -5 L21.5 -15 L19 6Z"/><path class="g-gold2" d="M-19.6 1.5 H19.6 L19 8 H-19Z"/><circle class="g-gold" cx="-21.5" cy="-16" r="2.5"/><circle class="g-gold" cx="0" cy="-20.5" r="2.7"/><circle class="g-gold" cx="21.5" cy="-16" r="2.5"/><circle class="g-gem" cx="0" cy="-4" r="3.3"/><circle class="g-w" cx="-10" cy="4.7" r="1.5"/><circle class="g-w" cx="10" cy="4.7" r="1.5"/><path class="g-hl" d="M-15 -8 L-13.5 1"/>' },
+  /* eyes: origin between the eyes, eyes at ±11.5 */
+  { id:'glasses', s:'eyes', r:'c', n:'Очки', d:'<circle class="g-glass" cx="-11.5" cy="0" r="7"/><circle class="g-glass" cx="11.5" cy="0" r="7"/><path class="g-sm" style="stroke-width:2.2" d="M-4.5 0 a7 7 0 1 1 -14 0 a7 7 0 1 1 14 0Z M18.5 0 a7 7 0 1 1 -14 0 a7 7 0 1 1 14 0Z M-4.5 -1 Q0 -3.5 4.5 -1"/>' },
+  { id:'square', s:'eyes', r:'c', n:'Квадратные очки', d:'<rect class="g-glass" x="-19" y="-5.5" width="15" height="11" rx="2.5"/><rect class="g-glass" x="4" y="-5.5" width="15" height="11" rx="2.5"/><rect class="g-sm" style="stroke-width:2.4" x="-19" y="-5.5" width="15" height="11" rx="2.5"/><rect class="g-sm" style="stroke-width:2.4" x="4" y="-5.5" width="15" height="11" rx="2.5"/><path class="g-sm" style="stroke-width:2.2" d="M-4 -2 H4"/>' },
+  { id:'round', s:'eyes', r:'c', n:'Круглые очки', d:'<circle class="g-glass" cx="-11.5" cy="0" r="8"/><circle class="g-glass" cx="11.5" cy="0" r="8"/><path class="g-sm" style="stroke-width:1.6" d="M-3.5 0 a8 8 0 1 1 -16 0 a8 8 0 1 1 16 0Z M19.5 0 a8 8 0 1 1 -16 0 a8 8 0 1 1 16 0Z M-3.5 -1.5 Q0 -4.5 3.5 -1.5"/>' },
+  { id:'shades', s:'eyes', r:'c', n:'Тёмные очки', d:'<path class="g-lens" d="M-20 -5 H-3.5 L-4.5 2.5 Q-6.5 6 -12 6 Q-18.5 6 -19.5 2Z M20 -5 H3.5 L4.5 2.5 Q6.5 6 12 6 Q18.5 6 19.5 2Z"/><path class="g-a" d="M-21 -7.5 H21 V-4 H-21Z"/><path class="g-hl" d="M-16.5 -2 L-13 -2.5 M13 -2.5 L16.5 -2"/>' },
+  { id:'aviator', s:'eyes', r:'c', n:'Авиаторы', d:'<path class="g-lens" d="M-19 -5 Q-11.5 -6.5 -4 -5 Q-3.5 4 -10.5 6.5 Q-18.5 6 -19 -5Z M19 -5 Q11.5 -6.5 4 -5 Q3.5 4 10.5 6.5 Q18.5 6 19 -5Z"/><path class="g-sm" style="stroke-width:1.7" d="M-19 -5 Q-11.5 -6.5 -4 -5 Q-3.5 4 -10.5 6.5 Q-18.5 6 -19 -5Z M19 -5 Q11.5 -6.5 4 -5 Q3.5 4 10.5 6.5 Q18.5 6 19 -5Z M-4 -4.6 Q0 -6.8 4 -4.6"/><path class="g-hl" d="M-15.5 -3 L-12 -3.6 M12 -3.6 L15.5 -3"/>' },
+  { id:'sport', s:'eyes', r:'c', n:'Спортивные очки', d:'<path class="g-a" d="M-22 -6 Q0 -10 22 -6 Q23.5 3 14 5.5 Q6 6 2.5 1.5 Q0 0 -2.5 1.5 Q-6 6 -14 5.5 Q-23.5 3 -22 -6Z"/><path class="g-lens" d="M-19.5 -4.6 Q-11 -7 -3.2 -4.8 Q-2 2.4 -8 3.8 Q-17.5 4.3 -19.5 -4.6Z M19.5 -4.6 Q11 -7 3.2 -4.8 Q2 2.4 8 3.8 Q17.5 4.3 19.5 -4.6Z"/><path class="g-hl" d="M-16.5 -3 L-12.5 -3.8 M13 -3.8 L17 -3"/>' },
+  { id:'swim', s:'eyes', r:'c', n:'Очки для плавания', d:'<path class="g-sd" style="stroke-width:2.2" d="M-19 0 H-28 M19 0 H28 M-4 0 H4"/><ellipse class="g-a" cx="-11.5" cy="0" rx="7.6" ry="6"/><ellipse class="g-a" cx="11.5" cy="0" rx="7.6" ry="6"/><ellipse class="g-lens" style="opacity:.6" cx="-11.5" cy="0" rx="5.2" ry="3.8"/><ellipse class="g-lens" style="opacity:.6" cx="11.5" cy="0" rx="5.2" ry="3.8"/><path class="g-hl" d="M-14.5 -1.6 L-12 -2.2 M8.5 -2.2 L11 -1.6"/>' },
+  { id:'ski', s:'eyes', r:'c', n:'Горнолыжная маска', d:'<path class="g-b" d="M-30 -3 H30 V3 H-30Z"/><path class="g-a" d="M-22 -8 Q0 -11 22 -8 Q24 2 16 7 Q8 8 4 4 Q0 2 -4 4 Q-8 8 -16 7 Q-24 2 -22 -8Z"/><path class="g-lens" style="opacity:.78" d="M-19.5 -6 Q0 -8.5 19.5 -6 Q21 1.5 15 4.6 Q8 5.5 4.5 2.5 Q0 .5 -4.5 2.5 Q-8 5.5 -15 4.6 Q-21 1.5 -19.5 -6Z"/><path class="g-hl" d="M-15 -4 L-9 -5"/>' },
+  { id:'neonvisor', s:'eyes', r:'r', n:'Неоновый визор', d:'<path class="g-k" d="M-23 -6 Q0 -9 23 -6 L22 4 Q0 7 -22 4Z"/><path class="g-a" d="M-23 -6 Q0 -9 23 -6 L23 -3.5 Q0 -6.5 -23 -3.5Z"/><path class="g-cy" style="opacity:.35" d="M-21 -2.5 Q0 -5.5 21 -2.5 L21 2 Q0 -1 -21 2Z"/><path class="g-cy" d="M-20 -1.4 Q0 -4.2 20 -1.4 L20 .6 Q0 -2.2 -20 .6Z"/>' },
+  { id:'mirror', s:'eyes', r:'r', n:'Зеркальные очки', d:'<path class="g-silver" d="M-19 -5 Q-11.5 -6.5 -4 -5 Q-3.5 4 -10.5 6.5 Q-18.5 6 -19 -5Z M19 -5 Q11.5 -6.5 4 -5 Q3.5 4 10.5 6.5 Q18.5 6 19 -5Z"/><path class="g-w" style="opacity:.85" d="M-17 -3 L-11 -4.4 L-15 3.5Z M6 -4.4 L12 -4.6 L8 3Z"/><path class="g-sm" style="stroke-width:1.9" d="M-19 -5 Q-11.5 -6.5 -4 -5 Q-3.5 4 -10.5 6.5 Q-18.5 6 -19 -5Z M19 -5 Q11.5 -6.5 4 -5 Q3.5 4 10.5 6.5 Q18.5 6 19 -5Z M-4 -4.6 Q0 -6.8 4 -4.6"/>' },
+  { id:'speed', s:'eyes', r:'r', n:'Очки «Скорость»', d:'<path class="g-a" d="M-23 -6.5 Q0 -9 23 -6.5 Q24 3 13 5.5 Q3 6 0 1.5 Q-3 6 -13 5.5 Q-24 3 -23 -6.5Z"/><path class="g-lens" d="M-20.5 -4.6 Q-11 -6.6 -2.5 -4.6 Q-2 2.6 -9 3.6 Q-19 3.8 -20.5 -4.6Z M20.5 -4.6 Q11 -6.6 2.5 -4.6 Q2 2.6 9 3.6 Q19 3.8 20.5 -4.6Z"/><path class="g-y" d="M-20 -2.5 H-3 V-1 H-20Z M3 -2.5 H20 V-1 H3Z M-18 .6 H-4 V1.8 H-18Z M4 .6 H18 V1.8 H4Z"/>' },
+  { id:'goldvisor', s:'eyes', r:'l', n:'Золотой визор', d:HALO(0, 0, 32, 14) + '<path class="g-gold" d="M-23 -6 Q0 -9.5 23 -6 Q24.5 3 15 6 Q7 6.5 3 2 Q0 .5 -3 2 Q-7 6.5 -15 6 Q-24.5 3 -23 -6Z"/><path class="g-gold2" d="M-20 -4 Q-11 -6.5 -3.5 -4.2 Q-2.5 2.5 -8.5 3.8 Q-18 4.2 -20 -4Z M20 -4 Q11 -6.5 3.5 -4.2 Q2.5 2.5 8.5 3.8 Q18 4.2 20 -4Z"/><path class="g-hl" d="M-16.5 -2.6 L-12 -3.4 M12 -3.4 L16.5 -2.6"/>' },
+  /* neck: origin = where the head meets the torso (waist items use the waist anchor) */
+  { id:'towel', s:'neck', r:'c', n:'Полотенце', d:'<path class="g-a" d="M-19 -3 Q0 7 19 -3 Q23 -1 22.5 4 Q0 14.5 -22.5 4 Q-23 -1 -19 -3Z"/><path class="g-a" d="M-22.5 3 L-15.5 6.5 L-14.8 18.5 Q-18 20.5 -21.6 18.5Z"/><path class="g-sd" style="stroke-width:1.4;opacity:.8" d="M-20.8 15.2 L-15.2 15.6 M-21 12.6 L-15.4 13"/>' },
+  { id:'whistle', s:'neck', r:'c', n:'Свисток', d:'<path class="g-sd" style="stroke-width:1.6" d="M-12 -3 Q-6 6 0 9 Q6 6 12 -3"/><path class="g-a" d="M-5 9 H5 A3.6 3.6 0 0 1 5 16.2 H-2 A4.4 4.4 0 0 1 -5 9Z"/><rect class="g-b" x="4" y="9" width="5.5" height="3.6" rx="1"/><circle class="g-b" cx="-1.5" cy="12.6" r="1.6"/>' },
+  { id:'scarf', s:'neck', r:'c', n:'Шарф', d:'<path class="g-a" d="M-20 -3 Q0 8 20 -3 L21 4 Q0 15 -21 4Z"/><path class="g-a" d="M10 6 L17 5 L19 21 L12 21.5Z"/><path class="g-b" d="M10.9 10 L17.6 9.3 L18 12.3 L11.2 13Z"/><path class="g-sd" style="stroke-width:1.3" d="M12.6 21.5 v3 M15.3 21.3 v3 M18 21 v3"/>' },
+  { id:'badge', s:'neck', r:'c', n:'Бейдж участника', d:'<path class="g-sm" style="stroke-width:1.8" d="M-11 -3 L-2 10 M11 -3 L2 10"/><rect class="g-a" x="-6.5" y="9" width="13" height="10" rx="2"/><rect class="g-b" x="-4.5" y="11" width="9" height="2.6" rx="1"/><rect class="g-b" x="-4.5" y="15" width="5" height="1.8" rx=".9"/>' },
+  { id:'tag', s:'neck', r:'c', n:'Жетон', d:'<path class="g-sd" style="stroke-width:1.3;stroke-dasharray:1.3 1.3" d="M-12 -3 Q0 9 12 -3"/><rect class="g-a" x="-4" y="4.5" width="8" height="11" rx="3.5"/><circle class="g-b" cx="0" cy="7" r="1"/><path class="g-sd" style="stroke-width:.9;opacity:.8" d="M-2 10 H2 M-2 12 H1"/>' },
+  { id:'stopwatch', s:'neck', r:'c', n:'Секундомер', d:'<path class="g-sd" style="stroke-width:1.5" d="M-11 -3 Q0 7 11 -3"/><rect class="g-b" x="-1.5" y="4.5" width="3" height="3" rx=".8"/><circle class="g-a" cx="0" cy="13" r="6"/><circle class="g-b" cx="0" cy="13" r="4.2"/><path class="g-sm" style="stroke-width:1.2" d="M0 13 V10 M0 13 L2.2 14.3"/>' },
+  { id:'neckband', s:'neck', r:'c', n:'Бандана на шее', d:'<path class="g-a" d="M-19 -2 Q0 6 19 -2 L13 4 L0 17 L-13 4Z"/><circle class="g-b" cx="-6" cy="5" r="1.4"/><circle class="g-b" cx="5" cy="7" r="1.4"/><circle class="g-b" cx="0" cy="12" r="1.4"/><circle class="g-b" cx="-1" cy="3" r="1.4"/>' },
+  { id:'chain', s:'neck', r:'c', n:'Цепь', d:CHAIN + '<rect class="g-a" x="-3.5" y="7" width="7" height="7" rx="1.5" transform="rotate(45 0 10.5)"/>' },
+  { id:'medal', s:'neck', r:'r', n:'Медаль призёра', d:'<path class="g-a" d="M-11 -4 L-5 -4 L1.5 9 L-4.5 9Z"/><path class="g-w" d="M11 -4 L5 -4 L-1.5 9 L4.5 9Z"/><circle class="g-silver" cx="0" cy="13.5" r="6.2"/><circle class="g-silver2" cx="0" cy="13.5" r="4.3"/><path class="g-a" d="M0 10.6 L1 12.6 L3.1 12.9 L1.6 14.3 L2 16.4 L0 15.4 L-2 16.4 L-1.6 14.3 L-3.1 12.9 L-1 12.6Z"/>' },
+  { id:'fanscarf', s:'neck', r:'r', n:'Шарф болельщика', d:'<path class="g-a" d="M-20 -3 Q0 8 20 -3 L21 4 Q0 15 -21 4Z"/><path class="g-w" d="M-12 1.6 L-7 3.4 L-7.6 9.6 L-12.6 7.6Z M-2 4.4 L3 4.3 L3 10.7 L-2 10.8Z M8 3.3 L13 1.4 L13.6 7.4 L8.6 9.4Z"/><path class="g-a" d="M10 6 L17 5 L19 21 L12 21.5Z"/><path class="g-w" d="M10.8 9.5 L17.5 8.8 L17.9 12 L11.1 12.6Z M11.4 15 L18.2 14.4 L18.5 17.4 L11.7 18Z"/>' },
+  { id:'neckphones', s:'neck', r:'r', n:'Наушники на шее', d:'<path style="fill:none;stroke:#1C1D21;stroke-width:3.5;stroke-linecap:round" d="M-15 0 Q0 9 15 0"/><rect class="g-a" x="-21" y="-5" width="9" height="12" rx="4"/><rect class="g-a" x="12" y="-5" width="9" height="12" rx="4"/><rect class="g-k" x="-19" y="-3" width="5" height="8" rx="2.5"/><rect class="g-k" x="14" y="-3" width="5" height="8" rx="2.5"/>' },
+  { id:'belt', s:'neck', r:'l', at:'waist', n:'Золотой пояс', d:HALO(0, 1, 30, 11) + '<path class="g-belt" d="M-22.5 -3.6 Q0 -1 22.5 -3.6 L23 3.6 Q0 6.2 -23 3.6Z"/><rect class="g-gold2" x="-19" y="-3" width="5" height="6" rx="1.2"/><rect class="g-gold2" x="14" y="-3" width="5" height="6" rx="1.2"/><ellipse class="g-gold" cx="0" cy=".8" rx="9" ry="7"/><ellipse class="g-gold2" cx="0" cy=".8" rx="5.6" ry="4.3"/><circle class="g-gem" cx="0" cy=".8" r="2.4"/><path class="g-hl" d="M-5.5 -3 L-3 -4.6"/>' },
+  /* hand: origin = paw */
+  { id:'dumbbell', s:'hand', r:'c', n:'Гантель', d:'<g transform="rotate(-28)"><rect class="g-b" x="-8.5" y="-1.6" width="17" height="3.2" rx="1.6"/><rect class="g-a" x="-13.5" y="-6.5" width="5.5" height="13" rx="1.8"/><rect class="g-a" x="8" y="-6.5" width="5.5" height="13" rx="1.8"/></g>' + PAW(0, 0) },
+  { id:'kettle', s:'hand', r:'c', n:'Гиря', d:'<g transform="translate(0 -5)"><path class="g-sm" style="stroke-width:3" d="M-5 4 Q-5.5 -3 0 -3 Q5.5 -3 5 4"/><circle class="g-a" cx="0" cy="8.5" r="6.4"/><path class="g-b" style="opacity:.55" d="M-6 9.5 Q0 12.5 6 9.5 Q5 14 0 14.6 Q-5 14 -6 9.5Z"/></g>' + PAW(0, -7.5) },
+  { id:'shaker', s:'hand', r:'c', n:'Шейкер', d:'<rect class="g-a" x="-5.5" y="-14" width="11" height="17" rx="3"/><rect class="g-b" x="-6" y="-17.5" width="12" height="5" rx="2"/><rect class="g-b" x="-2" y="-20.5" width="4" height="3.5" rx="1"/><path class="g-sd" style="stroke-width:1.2;opacity:.6" d="M-3.4 -6 H3.4 M-3.4 -3 H3.4"/>' + PAW(-4.5, -1) },
+  { id:'bottle', s:'hand', r:'c', n:'Бутылка воды', d:'<rect class="g-a" x="-4" y="-16" width="8" height="18" rx="3"/><rect class="g-b" x="-2.6" y="-20" width="5.2" height="4.5" rx="1"/><path class="g-b" style="opacity:.7" d="M-4 -9 h8 v3 h-8Z"/>' + PAW(-3.5, -2) },
+  { id:'rope', s:'hand', r:'c', n:'Скакалка', d:'<path class="g-sm" style="stroke-width:1.5" d="M1 -6 Q12 -24 -4 -25 Q-18 -23 -13 -7"/><rect class="g-b" x="-1.8" y="-10" width="3.6" height="9" rx="1.8" transform="rotate(18)"/><rect class="g-b" x="-15" y="-11" width="3.6" height="9" rx="1.8" transform="rotate(-12 -13 -6)"/>' + PAW(0, 0) },
+  { id:'grip', s:'hand', r:'c', n:'Кистевой эспандер', d:'<path class="g-a" d="M-2 -14 L-6.5 3 L-3 3.6 L1 -12Z M2 -14 L6.5 3 L3 3.6 L-1 -12Z"/><path class="g-sd" style="stroke-width:1.3" d="M-2 -12.5 q2 -3.4 4 0"/>' + PAW(0, 2) },
+  { id:'plate5', s:'hand', r:'c', n:'Блин 5 кг', d:'<circle class="g-a" cx="0" cy="-7" r="9"/><circle class="g-b" cx="0" cy="-7" r="6.2"/><circle class="g-a" cx="0" cy="-7" r="2.2"/><path class="g-sm" style="stroke-width:.9" d="M-2.6 -13.6 h1.6 l-.5 2 M.6 -13.6 h2 v2 h-2"/>' + PAW(-6, 0) },
+  { id:'chalk', s:'hand', r:'c', n:'Мешочек магнезии', d:'<path class="g-a" d="M-6.5 -12 h13 l1 13 q0 4 -7.5 4 q-7.5 0 -7.5 -4Z"/><path class="g-b" d="M-7 -14.5 h14 v3.4 h-14Z"/><circle class="g-b" cx="2" cy="-16" r="1.4"/><circle class="g-b" cx="-1.5" cy="-17.2" r="1"/>' + PAW(-6, -2) },
+  { id:'minibar', s:'hand', r:'r', n:'Мини-штанга', d:'<g transform="rotate(-18)"><rect class="g-silver2" x="-17" y="-1.3" width="34" height="2.6" rx="1.3"/><rect class="g-k" x="-15.5" y="-7" width="4.5" height="14" rx="1.5"/><rect class="g-a" x="-11.2" y="-5.5" width="3.4" height="11" rx="1.2"/><rect class="g-k" x="11" y="-7" width="4.5" height="14" rx="1.5"/><rect class="g-a" x="7.8" y="-5.5" width="3.4" height="11" rx="1.2"/></g>' + PAW(0, 0) },
+  { id:'glove', s:'hand', r:'r', n:'Боксёрская перчатка', d:'<path class="g-a" d="M-8 -6 Q-9 -17 1 -17 Q10 -17 9 -6 Q9 1 4 2 H-4 Q-8 1 -8 -6Z"/><path class="g-a" d="M-8 -10 Q-13 -10 -12 -4.5 Q-11 -.5 -7 -1.5Z"/><path class="g-sd" style="stroke-width:1.1;opacity:.6" d="M-3 -13 Q2 -15 6 -12"/><rect class="g-w" x="-5" y="1" width="10" height="6" rx="2"/>' },
+  { id:'flag', s:'hand', r:'r', n:'Флаг команды', d:'<rect class="g-silver2" x="-1" y="-30" width="2" height="31" rx="1"/><path class="g-a" d="M1 -29 L18 -25.5 L1 -17.5Z"/><path class="g-w" d="M1 -25.6 L11.5 -23.6 L1 -20.6Z"/>' + PAW(0, 0) },
+  { id:'cup', s:'hand', r:'l', n:'Золотой кубок', d:HALO(0, -12, 17, 15) + '<path class="g-gold" d="M-7.5 -21 H7.5 Q7.5 -10.5 0 -7.5 Q-7.5 -10.5 -7.5 -21Z"/><path style="fill:none;stroke:#C8940C;stroke-width:1.7" d="M-7.3 -19 Q-12.5 -19 -11.5 -14 Q-10.5 -11 -6.2 -12 M7.3 -19 Q12.5 -19 11.5 -14 Q10.5 -11 6.2 -12"/><rect class="g-gold2" x="-1.5" y="-8" width="3" height="4.2"/><rect class="g-gold" x="-5.5" y="-4.4" width="11" height="3.2" rx="1"/><path class="g-hl" d="M-4.5 -18.5 L-3.5 -12"/>' + PAW(0, -2) },
+  /* backgrounds: a separate 100×100 layer under the character */
+  { id:'gym', s:'bg', r:'c', n:'Зал', d:'<rect class="b-0" width="100" height="100"/><path class="b-1" d="M0 76 H100 V100 H0Z"/><path class="b-2" d="M11 26 h4 v50 h-4Z M85 26 h4 v50 h-4Z M8 42 h84 v3 h-84Z"/><rect class="b-3" x="17" y="34" width="5" height="19" rx="1.6"/><rect class="b-3" x="22.5" y="37" width="3.5" height="13" rx="1.2"/><rect class="b-3" x="78" y="34" width="5" height="19" rx="1.6"/><rect class="b-3" x="74" y="37" width="3.5" height="13" rx="1.2"/><path class="b-lane" d="M0 86 H100"/>' },
+  { id:'stadium', s:'bg', r:'c', n:'Стадион', d:'<rect class="b-0" width="100" height="100"/><path class="b-1" d="M0 18 H100 V42 H0Z"/><path class="b-lane" style="opacity:.25" d="M0 24 H100 M0 30 H100 M0 36 H100"/><circle class="b-3" cx="12" cy="9" r="4"/><circle class="b-3" cx="88" cy="9" r="4"/><path class="b-2" d="M0 66 H100 V100 H0Z"/><path class="b-lane" d="M0 74 H100 M0 82 H100 M0 91 H100"/>' },
+  { id:'mountains', s:'bg', r:'c', n:'Горы', d:'<rect class="b-0" width="100" height="100"/><circle class="b-1" cx="78" cy="22" r="8"/><path class="b-1" d="M-5 80 L22 46 L38 62 L58 33 L82 60 L105 44 V105 H-5Z"/><path class="b-snow" d="M58 33 L51.5 42 L55.5 41 L58.5 45 L62 41 L65.5 43Z M22 46 L17.5 52 L21 51 L24 54Z"/><path class="b-3" d="M-5 90 L30 68 L52 81 L76 63 L105 83 V105 H-5Z"/>' },
+  { id:'park', s:'bg', r:'c', n:'Парк', d:'<rect class="b-0" width="100" height="100"/><path class="b-2" d="M0 80 Q50 72 100 80 V100 H0Z"/><rect class="b-3" x="15" y="52" width="3" height="26"/><circle class="b-1" cx="16.5" cy="44" r="13"/><circle class="b-2" cx="12" cy="40" r="7"/><rect class="b-3" x="83" y="56" width="3" height="22"/><circle class="b-1" cx="84.5" cy="48" r="11"/><circle class="b-2" cx="88" cy="45" r="6"/><circle class="b-1" cx="70" cy="18" r="6"/>' },
+  { id:'beach', s:'bg', r:'c', n:'Пляж', d:'<rect class="b-0" width="100" height="100"/><circle style="fill:#FFD27A;opacity:.85" cx="72" cy="30" r="12"/><path class="b-1" d="M0 56 H100 V72 H0Z"/><path class="b-lane" d="M6 61 q4 -2 8 0 t8 0 M54 65 q4 -2 8 0 t8 0 M30 68 q4 -2 8 0 t8 0"/><path class="b-3" d="M0 72 Q50 66 100 74 V100 H0Z"/>' },
+  { id:'city', s:'bg', r:'c', n:'Город', d:'<rect class="b-0" width="100" height="100"/><path class="b-1" d="M0 52 h14 v-14 h12 v24 h10 v-30 h14 v20 h12 v-10 h12 v22 h12 v-8 h14 V100 H0Z"/><path class="b-2" d="M0 72 h20 v-8 h16 v12 h18 v-16 h14 v10 h16 v-6 h16 V100 H0Z"/><path class="b-lane" style="stroke-width:2;opacity:.35" d="M30 40 v3 M30 46 v3 M44 38 v3 M44 44 v3 M66 52 v3 M88 58 v3"/>' },
+  { id:'track', s:'bg', r:'c', n:'Беговая дорожка', d:'<rect class="b-0" width="100" height="100"/><path class="b-2" d="M30 46 H70 L104 100 H-4Z"/><path class="b-lane" d="M38 46 L18 100 M46 46 L38 100 M54 46 L62 100 M62 46 L82 100"/><path class="b-1" d="M0 34 H100 V46 H0Z"/>' },
+  { id:'pool', s:'bg', r:'c', n:'Бассейн', d:'<rect class="b-0" width="100" height="100"/><path class="b-2" d="M0 40 H100 V100 H0Z"/><path class="b-lane" style="stroke-dasharray:3 3" d="M0 55 H100 M0 72 H100 M0 89 H100"/><path class="b-1" d="M0 36 H100 V40 H0Z"/><path class="b-lane" style="opacity:.3" d="M10 47 q5 -2 10 0 t10 0 M60 64 q5 -2 10 0 t10 0 M25 81 q5 -2 10 0 t10 0"/>' },
+  { id:'sunset', s:'bg', r:'r', n:'Закат', d:'<rect class="b-x" style="fill:#FF8A3D;opacity:.35" width="100" height="100"/><path class="b-x" style="fill:#FF8A3D;opacity:.45" d="M0 30 H100 V60 H0Z"/><circle style="fill:#FFC266" cx="22" cy="54" r="12"/><path class="b-dark" style="opacity:.55" d="M0 62 H100 V100 H0Z"/><path class="b-x" style="fill:#FF8A3D;opacity:.7" d="M30 66 H70 V68 H30Z M38 72 H62 V74 H38Z M44 78 H56 V79.5 H44Z"/>' },
+  { id:'nightcity', s:'bg', r:'r', n:'Ночной город', d:'<rect style="fill:#13183A" width="100" height="100"/><circle style="fill:#E9E9F2" cx="80" cy="18" r="6"/><path class="b-1" style="opacity:.55" d="M0 56 h14 v-16 h12 v26 h10 v-32 h14 v22 h12 v-10 h12 v24 h12 v-8 h14 V100 H0Z"/><path class="b-y" d="M17 46 h3 v3 h-3Z M30 54 h3 v3 h-3Z M40 40 h3 v3 h-3Z M43 50 h3 v3 h-3Z M54 52 h3 v3 h-3Z M66 60 h3 v3 h-3Z M78 62 h3 v3 h-3Z M88 66 h3 v3 h-3Z"/><path class="b-2" d="M0 80 H100 V100 H0Z"/>' },
+  { id:'aurora', s:'bg', r:'r', n:'Северное сияние', d:'<rect class="b-dark" width="100" height="100"/><path class="b-x" style="fill:none;stroke:#3EDC8F;stroke-width:9;opacity:.45;stroke-linecap:round" d="M-5 34 Q20 16 45 30 T105 22"/><path class="b-neon" style="stroke-width:6;opacity:.5;stroke-linecap:round" d="M-5 48 Q25 30 50 44 T105 36"/><path class="b-star" style="fill:#fff;opacity:.8" d="M12 12h1v1h-1Z M30 8h1v1h-1Z M70 10h1v1h-1Z M88 16h1v1h-1Z M56 6h1v1h-1Z"/><path class="b-x" style="fill:#0F1A2C" d="M-5 84 L20 66 L40 78 L62 60 L105 82 V105 H-5Z"/>' },
+  { id:'neon', s:'bg', r:'l', n:'Неоновый фон', d:'<rect class="b-dark" width="100" height="100"/><path class="b-neon w" d="M0 74 H100 M0 80 H100 M0 88 H100 M0 99 H100 M50 64 L50 100 M50 64 L22 100 M50 64 L-6 100 M50 64 L78 100 M50 64 L106 100"/><circle class="b-neon g" cx="50" cy="44" r="21"/><circle class="b-neon" cx="50" cy="44" r="21"/><path class="b-dark" d="M26 46 H74 V49 H26Z M26 52 H74 V54 H26Z M26 57 H74 V58.5 H26Z"/><path class="b-neon w" d="M0 64 H100"/><path class="b-star" d="M16 18l1.4 3.2 3.2 1.4-3.2 1.4L16 27.2l-1.4-3.2-3.2-1.4 3.2-1.4z M86 26l1 2.3 2.3 1-2.3 1L86 32.6l-1-2.3-2.3-1 2.3-1z"/>' },
+];
+const ITEM = Object.fromEntries(ITEMS.map(i => [i.id, i]));
+const POOL = { c:ITEMS.filter(i => i.r === 'c'), r:ITEMS.filter(i => i.r === 'r'), l:ITEMS.filter(i => i.r === 'l') };
+function gearAt(kind, it) {
+  const A = ANCH[kind] || ANCH.cat;
+  if (it.s === 'head') return `<g transform="translate(${A.top[0]} ${A.top[1]}) scale(${(A.hr / 27).toFixed(3)})">${it.d}</g>`;
+  if (it.s === 'eyes') return `<g transform="translate(${A.eye[0]} ${A.eye[1]}) scale(${(A.eye[2] / 11.5).toFixed(3)})">${it.d}</g>`;
+  const p = it.s === 'hand' ? A.hand : it.at === 'waist' ? A.waist : A.neck, sc = it.s === 'hand' ? (A.hs || 1.15) : it.s === 'neck' && A.ns ? A.ns : 1;
+  return `<g transform="translate(${p[0]} ${p[1]})${sc !== 1 ? ` scale(${sc})` : ''}">${it.d}</g>`;
+}
+const ABS = '<path class="g-abs" d="M-4.6 -4 h3.4 M1.2 -4 h3.4 M-4.6 0 h3.4 M1.2 0 h3.4 M-4.6 4 h3.4 M1.2 4 h3.4"/>';
+const BAND = gold => `<path class="${gold ? 'g-gold' : 'g-b'}" d="M-24.5 8.5 Q0 3 24.5 8.5 L24.5 14.5 Q0 9 -24.5 14.5Z"/><path class="${gold ? 'g-gold2' : 'g-b'}" d="M22.5 10 L31 6 L30.5 13.2Z M22.5 12.5 L29.5 19.5 L25.5 20.5Z"/>`;
+const gearItem = (g, s) => g && g[s] && ITEM[g[s]] && ITEM[g[s]].s === s ? ITEM[g[s]] : null;
+/* o: { color, cls, still, label, stage (0..4, default 1 = as before 2.2), gear:{ head, eyes, neck, hand } } */
 function charSVG(kind, mood = 'calm', o = {}) {
-  const c = CHARS[kind] || CHARS.cat;
+  const c = CHARS[kind] || CHARS.cat, A = ANCH[kind] || ANCH.cat, st = o.stage == null ? 1 : o.stage, g = o.gear || {};
+  const { torso, head } = partsOf(kind), one = !torso, T = (one ? STAGE_T1 : STAGE_T)[st] || STAGE_T[1], hw = A.round ? '' : T.head;
+  const hat = gearItem(g, 'head'), eyes = gearItem(g, 'eyes'), neck = gearItem(g, 'neck'), hand = gearItem(g, 'hand');
+  const abs = st >= 3 ? `<g transform="translate(${A.abs[0]} ${A.abs[1]})">${ABS}</g>` : '';
+  const band = st >= 3 && !hat ? `<g transform="translate(${A.top[0]} ${A.top[1]}) scale(${(A.hr / 27).toFixed(3)})">${BAND(st >= 4)}</g>` : '';
+  const gid = 'au-' + hash(String(o.color || 'acc')), glow = st >= 4 ? `<defs><radialGradient id="${gid}"><stop offset="0" style="stop-color:var(--cm);stop-opacity:.5"/><stop offset=".55" style="stop-color:var(--cm);stop-opacity:.18"/><stop offset="1" style="stop-color:var(--cm);stop-opacity:0"/></radialGradient></defs><circle class="g-aura" cx="50" cy="58" r="52" fill="url(#${gid})"/>` : '';
+  const sparks = st >= 4 ? '<path class="c-spark" d="M10 26l1.8 4.2 4.2 1.8-4.2 1.8L10 38l-1.8-4.2L4 32l4.2-1.8z"/><path class="c-spark" style="animation-delay:.7s" d="M90 46l1.4 3.2 3.2 1.4-3.2 1.4L90 55.2l-1.4-3.2-3.2-1.4 3.2-1.4z"/><path class="c-spark" style="animation-delay:1.3s" d="M84 6l1.2 2.8 2.8 1.2-2.8 1.2L84 14l-1.2-2.8L80 10l2.8-1.2z"/>' : '';
+  const torsoG = one ? '' : `<g${T.torso ? ` transform="${T.torso}"` : ''}>${torso}${abs}${neck ? gearAt(kind, neck) : ''}${hand ? gearAt(kind, hand) : ''}</g>`;
+  let fit = '';
+  if (hat) { const sc = (one ? [.8, 1, 1.03, 1.05, 1.05] : [.86, 1, 1.03, 1.05, 1.05])[st] || 1, top = A.top[1] - (st === 0 && !one ? 2 : 0) + (hat.t == null ? -15 : hat.t) * A.hr / 27, y = 97 - (97 - top) * sc; if (y < 2) fit = tfm(+(95 / (97 - y)).toFixed(3), +(95 / (97 - y)).toFixed(3)); }
+  const headG = `<g${hw ? ` transform="${hw}"` : ''}>${head}${charFace(c.face, mood)}${one ? abs : ''}${band}${one && neck ? gearAt(kind, neck) : ''}${eyes ? gearAt(kind, eyes) : ''}${hat ? gearAt(kind, hat) : ''}${one && hand ? gearAt(kind, hand) : ''}</g>`;
   const fx = mood === 'sleepy' ? '<text class="c-z" x="76" y="20">z</text><text class="c-z c-z2" x="85" y="10">z</text>'
     : mood === 'fire' ? '<path class="c-spark" d="M84 8l2.4 5.6 5.6 2.4-5.6 2.4L84 24l-2.4-5.6-5.6-2.4 5.6-2.4z"/><path class="c-spark" style="animation-delay:.6s" d="M12 58l1.6 3.8 3.8 1.6-3.8 1.6L12 68.8l-1.6-3.8-3.8-1.6 3.8-1.6z"/>' : '';
   const style = o.color ? ` style="--cm:${o.color}"` : '';
-  return `<svg class="ch m-${mood}${o.cls ? ' ' + o.cls : ''}${o.still ? ' still' : ''}" viewBox="0 0 100 100"${style}${o.label ? ` role="img" aria-label="${esc(o.label)}"` : ' aria-hidden="true"'}><g class="c-hop"><g class="c-all">${c.back}${c.body}${charFace(c.face, mood)}</g></g>${fx}</svg>`;
+  return `<svg class="ch m-${mood} st-${st}${o.cls ? ' ' + o.cls : ''}${o.still ? ' still' : ''}" viewBox="0 0 100 100"${style}${o.label ? ` role="img" aria-label="${esc(o.label)}"` : ' aria-hidden="true"'}>${glow}<g class="c-hop"><g class="c-all"><g${T.all ? ` transform="${T.all}"` : ''}>${fit ? `<g transform="${fit}">` : ''}${c.back}${torsoG}${headG}${fit ? '</g>' : ''}</g></g></g>${sparks}${fx}</svg>`;
 }
+const bgSVG = (id, color) => { const it = ITEM[id]; return it && it.s === 'bg' ? `<svg class="chbg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"${color ? ` style="--cm:${color}"` : ''} aria-hidden="true">${it.d}</svg>` : ''; };
+/* character in a framed cell, optionally on a background */
+const mateCell = (kind, mood, o = {}, cls = '') => `<span class="mate${cls ? ' ' + cls : ''}${o.gear && gearItem({ bg:o.gear.bg }, 'bg') ? ' has-bg' : ''}">${o.gear && o.gear.bg ? bgSVG(o.gear.bg, o.color) : ''}${charSVG(kind, mood, o)}</span>`;
+const THUMB_VB = { head:'-33 -25 66 46', eyes:'-28 -13 56 26', neck:'-27 -8 54 32', hand:'-18 -26 36 34', bg:'0 18 100 72' };
+function thumbSVG(id, color, locked) {
+  const it = ITEM[id]; if (!it) return '';
+  if (it.s === 'bg') return `<svg class="chbg thumb bgthumb${locked ? ' sil' : ''}" viewBox="${THUMB_VB.bg}" preserveAspectRatio="xMidYMid slice"${color ? ` style="--cm:${color}"` : ''} aria-hidden="true">${it.d}</svg>`;
+  const vbx = it.at === 'waist' ? '-28 -14 56 30' : THUMB_VB[it.s];
+  return `<svg class="ch still thumb${locked ? ' sil' : ''}" viewBox="${vbx}"${color ? ` style="--cm:${color}"` : ''} aria-hidden="true">${it.d}</svg>`;
+}
+function chestSVG(kind = 'std', open = false, rar = 'c', cls = '') {
+  const gold = kind === 'gold', body = gold ? 'k-gold' : 'k-body', band = gold ? 'k-gold2' : 'k-band';
+  const lidClosed = `<path class="${body}" d="M18 53 V41 Q18 22 60 22 Q102 22 102 41 V53Z"/><path class="${band}" d="M31 24.5 h9 V53 h-9Z M80 24.5 h9 V53 h-9Z"/>`;
+  const lidOpen = `<path class="k-inner" d="M21 51 L29 15 Q60 9 91 15 L99 51Z"/><path class="${band}" style="opacity:.35" d="M33 50 L37 15 h7 L41 50Z M79 50 L76 15 h7 L87 50Z"/><path class="${body}" d="M29 15 Q60 9 91 15 L90.5 8.5 Q60 2 29.5 8.5Z"/><path class="${band}" d="M37 13.6 L37.4 6.8 h7 L44 12.4Z M76 12.4 L75.6 6.8 h7 L83 13.6Z"/>`;
+  const rc = RAR[rar] ? RAR[rar].col : RAR.c.col;
+  const burst = open ? `<g class="k-burst" style="--rc:${rc}"><circle cx="60" cy="40" r="44" class="k-glow"/><g class="k-rays">${Array.from({ length:12 }, (_, i) => { const a = i * 30 * Math.PI / 180, d = 4 * Math.PI / 180; return `<path d="M60 40 L${(60 + 70 * Math.cos(a - d)).toFixed(1)} ${(40 + 70 * Math.sin(a - d)).toFixed(1)} L${(60 + 70 * Math.cos(a + d)).toFixed(1)} ${(40 + 70 * Math.sin(a + d)).toFixed(1)}Z"/>`; }).join('')}</g></g>` : '';
+  return `<svg class="chest${open ? ' open' : ''}${gold ? ' gold' : ''}${cls ? ' ' + cls : ''}" viewBox="0 0 120 100" aria-hidden="true">${burst}<ellipse class="k-shadow" cx="60" cy="92" rx="42" ry="5"/>${open ? lidOpen : ''}<rect class="${body}" x="18" y="50" width="84" height="40" rx="6"/>${open ? `<ellipse class="k-light" style="--rc:${rc}" cx="60" cy="52" rx="38" ry="5"/>` : ''}<rect class="k-dark" x="18" y="80" width="84" height="10" rx="5" style="opacity:.35"/><path class="${band}" d="M31 50 h9 V90 h-9Z M80 50 h9 V90 h-9Z"/><rect class="${band}" x="15" y="48" width="90" height="7" rx="2.5"/>${open ? '' : lidClosed}<rect class="k-lock" x="52" y="${open ? 51 : 45}" width="16" height="17" rx="3.5"/><path class="k-key" d="M60 ${open ? 56 : 50} a2.6 2.6 0 1 1 .01 0Z M58.8 ${open ? 58 : 52} h2.4 v4 h-2.4Z"/></svg>`;
+}
+
 const charOf = p => (p && CHARS[p.char]) ? p.char : 'cat';
 function moodOf(list, goal, live) {
   const now = Date.now(), ws = weekStart(now), n = (list || []).filter(w => w.start >= ws).length, last = (list || [])[0];
@@ -1129,11 +1504,11 @@ const exById = id => EXMAP[id] || (S.profile.custom || []).find(e => e.id === id
 const allExercises = () => [...BUILTIN, ...(S.profile.custom || [])];
 const FEELS = [[1,'Легко'],[2,'Нормально'],[3,'Тяжело'],[4,'На пределе']];
 const PERIODS = { '28':{ l:'4 недели', d:28 }, '90':{ l:'3 месяца', d:90 }, '365':{ l:'Год', d:365 }, 'all':{ l:'Всё время', d:0 } };
-const VIEWS = ['today','log','progress','chat','body'];
-const TABS = [['today','Сегодня','today'],['log','Журнал','log'],['progress','Прогресс','progress'],['chat','Чат','chat'],['body','Тело','body']];
+const VIEWS = ['today','log','progress','chat','body','supp'];
+const TABS = [['today','Сегодня','today'],['log','Журнал','log'],['progress','Прогресс','progress'],['supp','Добавки','pill'],['chat','Чат','chat'],['body','Тело','body']];
 
 /* ================= state ================= */
-const DEFAULT_PROFILE = { rest:90, sound:true, bar:20, goal:3, rirAsk:true, templates:[], custom:[], body:[], meas:[], deleted:[], kudos:{} };
+const DEFAULT_PROFILE = { rest:90, sound:true, bar:20, goal:3, rirAsk:true, templates:[], custom:[], body:[], meas:[], deleted:[], kudos:{}, gear:{}, freeze:[], supps:[], slog:{}, sfull:[] };
 const S = {
   mode:'loading', loaded:{ profile:false, workouts:false, active:false }, metaLoaded:false,
   meta:null, pid:'main', store:{},
@@ -1141,7 +1516,7 @@ const S = {
   view:'today', sheets:[], toast:null,
   prog:{ period:'90', ex:null, metric:null }, bodyTab:'w', measKey:'waist', photos:null,
   rest:{ end:0, total:0, alerted:false },
-  justKey:null, bumpPr:false, countUp:false, welcomed:false, poke:0, bubble:null,
+  justKey:null, bumpPr:false, countUp:false, welcomed:false, poke:0, bubble:null, ateAt:0, eatUntil:0, supDay:0, supOrder:false,
   installEvt:null, updateReady:null, persisted:null,
   remote:{}, rd:{}, sync:{ status:'off', last:0, etag:null, msg:'' }, syncOffConfirm:false,
   chatMine:{}, chatAll:[], chatDraft:'', chatScroll:false,
@@ -1156,8 +1531,11 @@ const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.
 
 function normP(d) {
   const p = Object.assign(clone(DEFAULT_PROFILE), d ? clone(d) : {});
-  ['templates','custom','body','meas','deleted'].forEach(k => { if (!Array.isArray(p[k])) p[k] = []; });
-  if (!p.kudos || typeof p.kudos !== 'object' || Array.isArray(p.kudos)) p.kudos = {};
+  ['templates','custom','body','meas','deleted','freeze','supps','sfull'].forEach(k => { if (!Array.isArray(p[k])) p[k] = []; });
+  ['kudos','gear','slog'].forEach(k => { if (!p[k] || typeof p[k] !== 'object' || Array.isArray(p[k])) p[k] = {}; });
+  p.supps = p.supps.filter(x => x && x.id && typeof x.name === 'string');
+  if (p.chest && (typeof p.chest !== 'object' || !p.chest.op || typeof p.chest.op !== 'object')) delete p.chest;
+  if (p.chest) { if (!Array.isArray(p.chest.st)) p.chest.st = []; if (!Array.isArray(p.chest.buy)) p.chest.buy = []; }
   if (!(p.goal >= 1 && p.goal <= 7)) p.goal = 3;
   return p;
 }
@@ -1301,7 +1679,7 @@ const lvlNeed = k => 60 * k * (k - 1);           // total XP needed to reach lev
 function levelOf(xp) { let k = 1; while (xp >= lvlNeed(k + 1)) k++; const a = lvlNeed(k), b = lvlNeed(k + 1); return { k, title: TITLES[Math.min(k, TITLES.length) - 1] + (k > TITLES.length ? ' ' + (k - TITLES.length + 1) : ''), cur: xp - a, need: b - a, pct: Math.min(100, (xp - a) / (b - a) * 100), xp }; }
 const workoutXP = (w, Dx = D) => 40 + Math.min(40, wStats(w).sets * 2) + (Dx.prCount[w.id] || 0) * 15;
 function weekCounts(list) { const m = new Map(); list.forEach(w => { const k = weekStart(w.start); m.set(k, (m.get(k) || 0) + 1); }); return m; }
-const ctxLocal = () => ({ workouts:S.workouts, profile:S.profile, D });
+const ctxLocal = () => ({ workouts:S.workouts, profile:S.profile, D, local:true });
 const rdFor = sid => S.rd[sid] || (S.rd[sid] = deriveFrom(S.remote[sid] ? S.remote[sid].workouts : []));
 const ctxRemote = sid => { const m = S.remote[sid] || {}; return { workouts:m.workouts || [], profile:normP(m.profile), D:rdFor(sid) }; };
 
@@ -1309,8 +1687,8 @@ const ctxRemote = sid => { const m = S.remote[sid] || {}; return { workouts:m.wo
 const QXP = 50, QBONUS = 50, MAIN_MUSCLES = ['chest', 'back', 'legs', 'shoulders', 'arms', 'glutes'];
 const inWeek = (list, ws) => { const we = addDays(ws, 7); return list.filter(w => w.start >= ws && w.start < we); };
 const workSets = (w, f) => (w.exercises || []).forEach(x => { const e = exById(x.ex); (x.sets || []).forEach(s => { if (!s.warm && valid(s, e.kind)) f(e, s, x); }); });
-function questsFor(c, ws) {
-  const list = c.workouts, goal = c.profile.goal || 3, wk = inWeek(list, ws);
+function questsFor(c, ws, upto) {
+  const list = c.workouts, goal = c.profile.goal || 3, wk = inWeek(list, ws).filter(w => upto == null || w.start <= upto);
   const prev = [1, 2, 3, 4].map(i => inWeek(list, addDays(ws, -7 * i))).filter(l => l.length);
   const avg = f => prev.length ? prev.reduce((a, l) => a + f(l), 0) / prev.length : 0;
   const volOf = l => l.reduce((a, w) => a + wStats(w).vol, 0), setsOf = l => l.reduce((a, w) => a + wStats(w).sets, 0);
@@ -1322,7 +1700,7 @@ function questsFor(c, ws) {
   else { const tg = step(Math.max(avg(setsOf) * 1.1, 15), 5); q.push({ id:'sets', ic:'up', t:`${tg} рабочих подходов`, cur:setsOf(wk), target:tg, fmt:v => nf(v, 0) }); }
   const hist = list.some(w => w.start < ws), rot = ((Math.round(ws / (7 * DAY)) % 3) + 3) % 3;
   if (hist && rot === 0) {
-    const n = c.D.prEvents.filter(p => p.start >= ws && p.start < addDays(ws, 7)).length;
+    const n = c.D.prEvents.filter(p => p.start >= ws && p.start < addDays(ws, 7) && (upto == null || p.start <= upto)).length;
     q.push({ id:'pr', ic:'star', t:'Побить личный рекорд', cur:n, target:1, fmt:v => nf(v, 0) });
   } else if (hist && rot === 2) {
     const ms = {}; MAIN_MUSCLES.forEach(m => { ms[m] = 0; }); prev.flat().forEach(w => workSets(w, e => { if (e.muscle in ms) ms[e.muscle]++; }));
@@ -1349,21 +1727,23 @@ function questLog(c) {
 }
 function goalStreak(c = ctxLocal()) {
   const goal = c.profile.goal || 3, wc = weekCounts(c.workouts), now = weekStart(Date.now());
-  const cur = wc.get(now) || 0, curMet = cur >= goal;
+  const cur = wc.get(now) || 0, curMet = cur >= goal, fr = c.profile.freeze, first = c.workouts.length ? weekStart(c.workouts[c.workouts.length - 1].start) : now;
   let ws = curMet ? now : addDays(now, -7), n = 0;
-  while ((wc.get(ws) || 0) >= goal) { n++; ws = addDays(ws, -7); }
-  return { n, curMet, left:Math.max(0, goal - cur), daysLeft:Math.max(1, Math.round((addDays(now, 7) - Date.now()) / DAY)) };
+  while (ws >= first) { if ((wc.get(ws) || 0) >= goal) n++; else if (!weekFrozen(ws, fr)) break; ws = addDays(ws, -7); }
+  return { n, curMet, left:Math.max(0, goal - cur), daysLeft:Math.max(1, Math.round((addDays(now, 7) - Date.now()) / DAY)), frozen:weekFrozen(now, fr) };
 }
 function gameStats(c = ctxLocal()) {
   const goal = c.profile.goal || 3, wc = weekCounts(c.workouts);
   let tonTotal = 0, early = 0, owl = 0, heavy = 0, sets = 0;
   c.workouts.forEach(w => { const st = wStats(w); tonTotal += st.vol; sets += st.sets; const h = new Date(w.start).getHours(); if (h < 9) early++; if (h >= 21) owl++; workSets(w, (e, s) => { if (e.kind === 'wr' && (num(s.w) || 0) >= 100) heavy++; }); });
-  const weeks = [...wc.entries()].filter(([, n]) => n >= goal).map(([k]) => k).sort((a, b) => a - b); let bestStreak = 0, run = 0, prev = null;
-  weeks.forEach(k => { run = prev != null && addDays(prev, 7) === k ? run + 1 : 1; bestStreak = Math.max(bestStreak, run); prev = k; });
+  const weeks = [...wc.entries()].filter(([, n]) => n >= goal).map(([k]) => k).sort((a, b) => a - b), met = new Set(weeks), fr = c.profile.freeze; let bestStreak = 0, run = 0;
+  if (weeks.length) for (let k = weeks[0]; k <= weeks[weeks.length - 1]; k = addDays(k, 7)) { if (met.has(k)) { run++; bestStreak = Math.max(bestStreak, run); } else if (!weekFrozen(k, fr)) run = 0; }
+  const coll = collOf(c.profile, c.workouts), own = Object.keys(coll.cnt);
   const mw = id => (c.D.best[id] && c.D.best[id].maxW) || 0, ql = questLog(c);
   const pull = Math.max(0, ...((c.D.hist.pullup || []).map(h => h.maxR || 0)));
   return { n:c.workouts.length, prs:c.D.prEvents.length, tonTotal, early, owl, heavy, sets, bestStreak, goalWeeks:weeks.length, tpls:c.profile.templates.length, bodyN:c.profile.body.length, profiles:profiles().length + Object.keys(S.remote).length,
-    bench:mw('bench'), squat:mw('squat'), dead:mw('deadlift'), hip:mw('hip-thrust'), pull, quests:ql.done, perfect:ql.perfect, questXP:ql.xp };
+    bench:mw('bench'), squat:mw('squat'), dead:mw('deadlift'), hip:mw('hip-thrust'), pull, quests:ql.done, perfect:ql.perfect, questXP:ql.xp,
+    chests:Math.max(0, coll.opened - coll.old), uniq:coll.uniq, legend:own.some(id => ITEM[id].r === 'l'), slotsAll:SLOT_ORDER.every(s => own.some(id => ITEM[id].s === s)), stage:stageOf(c.workouts.length).k, supBest:c.local ? supBest(c.profile) : 0 };
 }
 const BADGES = [
   ['first','Старт','Первая тренировка в журнале','1', s => s.n >= 1],
@@ -1398,9 +1778,16 @@ const BADGES = [
   ['tpl','Своя программа','Создать программу','П', s => s.tpls >= 1],
   ['body','Контроль','5 записей веса тела','5', s => s.bodyN >= 5],
   ['pair','Команда','Подключить партнёра или второй профиль','@users', s => s.profiles >= 2],
+  ['chest1','Первый сундук','Открыть сундук после тренировки','@chest', s => s.chests >= 1],
+  ['coll30','Коллекционер','Собрать 30 разных вещей','30', s => s.uniq >= 30],
+  ['legend','Легенда найдена','Найти легендарную вещь','@spark', s => s.legend],
+  ['athlete','Атлет','Напарник дорос до стадии «Атлет»','@up', s => s.stage >= 3],
+  ['wardrobe','Полный гардероб','Вещь для каждого слота: голова, глаза, шея, рука и фон','@shirt', s => s.slotsAll],
+  ['sup7','Режим','7 дней подряд все добавки по плану','@pill', s => s.supBest >= 7],
+  ['sup30','Железная дисциплина','30 дней подряд все добавки по плану','30д', s => s.supBest >= 30],
 ];
 function unlockedBadges(st = gameStats()) { return BADGES.filter(b => b[4](st)).map(b => b[0]); }
-function totalXP(st = gameStats(), c = ctxLocal()) { return c.workouts.reduce((a, w) => a + workoutXP(w, c.D), 0) + st.goalWeeks * 60 + unlockedBadges(st).length * 30 + st.questXP; }
+function totalXP(st = gameStats(), c = ctxLocal()) { return c.workouts.reduce((a, w) => a + workoutXP(w, c.D), 0) + st.goalWeeks * 60 + unlockedBadges(st).length * 30 + st.questXP + (c.local ? supXP(c.profile) : Math.max(0, Math.min(1e6, +c.profile.sx || 0))); }
 function medalHTML(b, i, unlocked, isNew, row) {
   const g = b[3].startsWith('@') ? icon(b[3].slice(1)) : esc(b[3]);
   const circ = `<span class="medal-c">${unlocked ? g : (b[3].startsWith('@') ? icon(b[3].slice(1)) : esc(b[3]))}</span>`;
@@ -1409,15 +1796,22 @@ function medalHTML(b, i, unlocked, isNew, row) {
 }
 function moodNow() {
   const ws = weekStart(Date.now()), n = S.workouts.filter(w => w.start >= ws).length, goal = S.profile.goal || 3;
-  return { mood: moodOf(S.workouts, goal, false), n, goal };
+  let mood = mateMood(S.workouts, goal, false, S.profile.freeze);
+  const sd = S.profile.supps.length ? supDay(S.profile, startOfDay(Date.now())) : null;
+  if (mood === 'calm' && sd && sd.full && satietyOf(S.workouts, S.profile.freeze).v >= 60) mood = 'happy';
+  return { mood, n, goal, sd };
 }
 function bubbleText(m) {
   const trainedToday = S.workouts.some(w => dayKey(w.start) === dayKey(Date.now()));
+  const sd = m.sd, h = new Date(Date.now()).getHours();
+  if (sd && sd.due.length && !sd.full && h >= 11 && Math.random() < .5) { const left = sd.due.filter(s => !sd.taken.has(s.id)).map(s => s.name); return `Не забудь: ${left.slice(0, 3).join(', ')}${left.length > 3 ? '…' : ''}.`; }
+  if (frozenNow(S.profile.freeze)) return 'Заморозка: отдыхаем без потерь. Выздоравливай!';
   if (!S.workouts.length) return 'Первая тренировка — точка отсчёта. Начнём?';
   if (trainedToday) return pick(['Тренировка засчитана. Теперь восстановление.', 'Готово на сегодня. Сон и белок сделают остальное.', 'Сделано. Мышцы растут на отдыхе.']);
   const buddy = Object.values(S.remote).find(r => (r.workouts || []).some(w => dayKey(w.start) === dayKey(Date.now())) || (r.live && Date.now() - r.live.start < 4 * 3600e3));
   if (buddy) return `${buddy.name || 'Партнёр'} уже тренируется сегодня. Твой ход.`;
   if (m.mood === 'sleepy') { const d = Math.round((Date.now() - S.workouts[0].start) / DAY); return `Перерыв ${d} ${plural(d, ['день','дня','дней'])}. Лёгкая тренировка вернёт ритм.`; }
+  if (sd && sd.full && Math.random() < .35) return 'Добавки по плану приняты. Режим держится.';
   if (m.n >= m.goal) return pick(['Цель недели выполнена.', 'Неделя закрыта. Серия продолжается.', 'План выполнен. Можно и сверх плана.']);
   const left = m.goal - m.n;
   return `До цели недели: ${left} ${plural(left, ['тренировка','тренировки','тренировок'])}.`;
@@ -1441,6 +1835,8 @@ function saveWorkout(w) {
 function deleteWorkout(id) {
   S.workouts = S.workouts.filter(w => w.id !== id);
   if (!S.profile.deleted.includes(id)) S.profile.deleted.push(id);
+  if (S.profile.chest && S.profile.chest.op) delete S.profile.chest.op[id];
+  S.profile.gear = gearOf(S.profile, collOf(S.profile, S.workouts));
   derive(); markDirty(); schedulePush();
 }
 function changed() { const w = curW(); if (w && isLive(w)) markDirty(); }
@@ -1450,7 +1846,7 @@ function loadProfileData() {
   S.workouts = (d.workouts || []).map(w => normW(w, w.id)).sort((a, b) => b.start - a.start);
   S.active = d.active ? normW(d.active, d.active.id) : null;
   S.loaded = { profile:true, workouts:true, active:true };
-  syncCur(); derive();
+  syncCur(); derive(); ensureChest();
 }
 function switchProfile(pid) {
   flush(); syncCur();
@@ -1489,14 +1885,21 @@ function payload(pid) {
   const d = pid === S.pid ? { profile:S.profile, workouts:S.workouts, active:S.active } : (S.store[pid] || {});
   const prof = normP(d.profile), share = !!(S.meta.sync && S.meta.sync.shareBody);
   return { v:1, id:p.sid, dev:devId(), name:p.name || '', color:p.color || 'red', char:charOf(p),
-    profile:{ goal:prof.goal, custom:prof.custom, body: share ? prof.body : [], meas: share ? prof.meas : [] },
+    profile:{ goal:prof.goal, custom:prof.custom, body: share ? prof.body : [], meas: share ? prof.meas : [], gear:prof.gear, freeze:prof.freeze.slice(-24),
+      chest: prof.chest ? { v:1, at:prof.chest.at, st:prof.chest.st, op:prof.chest.op, buy:prof.chest.buy, old:prof.chest.old || 0 } : undefined, sx:supShared(prof) },
     workouts:(d.workouts || []).map(w => clean(w)), deleted:prof.deleted.slice(-800), kudos:prof.kudos,
     live: d.active ? { start:d.active.start, title:d.active.title || '' } : null };
 }
 function validMember(m) {
   if (!m || typeof m !== 'object' || !m.id) return null;
   m.workouts = Array.isArray(m.workouts) ? m.workouts.filter(w => w && w.id && Number.isFinite(w.start) && Array.isArray(w.exercises)).map(w => normW(w, String(w.id))).sort((a, b) => b.start - a.start) : [];
-  m.profile = m.profile && typeof m.profile === 'object' ? m.profile : {};
+  m.profile = m.profile && typeof m.profile === 'object' && !Array.isArray(m.profile) ? m.profile : {};
+  { const pf = m.profile;
+    if (!pf.gear || typeof pf.gear !== 'object' || Array.isArray(pf.gear)) pf.gear = {};
+    pf.freeze = Array.isArray(pf.freeze) ? pf.freeze.filter(f => f && Number.isFinite(f.from) && Number.isFinite(f.to)).slice(-24) : [];
+    if (!pf.chest || typeof pf.chest !== 'object' || !pf.chest.op || typeof pf.chest.op !== 'object' || Array.isArray(pf.chest.op)) delete pf.chest;
+    else { if (!Array.isArray(pf.chest.st)) pf.chest.st = []; pf.chest.st = pf.chest.st.filter(x => typeof x === 'string'); pf.chest.buy = Array.isArray(pf.chest.buy) ? pf.chest.buy.filter(b => b && typeof b.id === 'string' && Number.isFinite(b.at)) : []; }
+    pf.sx = Number.isFinite(pf.sx) ? Math.max(0, pf.sx) : 0; delete pf.supps; delete pf.slog; delete pf.sfull; }
   m.kudos = m.kudos && typeof m.kudos === 'object' ? m.kudos : {};
   m.deleted = Array.isArray(m.deleted) ? m.deleted : [];
   if (!COLORS[m.color]) m.color = 'blue';
@@ -1591,7 +1994,17 @@ function mergeMember(pid, rem) {
   const del = new Set([...prof.deleted, ...rem.deleted]);
   const map = new Map((d.workouts || []).map(w => [w.id, w]));
   let changed = false;
-  (rem.workouts || []).forEach(w => { if (del.has(w.id)) return; const l = map.get(w.id); if (!l || (w.u || 0) > (l.u || 0)) { map.set(w.id, normW(w, w.id)); changed = true; } });
+  const rc = rem.profile && rem.profile.chest, fresh = [];
+  (rem.workouts || []).forEach(w => { if (del.has(w.id)) return; const l = map.get(w.id); if (!l || (w.u || 0) > (l.u || 0)) { if (!l) fresh.push(w.id); map.set(w.id, normW(w, w.id)); changed = true; } });
+  if (prof.chest) { // the same person on another phone: unite opened chests and purchases
+    const lc = prof.chest;
+    if (rc) {
+      Object.entries(rc.op || {}).forEach(([k, v]) => { if (!lc.op[k] && ITEM[v]) { lc.op[k] = v; changed = true; } });
+      (rc.buy || []).forEach(b => { if (ITEM[b.id] && !lc.buy.some(x => x.at === b.at && x.id === b.id)) { lc.buy.push({ id:b.id, at:b.at, c:+b.c || 0 }); changed = true; } });
+      if (rc.at && Array.isArray(rc.st) && (!lc.at || rc.at < lc.at)) { lc.st = rc.st.slice(0, 12); lc.at = rc.at; lc.old = Math.max(+lc.old || 0, +rc.old || 0); changed = true; }
+    } else if (fresh.length) { lc.imp = [...new Set([...(lc.imp || []), ...fresh])]; changed = true; } // an older app version: no chest avalanche
+  }
+  ((rem.profile && rem.profile.freeze) || []).forEach(f => { if (!prof.freeze.some(x => x.from === f.from)) { prof.freeze.push({ from:f.from, to:f.to }); changed = true; } });
   del.forEach(id => { if (map.has(id)) { map.delete(id); changed = true; } });
   const before = JSON.stringify(prof.kudos);
   prof.kudos = Object.assign({}, rem.kudos || {}, prof.kudos);
@@ -1985,7 +2398,7 @@ function render() {
   try { if (fid && typeof ae.selectionStart === 'number') sel = [ae.selectionStart, ae.selectionEnd]; } catch (e) { sel = null; }
   CH = {};
   if (!S.welcomed && S.metaLoaded && !S.meta && ready() && !S.sheets.length) { S.welcomed = true; S.sheets.push({ type:'welcome', name:'', color:'lime', char:'cat', key:uid() }); applyAccent('lime'); }
-  if (S.metaLoaded && S.meta && !S.meta.v2seen && ready() && !S.sheets.length && !S.active) { S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
+  if (S.metaLoaded && S.meta && !S.meta.v22seen && ready() && !S.sheets.length && !S.active) { S.meta.v22seen = true; S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
   const main = $('#main');
   const vk = [S.view, S.pid, S.view === 'today' && S.active ? 'live:' + S.active.id : '', S.view === 'editor' && S.editing ? S.editing.id : '', ready() ? 'r' : 'l'].join('|');
   const html = `<div class="view">${viewHTML()}</div>`;
@@ -2033,6 +2446,7 @@ function viewHTML() {
   if (S.view === 'progress') return viewProgress();
   if (S.view === 'body') return viewBody();
   if (S.view === 'chat') return viewChat();
+  if (S.view === 'supp') return viewSupp();
   return viewToday();
 }
 function headHTML(title, eyebrow, extra = '') {
@@ -2060,17 +2474,24 @@ function bannersHTML() {
 
 /* ---------- today ---------- */
 function heroHTML() {
-  const m = moodNow(), st = gameStats(), L = levelOf(totalXP(st)), gs = goalStreak(), p = curProf();
-  if (!S.bubble || S.bubble.mood !== m.mood || S.bubble.pid !== S.pid || S.bubble.n !== m.n) S.bubble = { mood:m.mood, pid:S.pid, n:m.n, text:bubbleText(m) };
-  const streakSub = gs.curMet ? 'серия недель' : gs.n ? `серия · ещё ${gs.left} за ${gs.daysLeft} ${plural(gs.daysLeft, ['день','дня','дней'])}` : 'серия недель';
-  return `<section class="hero" aria-label="Персонаж и прогресс недели">
-    <button class="ch-btn" data-act="poke" aria-label="${esc(CHARS[charOf(p)].name)}: нажмите, чтобы подбодрить">${charSVG(charOf(p), m.mood, { cls:S.poke ? 'poke' : '' }).replace('<svg ', `<svg data-mood="${m.mood}${S.poke}${charOf(p)}" `)}</button>
+  const m = moodNow(), st = gameStats(), L = levelOf(totalXP(st)), gs = goalStreak(), p = curProf(), kind = charOf(p);
+  const fr = S.profile.freeze, fz = frozenNow(fr), sat = satietyOf(S.workouts, fr), mt = mateOf(S.profile, S.workouts), nx = STAGES[mt.stage.k + 1], cs = chestState();
+  const bk = bubbleKey(m);
+  if (!S.bubble || S.bubble.mood !== bk || S.bubble.pid !== S.pid || S.bubble.n !== m.n) S.bubble = { mood:bk, pid:S.pid, n:m.n, text:bubbleText(m) };
+  if (S.ateAt && !S.sheets.length) { S.eatUntil = Date.now() + 2600; S.ateAt = 0; }
+  const eat = !RM && S.eatUntil > Date.now();
+  const streakSub = gs.curMet ? 'серия недель' : gs.frozen ? 'серия · заморожена' : gs.n ? `серия · ещё ${gs.left} за ${gs.daysLeft} ${plural(gs.daysLeft, ['день','дня','дней'])}` : 'серия недель';
+  const gold = cs.closed.some(c => c.gold);
+  return `<section class="hero" aria-label="Напарник и прогресс недели">
+    <button class="ch-btn mate${mt.gear.bg ? ' has-bg' : ''}${eat ? ' eat' : ''}" data-act="mate" aria-label="${esc(mateName(kind))}, ${stName(mt.stage, kind).toLowerCase()}: открыть гардероб">${mt.gear.bg ? bgSVG(mt.gear.bg) : ''}${charSVG(kind, m.mood, { cls:S.poke ? 'poke' : '', stage:mt.stage.k, gear:mt.gear }).replace('<svg ', `<svg data-mood="${m.mood}${S.poke}${kind}" `)}${eat ? '<span class="yum" aria-hidden="true">Ням!</span>' : ''}</button>
     <div class="hero-main"><p class="bubble" data-key="bubble-${hash(S.bubble.text)}">${esc(S.bubble.text)}</p>
       <div class="hero-stats">
         <div class="hs"><b>${Math.min(m.n, m.goal)}<small>/${m.goal}</small></b><span>цель недели</span></div>
-        <div class="hs${!gs.curMet && gs.n ? ' warn' : ''}"><b>${icon('flame')}${gs.n}</b><span>${streakSub}</span></div>
+        <div class="hs${!gs.curMet && gs.n && !gs.frozen ? ' warn' : ''}"><b>${icon(gs.frozen ? 'snow' : 'flame')}${gs.n}</b><span>${streakSub}</span></div>
       </div></div>
+    <div class="sat-row">${satHTML(sat, fz)}<button class="stg" data-act="ward" aria-label="Стадия: ${stName(mt.stage, kind)}${nx ? `, до стадии «${stName(nx, kind)}» ${cntW(nx.from - S.workouts.length)}` : ''}. Открыть гардероб">${stName(mt.stage, kind)}<small>${nx ? `до «${stName(nx, kind)}» ${nx.from - S.workouts.length}` : 'высшая стадия'}</small></button></div>
     <button class="lvl" data-act="awards" aria-label="Уровень ${L.k}: ${esc(L.title)}"><span class="lvl-n">${L.k}</span><span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></button>
+    ${cs.closed.length ? `<button class="chestbtn" data-act="chestOpenNext">${chestSVG(gold ? 'gold' : 'std', false)}<span><b>Сундуки: ${cs.closed.length}</b><small>${gold ? 'Есть золотой! ' : ''}Внутри — вещи для напарника</small></span>${icon('chevron')}</button>` : ''}
   </section>`;
 }
 function questsHTML() {
@@ -2092,11 +2513,12 @@ function viewToday() {
   const sum = thisWeek.length ? `${a.n} ${plural(a.n, ['тренировка','тренировки','тренировок'])} · ${ton(a.vol)} · ${fmtDur(a.dur)}` : 'На этой неделе тренировок пока нет';
   const tpls = S.profile.templates, last = S.workouts[0];
   return `${headHTML(title, eb)}
-    ${heroHTML()}
+    ${dbgHTML()}${hungerHTML()}${heroHTML()}
     <section class="week" aria-label="Эта неделя">${days}</section>
     <p class="week-sum">${sum}</p>
     <button class="btn btn-primary btn-lg btn-block start" data-act="startEmpty">${icon('play', 'ic-f')} Начать тренировку</button>
     ${bannersHTML()}
+    ${supCardHTML()}
     ${questsHTML()}
     ${pairCard()}
     <section class="sec"><div class="sec-head"><h2 class="h2">Программы</h2></div>
@@ -2118,10 +2540,12 @@ function pairCard() {
   const dotsOf = (s, c) => Array.from({ length:7 }, (_, i) => `<i class="${s.days.has(dayKey(addDays(ws, i))) ? 'on' : ''}" style="--pc:${c}"></i>`).join('');
   const rows = ps.map(p => {
     const s = weekSummary(p.id === S.pid ? S.workouts : (S.store[p.id] && S.store[p.id].workouts));
-    return `<div class="pair-row" data-key="pair-${esc(p.id)}"><button class="pair-who" data-act="switchProf" data-id="${esc(p.id)}" aria-label="Открыть профиль ${esc(pname(p))}">${charSVG(charOf(p), moodOf(p.id === S.pid ? S.workouts : ((S.store[p.id] && S.store[p.id].workouts) || []), p.id === S.pid ? S.profile.goal : 3, p.id === S.pid && !!S.active), { color:pcolor(p) })}<span>${esc(pname(p))}${p.id === S.pid && ps.length > 1 ? ' <small>· открыт</small>' : ''}</span></button><span class="pair-dots" aria-label="${s.n} тренировок на этой неделе">${dotsOf(s, col(p)[0])}</span><span class="pair-n">${s.n}</span></div>`;
+    const pw = p.id === S.pid ? S.workouts : ((S.store[p.id] && S.store[p.id].workouts) || []), pp = p.id === S.pid ? S.profile : normP(S.store[p.id] && S.store[p.id].profile), pm = mateOf(pp, pw);
+    return `<div class="pair-row" data-key="pair-${esc(p.id)}"><button class="pair-who" data-act="switchProf" data-id="${esc(p.id)}" aria-label="Открыть профиль ${esc(pname(p))}">${charSVG(charOf(p), mateMood(pw, pp.goal, p.id === S.pid && !!S.active, pp.freeze), { color:pcolor(p), stage:pm.stage.k, gear:pm.gear, still:true })}<span>${esc(pname(p))}${p.id === S.pid && ps.length > 1 ? ' <small>· открыт</small>' : ''}</span></button><span class="pair-dots" aria-label="${s.n} тренировок на этой неделе">${dotsOf(s, col(p)[0])}</span><span class="pair-n">${s.n}</span></div>`;
   }).concat(rs.map(m => {
     const s = weekSummary(m.workouts), live = m.live && Date.now() - m.live.start < 4 * 3600e3;
-    return `<div class="pair-row" data-key="pair-r-${esc(m.id)}"><button class="pair-who" data-act="friend" data-sid="${esc(m.id)}" aria-label="Открыть ${esc(m.name || 'партнёра')}">${charSVG(charOf(m), moodOf(m.workouts, (m.profile && m.profile.goal) || 3, live), { color:pcolor(m) })}<span>${esc(m.name || 'Партнёр')}${live ? ' <small class="live-txt">· тренируется</small>' : ''}</span></button><span class="pair-dots" aria-label="${s.n} тренировок на этой неделе">${dotsOf(s, col(m)[0])}</span><span class="pair-n">${s.n}</span></div>`;
+    const rpf = normP(m.profile), rm = mateOf(rpf, m.workouts);
+    return `<div class="pair-row" data-key="pair-r-${esc(m.id)}"><button class="pair-who" data-act="friend" data-sid="${esc(m.id)}" aria-label="Открыть ${esc(m.name || 'партнёра')}">${charSVG(charOf(m), mateMood(m.workouts, rpf.goal, live, rpf.freeze), { color:pcolor(m), stage:rm.stage.k, gear:rm.gear, still:true })}<span>${esc(m.name || 'Партнёр')}${live ? ' <small class="live-txt">· тренируется</small>' : ''}</span></button><span class="pair-dots" aria-label="${s.n} тренировок на этой неделе">${dotsOf(s, col(m)[0])}</span><span class="pair-n">${s.n}</span></div>`;
   })).join('');
   const recent = rs.flatMap(m => m.workouts.filter(w => Date.now() - w.start < 10 * DAY).slice(0, 3).map(w => [m, w])).sort((a, b) => b[1].start - a[1].start).slice(0, 3);
   const note = syncCfg() ? `<p class="sync-note">${esc(syncStatusText())}</p>` : '';
@@ -2580,21 +3004,33 @@ SHEETS.done = sh => {
   const prList = [...marks].map(key => { const [xi, si] = key.split(':').map(Number), x = w.exercises[xi], ex = exById(x.ex); return `<li>${icon('star', 'ic-f')}<span><b>${esc(ex.name)}</b> · ${esc(setLong(x.sets[si], ex.kind))}</span></li>`; }).join('');
   const L = levelOf(sh.xpAfter);
   const nb = (sh.newBadges || []).map(id => { const i = BADGES.findIndex(b => b[0] === id); return i >= 0 ? medalHTML(BADGES[i], i, true, true, true) : ''; }).join('');
-  return `${closeOnly()}<div class="sheet-body"><div class="done-hero">${charSVG(charOf(curProf()), pr || sh.lvlUp ? 'fire' : 'happy')}<h2 id="sheet-title" class="big-title">${sh.lvlUp ? 'Новый уровень' : pr ? 'Новые рекорды' : 'Тренировка завершена'}</h2><p>${esc(w.title || 'Тренировка')} · записано в журнал</p><span class="xp-chip">+${sh.xpGain} XP</span></div>
+  return `${closeOnly()}<div class="sheet-body"><div class="done-hero">${(() => { const k = charOf(curProf()), mt = mateOf(S.profile, S.workouts); return charSVG(k, pr || sh.lvlUp ? 'fire' : 'happy', { stage:mt.stage.k, gear:mt.gear }); })()}<h2 id="sheet-title" class="big-title">${sh.lvlUp ? 'Новый уровень' : pr ? 'Новые рекорды' : 'Тренировка завершена'}</h2><p>${esc(w.title || 'Тренировка')} · записано в журнал</p><span class="xp-chip">+${sh.xpGain} XP</span></div>
     <div class="kv k4"><div><b ${cnt(st.dur, 'dur')}>${fmtDur(st.dur)}</b><span>время</span></div><div><b ${cnt(st.vol, 'ton')}>${ton(st.vol)}</b><span>объём</span></div><div><b ${cnt(st.sets, 'int')}>${st.sets}</b><span>подходов</span></div><div class="${pr ? 'is-pr' : ''}"><b ${cnt(pr, 'int')}>${pr}</b><span>${plural(pr, ['рекорд','рекорда','рекордов'])}</span></div></div>
     <div class="lvl-up">${sh.lvlUp ? `<p class="lvl-new">Уровень ${L.k} · ${esc(L.title)}</p>` : ''}<div class="lvl"><span class="lvl-n">${L.k}</span><span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></div></div>
     ${nb ? `<div class="sblock" style="border:0;padding-bottom:0"><b>Новые достижения</b><div class="medal-list">${nb}</div></div>` : ''}
     ${(sh.newQuests || []).length ? `<div class="sblock" style="border:0;padding-bottom:0"><b>Задания недели</b><ul class="pr-list news">${sh.newQuests.map(t => `<li>${icon('check')}<span><b>${esc(t)}</b> · +${QXP} XP</span></li>`).join('')}</ul></div>` : ''}
-    ${prList ? `<ul class="pr-list">${prList}</ul>` : ''}</div>
-    <footer class="sheet-foot"><button class="btn" data-act="doneDetail">Подробнее</button><button class="btn btn-primary" data-act="closeSheet">Готово</button></footer>`;
+    ${prList ? `<ul class="pr-list">${prList}</ul>` : ''}${doneChestHTML(w)}</div>
+    <footer class="sheet-foot">${doneChestBtn(w)}</footer>`;
 };
 
+function doneChestInfo(w) { const cs = chestState(), ch = cs.all.find(x => x.id === w.id); return { cs, ch, open:!!(ch && cs.op[ch.id]) }; }
+function doneChestHTML(w) {
+  const { cs, ch, open } = doneChestInfo(w), it = open ? ITEM[cs.op[ch.id]] : null;
+  if (ch) return `<div class="done-chest">${chestSVG(ch.gold ? 'gold' : 'std', !!it, it ? it.r : 'c')}<span><b>${it ? 'Сундук открыт' : ch.gold ? 'Золотой сундук!' : 'Сундук за тренировку'}</b>${it ? esc(it.n) : ch.gold ? 'Все задания недели выполнены — внутри минимум редкая вещь.' : ch.prs ? 'Рекорд поднял шанс редкой вещи.' : 'Внутри — вещь для напарника.'}</span></div>`;
+  const reason = wStats(w).sets < CH_MIN_SETS ? `Сундук даётся за тренировку от ${CH_MIN_SETS} рабочих подходов.` : 'Сундук за этот день уже получен — следующий завтра.';
+  return `<p class="fine">${reason}</p>`;
+}
+function doneChestBtn(w) {
+  const { ch, open } = doneChestInfo(w);
+  if (ch && !open) return `<button class="btn" data-act="closeSheet">Готово</button><button class="btn btn-primary" data-act="chestOpenFor" data-id="${esc(ch.id)}">${icon('chest')} Открыть сундук</button>`;
+  return `<button class="btn" data-act="doneDetail">Подробнее</button><button class="btn btn-primary" data-act="closeSheet">Готово</button>`;
+}
 SHEETS.awards = () => {
   const st = gameStats(), xp = totalXP(st), L = levelOf(xp), un = new Set(unlockedBadges(st));
   const order = BADGES.map((b, i) => [b, i]).sort((a, b) => (un.has(b[0][0]) ? 1 : 0) - (un.has(a[0][0]) ? 1 : 0));
   return `${sheetHead('Уровень и достижения', `${xp} XP всего`)}<div class="sheet-body">
     <div class="lvl" style="margin-top:0"><span class="lvl-n">${L.k}</span><span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">ещё ${L.need - L.cur} XP</span></div>
-    <p class="fine">Опыт: 40 за тренировку, по 2 за рабочий подход (до 40), 15 за рекорд, 60 за неделю с выполненной целью, ${QXP} за задание недели (+${QBONUS} за все три) и 30 за каждое достижение.</p>
+    <p class="fine">Опыт: 40 за тренировку, по 2 за рабочий подход (до 40), 15 за рекорд, 60 за неделю с выполненной целью, ${QXP} за задание недели (+${QBONUS} за все три), 30 за каждое достижение и 10 за день, когда все добавки приняты по плану.</p>
     <div class="sblock"><b>Достижения · ${un.size} из ${BADGES.length}</b><div class="medal-list">${order.map(([b, i]) => medalHTML(b, i, un.has(b[0]), false, true)).join('')}</div></div>
   </div>`;
 };
@@ -2664,13 +3100,14 @@ SHEETS.prof = sh => {
       <label class="lbl">Имя<input class="field" id="cp-name" data-ch="cpName" value="${esc(cur.name || '')}" placeholder="Как вас зовут?" autocomplete="off" maxlength="24"></label>
       <div class="lbl" style="margin-top:12px">Цвет${colorDots(cur.color, 'cpColor')}</div>
       <div class="lbl" style="margin-top:12px">Напарник${charPicker(charOf(cur), 'cpChar')}</div>
+      <button class="btn btn-sm" style="margin-top:12px" data-act="ward">${icon('shirt')} Гардероб · ${collOf(S.profile, S.workouts).uniq} из ${ITEMS.length}</button>
       ${cur.id !== 'main' ? `<button class="btn btn-sm ${sh.confirm ? 'btn-danger' : 'btn-danger-soft'}" style="margin-top:14px" data-act="profDel">${icon('trash')} ${sh.confirm ? 'Удалить профиль и все его тренировки' : 'Удалить профиль'}</button>` : ''}
     </div>
     <p class="fine">Профили нужны, если вы тренируетесь с одного телефона вдвоём: у каждого свой журнал, рекорды, уровень и цвет. Если у каждого свой телефон — просто установите приложение на оба.</p>
   </div>`;
 };
 
-const charPicker = (sel, act) => `<div class="chars" role="group" aria-label="Напарник">${CHAR_ORDER.map(k => `<button class="chp" data-act="${act}" data-c="${k}" aria-pressed="${sel === k}">${charSVG(k, sel === k ? 'happy' : 'calm')}<span>${CHARS[k].name}</span></button>`).join('')}</div>`;
+const charPicker = (sel, act) => `<div class="chars" role="group" aria-label="Напарник">${CHAR_ORDER.map(k => `<button class="chp" data-act="${act}" data-c="${k}" aria-pressed="${sel === k}">${charSVG(k, sel === k ? 'happy' : 'calm', { still:sel !== k })}<span>${CHARS[k].name}</span></button>`).join('')}</div>`;
 SHEETS.welcome = sh => `${closeOnly()}<div class="sheet-body">
   <div class="welcome-hero">${charSVG(sh.char || 'cat', 'happy')}<h2 id="sheet-title" class="big-title">Добро пожаловать</h2><p>Дневник тренировок: подходы, рекорды, задания недели и прогресс. Всё хранится на этом устройстве и работает без интернета.</p></div>
   <label class="lbl">Как вас зовут?<input class="field" id="wl-name" data-in="wlName" value="${esc(sh.name)}" placeholder="Имя" autocomplete="off" maxlength="24" enterkeyhint="done"></label>
@@ -2679,17 +3116,18 @@ SHEETS.welcome = sh => `${closeOnly()}<div class="sheet-body">
   <div class="hint">${icon('users')}<span><b>Тренируетесь вдвоём?</b> Потом нажмите «Подключить» на главном экране — будете видеть тренировки друг друга и переписываться, даже в разных залах.</span></div>
 </div><footer class="sheet-foot"><button class="btn btn-primary btn-lg btn-block" data-act="welcomeSave">Начать</button></footer>`;
 
-SHEETS.news = () => `${sheetHead('Новый «Подход»', 'Версия ' + APP_VERSION)}<div class="sheet-body">
-  <p style="color:var(--ink-2);font-size:14px;margin-bottom:14px">Строгий спортивный вид, задания недели, серии, достижения и чат с партнёром. Выберите напарника — он будет радоваться вашим тренировкам.</p>
-  ${charPicker(charOf(curProf()), 'cpChar')}
-  <ul class="pr-list news" style="margin-top:18px">
-    <li>${icon('target')}<span><b>Задания недели</b> — три цели, за каждую +${QXP} XP, за все сразу ещё +${QBONUS}</span></li>
-    <li>${icon('flame')}<span><b>Серия</b> — недели подряд с выполненной целью. Пропустили — серия сгорает</span></li>
-    <li>${icon('trophy')}<span><b>Достижения</b> — жим 100, присед 100, полгода без пропусков и другие</span></li>
-    <li>${icon('up')}<span><b>Подсказки</b> — в тренировке видно, какой вес и сколько повторов делать дальше</span></li>
-    <li>${icon('chat')}<span><b>Чат</b> — переписка с партнёром прямо в приложении</span></li>
+SHEETS.news = () => { const k = charOf(curProf()), mt = mateOf(S.profile, S.workouts), n = chestState().closed.length;
+  return `${sheetHead('Что нового', 'Версия ' + APP_VERSION)}<div class="sheet-body">
+  <div style="display:grid;place-items:center;margin-bottom:10px">${mateCell(k, 'happy', { stage:mt.stage.k, gear:mt.gear }, 'mate-g')}</div>
+  <ul class="pr-list news">
+    <li>${icon('up')}<span><b>Напарник растёт</b> — пять стадий от малыша до легенды. Сейчас: ${stName(mt.stage, k).toLowerCase()}, тренировок: ${S.workouts.length}</span></li>
+    <li>${icon('heart')}<span><b>Сытость</b> — после тренировки 100%, два дня отдыха без потерь. На болезнь и отпуск есть заморозка в настройках</span></li>
+    <li>${icon('chest')}<span><b>Сундуки</b> — после тренировки от ${CH_MIN_SETS} подходов. Рекорды повышают шанс редкой вещи, идеальная неделя даёт золотой сундук</span></li>
+    <li>${icon('shirt')}<span><b>Гардероб</b> — 60 вещей и фонов. Нажмите на напарника, чтобы переодеть. Партнёр видит обновки</span></li>
+    <li>${icon('pill')}<span><b>Добавки</b> — новая вкладка: свой план приёма, галочки, курсы и запас. Видите только вы</span></li>
   </ul>
-</div><footer class="sheet-foot"><button class="btn btn-primary btn-block" data-act="closeSheet">Готово</button></footer>`;
+  ${n ? `<p class="fine">Прошлые тренировки уже превратились в открытые сундуки. А ещё вас ждут ${n} ${plural(n, ['сундук','сундука','сундуков'])} в подарок.</p>` : ''}
+</div><footer class="sheet-foot">${n ? `<button class="btn" data-act="closeSheet">Позже</button><button class="btn btn-primary" data-act="chestOpenNext">${icon('chest')} Открыть сундуки</button>` : `<button class="btn btn-primary btn-block" data-act="closeSheet">Готово</button>`}</footer>`; };
 
 SHEETS.help = () => `${sheetHead('Как пользоваться')}<div class="sheet-body help">
   <h3>1. Установите на телефон</h3>
@@ -2706,7 +3144,12 @@ SHEETS.help = () => `${sheetHead('Как пользоваться')}<div class="
   <ol><li>Один человек открывает <b>Настройки → Синхронизация → Настроить → «Я настраиваю первым»</b> и создаёт бесплатный ключ на GitHub (приложение подскажет, куда нажать).</li><li>Затем нажимает «Код для партнёра» и отправляет код второму.</li><li>Второй открывает <b>Настройки → Синхронизация → Настроить → «У меня есть код»</b> и вставляет его.</li></ol>
   <p>После этого на главной появится «Неделя вместе»: тренировки, рекорды и уровень партнёра, а ещё реакции — огонь, сердце и звезда. Обмен идёт, когда есть интернет, а в зале всё работает и без него. Синхронизация заодно служит облачной копией: на новом телефоне подключитесь тем же кодом и выберите «Это мой профиль — …». Если код вам прислал партнёр, всегда выбирайте «Я новый участник».</p>
   <h3>6. Один телефон на двоих</h3>
-  <p>Добавьте второй профиль: нажмите на кружок с буквой вверху.</p>
+  <p>Добавьте второй профиль: нажмите на кружок с буквой вверху. У каждого профиля свой напарник, гардероб и добавки.</p>
+  <h3>7. Напарник и сундуки</h3>
+  <p>Напарник растёт с каждой тренировкой: малыш, юный, взрослый, атлет и легенда. Сытость — 100% после тренировки, первые два дня отдыха она не падает, потом снижается на 20% в день. Болеете или в отпуске — включите <b>Настройки → Заморозка</b>.</p>
+  <p>За тренировку от ${CH_MIN_SETS} рабочих подходов дают сундук (один в день) с вещью для напарника. Рекорд повышает шанс редкой вещи, все три задания недели — золотой сундук. Повторы превращаются в искры: 100 искр — обычная вещь на выбор, 300 — редкая. Нажмите на напарника, чтобы открыть гардероб.</p>
+  <h3>8. Добавки</h3>
+  <p>Во вкладке «Добавки» составьте свой план: доза, время приёма, дни недели, курс и запас. Отмечайте приём галочкой — за полный день +10 XP. План личный и партнёру не передаётся.</p>
 </div>`;
 
 SHEETS.sync = sh => {
@@ -2759,7 +3202,8 @@ SHEETS.friend = sh => {
   const live = m.live && Date.now() - m.live.start < 4 * 3600e3;
   const body = (m.profile.body || []).slice().sort((a, b) => b.d - a.d)[0];
   return `${sheetHead(esc(m.name || 'Партнёр'), live ? 'Сейчас тренируется' : (m.workouts[0] ? 'Последняя тренировка ' + relDays(m.workouts[0].start) : 'Пока без тренировок'))}<div class="sheet-body">
-    <div style="display:grid;place-items:center;margin:-6px 0 12px">${charSVG(charOf(m), moodOf(m.workouts, c.profile.goal, live), { color:pcolor(m), cls:'big' })}</div>
+    ${(() => { const mt = mateOf(c.profile, m.workouts), sat = satietyOf(m.workouts, c.profile.freeze), fz = frozenNow(c.profile.freeze), nx = STAGES[mt.stage.k + 1], k = charOf(m);
+      return `<div class="fr-top" style="--accent:${pcolor(m)}">${mateCell(k, mateMood(m.workouts, c.profile.goal, live, c.profile.freeze), { color:pcolor(m), stage:mt.stage.k, gear:mt.gear, label:mateName(k) }, 'mate-f')}<div><div class="stg">${esc(mateName(k))} · ${stName(mt.stage, k)}<small>${nx ? `до «${stName(nx, k)}» ${nx.from - m.workouts.length}` : 'высшая стадия'}</small></div>${satHTML(sat, fz)}<p class="fine" style="margin:0">Гардероб: <b style="color:var(--ink)">${mt.coll.uniq} из ${ITEMS.length}</b></p></div></div>`; })()}
     <div class="lvl" style="margin-top:0;--accent:${col(m)[1]}"><span class="lvl-n" style="background:${col(m)[0]};color:${col(m)[2]}">${L.k}</span><span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%;background:${col(m)[0]}"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></div>
     <div class="kv k4" style="margin-top:12px"><div><b>${wk.n}</b><span>на этой неделе</span></div><div><b>${streak}</b><span>серия, недель</span></div><div><b>${m.workouts.length}</b><span>всего</span></div><div class="is-pr"><b>${c.D.prEvents.length}</b><span>рекордов</span></div></div>
     <p class="fine">Задания недели: <b style="color:var(--ink)">${qd} из 3</b></p>
@@ -2781,6 +3225,9 @@ SHEETS.set = () => {
       : `<p class="fine" style="margin:0 0 10px">Ваши телефоны будут видеть тренировки и рекорды друг друга, даже если вы в разных залах. Бесплатно, через ваш GitHub.</p><button class="btn btn-sm btn-primary" data-act="syncSetup">${icon('users')} Настроить</button>`}</div>
     <div class="srow"><div class="srow-t"><b>Профили на этом телефоне</b><span>${profiles().length > 1 ? profiles().map(pname).join(', ') : 'Если тренируетесь вдвоём с одного телефона'}</span></div><button class="btn btn-sm" data-act="profiles">${icon('users')} Открыть</button></div>
     <div class="sblock"><b>Цель на неделю</b><div class="seg" role="group" aria-label="Цель на неделю">${[1, 2, 3, 4, 5, 6].map(v => `<button data-act="setGoal" data-v="${v}" aria-pressed="${p.goal === v}">${v}</button>`).join('')}</div><p class="fine" style="margin-top:8px">Сколько тренировок в неделю вы планируете. За выполненную неделю — +60 XP и ещё одна неделя в серии.</p></div>
+    <div class="sblock"><b>Заморозка</b>${(() => { const fz = frozenNow(p.freeze); if (fz) return `<p class="fine" style="margin:0 0 10px">Включена до ${dayMonth(fz.to)}: сытость напарника и серия недель на паузе.</p><button class="btn btn-sm" data-act="freezeOff">${icon('sun')} Я вернулся — снять</button>`;
+      if (canFreeze(p.freeze)) return `<p class="fine" style="margin:0 0 10px">Болезнь или отпуск? Сытость напарника и серия недель встанут на паузу. Можно раз в месяц.</p><div class="seg" role="group" aria-label="Заморозка">${[3, 7, 14].map(v => `<button data-act="freezeOn" data-d="${v}">${icon('snow')} ${v} ${plural(v, ['день','дня','дней'])}</button>`).join('')}</div>`;
+      const d = new Date(Date.now()); return `<p class="fine" style="margin:0">В этом месяце заморозка уже была. Следующая — с ${dayMonth(new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime())}.</p>`; })()}</div>
     <div class="sblock"><b>Отдых между подходами</b><div class="seg" role="group" aria-label="Отдых">${[60, 90, 120, 150, 180, 240].map(v => `<button data-act="setRest" data-v="${v}" aria-pressed="${p.rest === v}">${fmtClock(v)}</button>`).join('')}</div></div>
     <div class="srow"><div class="srow-t"><b>Сигнал после отдыха</b><span>Звук и вибрация, когда таймер закончился</span></div><button class="switch" role="switch" aria-checked="${!!p.sound}" aria-label="Сигнал после отдыха" data-act="toggleSound"></button></div>
     <div class="srow"><div class="srow-t"><b>Спрашивать запас повторов</b><span>После подхода: сколько ещё могли сделать. Подсказки веса станут точнее</span></div><button class="switch" role="switch" aria-checked="${p.rirAsk !== false}" aria-label="Спрашивать запас повторов" data-act="toggleRir"></button></div>
@@ -2870,11 +3317,31 @@ function mergeInto(pid, src) {
   const prof = normP(d.profile), inc = normP(src.profile);
   ['templates', 'custom', 'body', 'meas'].forEach(k => { const have = new Set(prof[k].map(o => o.id)); inc[k].forEach(o => { if (o && o.id && !have.has(o.id)) prof[k].push(o); }); });
   if (!d.profile && src.profile) ['rest', 'sound', 'bar', 'goal'].forEach(k => { if (src.profile[k] != null) prof[k] = src.profile[k]; });
+  { const have = new Set(prof.supps.map(o => o.id)); inc.supps.forEach(o => { if (!have.has(o.id)) prof.supps.push(o); }); }
+  Object.entries(inc.slog).forEach(([k, l]) => { if (Array.isArray(l)) prof.slog[k] = [...new Set([...(prof.slog[k] || []), ...l])]; });
+  prof.sfull = [...new Set([...prof.sfull, ...inc.sfull])].sort();
+  inc.freeze.forEach(f => { if (f && Number.isFinite(f.from) && !prof.freeze.some(x => x.from === f.from)) prof.freeze.push(f); });
+  if (!Object.keys(prof.gear).length) prof.gear = inc.gear;
+  const before = new Set((d.workouts || []).map(w => w.id));
   const ws = new Map((d.workouts || []).map(w => [w.id, w])); let n = 0;
   (src.workouts || []).forEach(w => { if (w && w.id && Number.isFinite(w.start) && Array.isArray(w.exercises)) { const c = normW(w, String(w.id)); delete c.demo; ws.set(c.id, c); n++; } });
+  if (inc.chest && prof.chest) { Object.entries(inc.chest.op).forEach(([k, v]) => { if (!prof.chest.op[k] && ITEM[v]) prof.chest.op[k] = v; }); inc.chest.buy.forEach(b => { if (b && ITEM[b.id] && !prof.chest.buy.some(x => x.at === b.at && x.id === b.id)) prof.chest.buy.push(b); }); }
+  else if (inc.chest && !prof.chest) prof.chest = inc.chest;
+  else if (prof.chest) prof.chest.imp = [...new Set([...(prof.chest.imp || []), ...[...ws.keys()].filter(id => !before.has(id))])]; // a backup from before 2.2
   d.profile = prof; d.workouts = [...ws.values()].sort((a, b) => b.start - a.start); d.active = d.active || null;
   KV.set('p:' + pid, d);
   return n;
+}
+
+function commitWorkout(w) {
+  const st0 = gameStats(), xp0 = totalXP(st0), b0 = new Set(unlockedBadges(st0)), l0 = levelOf(xp0).k, q0 = new Set(questsFor(ctxLocal(), weekStart(w.start)).filter(x => x.done).map(x => x.id)), g0 = stageOf(S.workouts.length).k;
+  saveWorkout(w);
+  const st1 = gameStats(), xp1 = totalXP(st1), newBadges = unlockedBadges(st1).filter(id => !b0.has(id)), l1 = levelOf(xp1).k, g1 = stageOf(S.workouts.length).k;
+  S.sheets = []; S.bubble = null; S.ateAt = Date.now(); buzz([30, 60, 30]);
+  const newQuests = questsFor(ctxLocal(), weekStart(w.start)).filter(x => x.done && !q0.has(x.id)).map(x => x.t);
+  go('log'); openSheet({ type:'done', id:w.id, prs:D.prCount[w.id] || 0, xpGain:xp1 - xp0, xpAfter:xp1, lvlUp:l1 > l0, newBadges, newQuests });
+  if (g1 > g0) { openSheet({ type:'grow', k:g1 }); setTimeout(() => confetti(innerWidth / 2, innerHeight * .35, 110), RM ? 0 : 350); }
+  if (isStandalone() && !S.persisted) requestPersist();
 }
 
 /* ================= actions ================= */
@@ -2994,7 +3461,7 @@ const A = {
   poke: el => {
     S.poke = (S.poke + 1) % 2 || 2; buzz([10, 30, 10]);
     const m = moodNow(), lines = ['Готов работать.', 'Разминка 5 минут — и в бой.', 'Вода, сон, белок.', 'Техника важнее веса.', 'Сегодня хороший день для рекорда.', 'Без спешки: подход за подходом.'];
-    S.bubble = { mood:m.mood, pid:S.pid, n:m.n, text:pick(lines) }; render();
+    S.bubble = { mood:bubbleKey(m), pid:S.pid, n:m.n, text:pick(lines) }; render();
     const svg = el.querySelector('.ch'); if (svg) { svg.classList.remove('poke'); void svg.getBoundingClientRect(); svg.classList.add('poke'); }
   },
   profiles: () => { S.sheets = []; openSheet({ type:'prof', adding:false, newName:'', newColor:nextColor(), confirm:false }); },
@@ -3023,7 +3490,7 @@ const A = {
   wlColor: el => { top().color = el.dataset.c; applyAccent(el.dataset.c); render(); },
   welcomeSave: () => {
     const sh = top(), name = (sh.name || '').trim();
-    S.meta = { profiles:[{ id:'main', name, color:sh.color || 'lime', char:sh.char || 'cat' }], cur:'main', theme:'auto', v2seen:true, chatSeen:Date.now() }; saveMeta(); applyAccent();
+    S.meta = { profiles:[{ id:'main', name, color:sh.color || 'lime', char:sh.char || 'cat' }], cur:'main', theme:'auto', v2seen:true, v22seen:true, chatSeen:Date.now() }; saveMeta(); applyAccent();
     S.sheets = []; S.bubble = null; render(); buzz([10, 40, 10]); toast(name ? `Привет, ${name}! Поехали` : 'Поехали!');
   },
   startEmpty: () => startWorkout(null),
@@ -3095,14 +3562,8 @@ const A = {
     const sh = top(); const w = finalize(clone(S.active)); w.end = Date.now();
     const note = (sh.note || '').trim(); if (note) w.note = note; if (sh.feel) w.feel = sh.feel;
     if (!w.exercises.length) { toast('Нет ни одного заполненного подхода'); return; }
-    const st0 = gameStats(), xp0 = totalXP(st0), b0 = new Set(unlockedBadges(st0)), l0 = levelOf(xp0).k, q0 = new Set(questsFor(ctxLocal(), weekStart(w.start)).filter(x => x.done).map(x => x.id));
-    S.active = null; S.rest = { end:0, total:0, alerted:false };
-    saveWorkout(w); keepAwake(false);
-    const st1 = gameStats(), xp1 = totalXP(st1), newBadges = unlockedBadges(st1).filter(id => !b0.has(id)), l1 = levelOf(xp1).k;
-    S.sheets = []; S.bubble = null; buzz([30, 60, 30]);
-    const newQuests = questsFor(ctxLocal(), weekStart(w.start)).filter(x => x.done && !q0.has(x.id)).map(x => x.t);
-    go('log'); openSheet({ type:'done', id:w.id, prs:D.prCount[w.id] || 0, xpGain:xp1 - xp0, xpAfter:xp1, lvlUp:l1 > l0, newBadges, newQuests });
-    if (isStandalone() && !S.persisted) requestPersist();
+    S.active = null; S.rest = { end:0, total:0, alerted:false }; keepAwake(false);
+    commitWorkout(w);
   },
   doneDetail: () => { const id = top().id; S.sheets = []; openSheet({ type:'wd', id }); },
   discardOpen: () => openSheet({ type:'disc' }),
@@ -3123,7 +3584,7 @@ const A = {
   editSave: () => {
     const w = finalize(clone(S.editing)); if (!w.exercises.length) { toast('Добавьте хотя бы один заполненный подход'); return; }
     if (!(w.end > w.start)) w.end = w.start + 3600000;
-    const isNew = S.editing.isNew; saveWorkout(w); S.editing = null; S.view = 'log';
+    const isNew = S.editing.isNew; if (isNew) w.ad = Date.now(); saveWorkout(w); S.editing = null; S.view = 'log';
     try { history.replaceState(null, '', '#log'); } catch (e) { /* hash blocked */ }
     toast(isNew ? 'Тренировка добавлена в журнал' : 'Изменения сохранены'); render(); window.scrollTo(0, 0);
   },
@@ -3274,6 +3735,422 @@ const CHG = {
   },
 };
 
+/* ================= 2.2: companion growth, satiety, chests, wardrobe ================= */
+/* Debug mode (?debug=1): shift «today» by whole days, add test workouts, open all chests. Invisible otherwise. */
+const DBG = (() => { try { return /[?&]debug=1(&|$)/.test(location.search); } catch (e) { return false; } })();
+const dbgShift = () => { try { return +(localStorage.getItem('podhod-dbg-shift') || 0) || 0; } catch (e) { return 0; } };
+if (DBG) { const realNow = Date.now.bind(Date); Date.now = () => realNow() + dbgShift() * DAY; }
+
+const mulberry32 = a => () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const seed32 = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+const daysBetween = (a, b) => Math.round((startOfDay(b) - startOfDay(a)) / DAY);
+const keyDay = k => { const [y, m, d] = String(k).split('-').map(Number); return new Date(y, (m || 1) - 1, d || 1).getTime(); };
+
+/* ---- freeze: once a month, for illness or a holiday — satiety and the week streak stop ---- */
+const freezeOf = p => (p && Array.isArray(p.freeze) ? p.freeze : []).filter(f => f && Number.isFinite(f.from) && Number.isFinite(f.to));
+function frozenNow(fr, now = Date.now()) { const d = startOfDay(now); return freezeOf({ freeze:fr }).find(f => d >= startOfDay(f.from) && d <= startOfDay(f.to)) || null; }
+function canFreeze(fr, now = Date.now()) { const d = new Date(now), m0 = new Date(d.getFullYear(), d.getMonth(), 1).getTime(); return !frozenNow(fr, now) && !freezeOf({ freeze:fr }).some(f => f.from >= m0); }
+function frozenDays(a, b, fr) { let n = 0; freezeOf({ freeze:fr }).forEach(f => { const x = Math.max(a, startOfDay(f.from)), y = Math.min(b, startOfDay(f.to)); if (y >= x) n += daysBetween(x, y) + 1; }); return n; }
+function weekFrozen(ws, fr) {
+  return freezeOf({ freeze:fr }).some(f => { const len = daysBetween(f.from, f.to) + 1; if (len < 1) return false; const a = Math.max(ws, startOfDay(f.from)), b = Math.min(addDays(ws, 6), startOfDay(f.to)); return b >= a && daysBetween(a, b) + 1 >= Math.min(3, len); });
+}
+
+/* ---- satiety: derived from workout dates only. 100 after a workout, two free days, then −20 a day ---- */
+function satietyOf(list, fr, now = Date.now()) {
+  const last = list && list[0]; if (!last) return { v:100, days:null, state:'new' };
+  let days = daysBetween(last.start, now);
+  if (days > 0) days -= frozenDays(addDays(startOfDay(last.start), 1), startOfDay(now), fr);
+  days = Math.max(0, days);
+  const v = days <= 2 ? 100 : Math.max(0, 100 - 20 * (days - 2));
+  return { v, days, state: days >= 7 ? 'sleep' : v < 30 ? 'sad' : v < 60 ? 'hungry' : 'fed' };
+}
+function mateMood(list, goal, live, fr) {
+  if (live) return 'fire';
+  const s = satietyOf(list, fr);
+  if (s.state === 'sleep') return 'sleepy';
+  if (s.state === 'hungry' || s.state === 'sad') return 'calm';
+  const m = moodOf(list, goal, false); return m === 'sleepy' ? 'calm' : m;
+}
+
+/* ---- chests: one per real workout (6+ working sets), one per calendar day; the contents follow from the workout id ---- */
+const CH_MIN_SETS = 6;
+const CCACHE = new WeakMap();
+function workoutChests(c) {
+  const goal = c.profile.goal || 3, hit = CCACHE.get(c.D);
+  if (hit && hit.n === c.workouts.length && hit.goal === goal) return hit.list;
+  const asc = [...c.workouts].sort((a, b) => a.start - b.start), days = new Set(), list = [];
+  asc.forEach(w => {
+    if (wStats(w).sets < CH_MIN_SETS) return;
+    if (w.ad && daysBetween(w.start, w.ad) > 2) return; // added via «Прошедшая» more than two days later
+    const dk = dayKey(w.start); if (days.has(dk)) return; days.add(dk);
+    list.push({ id:w.id, start:w.start, title:w.title || '', prs:c.D.prCount[w.id] || 0, gold:false });
+  });
+  // golden chest: the first chest after the moment all weekly quests were done
+  const byWeek = new Map(); list.forEach(ch => { const ws = weekStart(ch.start); if (!byWeek.has(ws)) byWeek.set(ws, []); byWeek.get(ws).push(ch); });
+  byWeek.forEach((chs, ws) => {
+    if (!questsFor(c, ws).every(q => q.done)) return;
+    const wk = inWeek(c.workouts, ws).sort((a, b) => a.start - b.start), done = wk.find(w => questsFor(c, ws, w.start).every(q => q.done));
+    const g = done && chs.find(ch => ch.start >= done.start); if (g) g.gold = true;
+  });
+  CCACHE.set(c.D, { n:c.workouts.length, goal, list });
+  return list;
+}
+function chestState(c = ctxLocal()) {
+  const ch = c.profile.chest || {}, op = ch.op || {};
+  const st = (Array.isArray(ch.st) ? ch.st : []).map(id => ({ id, start:ch.at || 0, title:'', prs:0, gold:false, starter:true }));
+  const all = [...st, ...workoutChests(c)];
+  return { all, closed:all.filter(x => !op[x.id]), op };
+}
+function rollChest(ch) {
+  const r = mulberry32(seed32(ch.id + 'chest')), x = r();
+  let L = .05, R = .25;
+  if (ch.prs >= 1) { L = .08; R = .32; }
+  if (ch.prs >= 3) { L = .1; R = .38; }
+  if (ch.gold) { L = Math.max(L, .2); R = 1 - L; }
+  const rar = x < L ? 'l' : x < L + R ? 'r' : 'c', pool = POOL[rar];
+  return pool[Math.floor(r() * pool.length)].id;
+}
+/* collection: items from opened chests + bought; duplicates turn into sparks (10 each) */
+function collOf(prof, workouts) {
+  const ch = (prof && prof.chest) || {}, op = ch.op || {}, ids = new Set((workouts || []).map(w => w.id)), cnt = {};
+  let total = 0, opened = 0;
+  Object.entries(op).forEach(([cid, it]) => { if (!ITEM[it] || (!cid.startsWith('st-') && !ids.has(cid))) return; cnt[it] = (cnt[it] || 0) + 1; total++; opened++; });
+  const buy = (Array.isArray(ch.buy) ? ch.buy : []).filter(b => b && ITEM[b.id]);
+  buy.forEach(b => { cnt[b.id] = (cnt[b.id] || 0) + 1; total++; });
+  const uniq = Object.keys(cnt).length, spent = buy.reduce((a, b) => a + (+b.c || 0), 0);
+  return { cnt, uniq, total, opened, old:+ch.old || 0, sparks:Math.max(0, (total - uniq) * 10 - spent), has:id => !!cnt[id] };
+}
+function gearOf(prof, coll) {
+  const g = {}, src = (prof && prof.gear && typeof prof.gear === 'object') ? prof.gear : {};
+  SLOT_ORDER.forEach(s => { const id = src[s]; if (typeof id === 'string' && ITEM[id] && ITEM[id].s === s && (!coll || coll.has(id))) g[s] = id; });
+  return g;
+}
+const mateOf = (prof, workouts) => { const coll = collOf(prof, workouts); return { coll, stage:stageOf((workouts || []).length), gear:gearOf(prof, coll) }; };
+/* first run of 2.2 for a profile: past workouts count as already opened chests, plus three starter chests */
+function ensureChest() {
+  const p = S.profile; let ch = false;
+  if (!p.chest || !p.chest.v || typeof p.chest.op !== 'object') {
+    const op = {}; workoutChests(ctxLocal()).forEach(c => { op[c.id] = rollChest(c); });
+    p.chest = { v:1, at:Date.now(), st:[1, 2, 3].map(() => 'st-' + uid()), op, buy:[], old:Object.keys(op).length };
+    ch = true;
+  } else if (Array.isArray(p.chest.imp) && p.chest.imp.length) { // workouts restored from an old backup or an older phone — no chest avalanche
+    const imp = new Set(p.chest.imp); workoutChests(ctxLocal()).forEach(c => { if (imp.has(c.id) && !p.chest.op[c.id]) { p.chest.op[c.id] = rollChest(c); p.chest.old = (+p.chest.old || 0) + 1; } });
+    delete p.chest.imp; ch = true;
+  }
+  if (ch) markDirty();
+  return ch;
+}
+const mateName = k => CHARS[k] ? CHARS[k].name : 'Напарник';
+const GROW_TXT = ['', 'Подрос и окреп — больше не малыш.', 'Плечи шире, шаг увереннее.', 'Повязка чемпиона и пресс кубиками.', 'Сияние и искры — так выглядит легенда.'];
+const bubbleKey = m => m.mood + '|' + (m.sd ? m.sd.done + '/' + m.sd.due.length : '');
+const cntW = n => `${n} ${plural(n, ['тренировка','тренировки','тренировок'])}`;
+
+/* ================= supplements: a private daily plan ================= */
+const SUP_WHEN = [['am','Утро'],['day','День'],['pm','Вечер'],['pre','До тренировки'],['post','После тренировки'],['any','В любое время']];
+const SUP_UNITS = ['г','мг','мкг','МЕ','капс.','таб.','мл','ложка','порция'];
+const SUP_QUICK = [['Креатин','5','г','am'],['Протеин','30','г','post'],['Витамин D','2000','МЕ','am'],['Омега-3','2','капс.','day'],['Магний','400','мг','pm'],['Цинк','25','мг','pm'],['Мультивитамины','1','таб.','am'],['Коллаген','10','г','am']];
+const WD_ORDER = [1, 2, 3, 4, 5, 6, 0];
+const supDose = s => { const v = parseNum(s && s.dose); return v > 0 ? v : null; };
+const doseTxt = s => s.dose ? `${String(s.dose).replace('.', ',')} ${s.unit || ''}`.trim() : '';
+function supDue(s, day) {
+  if (!s || s.off) return false;
+  if (Array.isArray(s.days) && s.days.length && !s.days.includes(new Date(day).getDay())) return false;
+  if (s.cf) { const a = startOfDay(s.cf); if (day < a || (s.cd > 0 && day >= addDays(a, s.cd))) return false; }
+  return true;
+}
+function supCourse(s, day) { if (!s.cf || !(s.cd > 0)) return null; const a = startOfDay(s.cf), b = addDays(a, s.cd); return day < a ? { st:'soon', a, b } : day >= b ? { st:'over', a, b } : { st:'on', a, b, n:daysBetween(a, day) + 1 }; }
+function supDay(p, day) {
+  const due = (p.supps || []).filter(s => supDue(s, day)), taken = new Set((p.slog || {})[dayKey(day)] || []);
+  const done = due.filter(s => taken.has(s.id)).length;
+  return { due, taken, done, full:due.length > 0 && done === due.length };
+}
+function supLeft(s) { if (s.stock == null) return null; const d = supDose(s); if (!d) return null; const perDay = d * ((Array.isArray(s.days) && s.days.length ? s.days.length : 7) / 7); return Math.floor(s.stock / perDay + 1e-9); }
+const SBC = { k:'', v:0 };
+function supBest(p) {
+  const full = [...new Set(p.sfull || [])].sort(), k = full.length + '|' + full[0] + '|' + full[full.length - 1] + '|' + JSON.stringify((p.supps || []).map(s => [s.days, s.cf, s.cd, s.off]));
+  if (SBC.k === k) return SBC.v;
+  let best = 0, run = 0, prev = null;
+  full.forEach(dk => {
+    const d = keyDay(dk);
+    if (prev != null) { let gap = false; for (let x = addDays(prev, 1); x < d; x = addDays(x, 1)) if ((p.supps || []).some(s => supDue(s, x))) { gap = true; break; } run = gap ? 1 : run + 1; } else run = 1;
+    best = Math.max(best, run); prev = d;
+  });
+  SBC.k = k; SBC.v = best; return best;
+}
+function supStreak(p, now = Date.now()) {
+  const full = new Set(p.sfull || []); if (!full.size) return 0;
+  const first = keyDay([...full].sort()[0]);
+  let day = startOfDay(now), n = 0;
+  if (!full.has(dayKey(day))) day = addDays(day, -1); // today is still in progress
+  while (day >= first) { const k = dayKey(day); if (full.has(k)) n++; else if ((p.supps || []).some(s => supDue(s, day))) break; day = addDays(day, -1); }
+  return n;
+}
+const supXP = p => (Array.isArray(p.sfull) ? p.sfull.length : 0) * 10;
+const supShared = p => supXP(p) + [7, 30].filter(n => supBest(p) >= n).length * 30; // the partner only gets this number
+function supToggle(id, day) {
+  const p = S.profile, k = dayKey(day), s = p.supps.find(x => x.id === id); if (!s) return null;
+  const list = p.slog[k] || (p.slog[k] = []), i = list.indexOf(id), d = supDose(s), on = i < 0;
+  if (!on) { list.splice(i, 1); if (s.stock != null && d) s.stock = Math.round((s.stock + d) * 1000) / 1000; }
+  else { list.push(id); if (s.stock != null && d) s.stock = Math.max(0, Math.round((s.stock - d) * 1000) / 1000); }
+  if (!list.length) delete p.slog[k];
+  const st = supDay(p, day), f = new Set(p.sfull); if (st.full) f.add(k); else f.delete(k); p.sfull = [...f].sort();
+  saveProfile();
+  return { on, full:st.full };
+}
+function supSub(s, day) {
+  const parts = [], dose = doseTxt(s); if (dose) parts.push(dose);
+  if (s.note) parts.push(s.note);
+  if (Array.isArray(s.days) && s.days.length && s.days.length < 7) parts.push(WD_ORDER.filter(d => s.days.includes(d)).map(d => WD[d]).join(', '));
+  const c = supCourse(s, day);
+  if (c) parts.push(c.st === 'on' ? `курс: день ${c.n} из ${s.cd}` : c.st === 'soon' ? `курс с ${dShort(c.a)}` : 'курс завершён');
+  const left = supLeft(s);
+  if (s.stock != null) parts.push(s.stock <= 0 ? 'запас закончился' : `осталось ${nf(s.stock, 2)} ${s.unit || ''}${left != null ? ` ≈ ${left} ${plural(left, ['день','дня','дней'])}` : ''}`.trim());
+  if (s.off) parts.push('на паузе');
+  return parts.join(' · ');
+}
+const supLow = p => (p.supps || []).filter(s => !s.off && s.stock != null && (s.stock <= 0 || (supLeft(s) != null && supLeft(s) <= 7)));
+
+/* ================= 2.2 views ================= */
+function hungerHTML() {
+  const fz = frozenNow(S.profile.freeze), k = charOf(curProf()), nm = esc(mateName(k));
+  if (fz) return `<div class="calm" data-key="calm-fz">${icon('snow')}<span><b>Заморозка до ${dayMonth(fz.to)}.</b> Сытость и серия недель на паузе — выздоравливайте и отдыхайте спокойно.</span></div>`;
+  const s = satietyOf(S.workouts, S.profile.freeze); if (s.state === 'new' || s.state === 'fed') return '';
+  const d = `${s.days} ${plural(s.days, ['день','дня','дней'])} без тренировки`;
+  if (s.state === 'sleep') return `<div class="calm" data-key="calm-s">${icon('moon')}<span><b>${nm} ${vb(k, 'уснул', 'уснула')}</b> — ${d}. Любая тренировка разбудит, и сытость сразу станет 100%.</span></div>`;
+  return `<div class="calm" data-key="calm-h">${icon('heart')}<span><b>${nm} ${vb(k, 'проголодался', 'проголодалась')}</b> — ${d}. Лёгкая тренировка вернёт в форму.</span></div>`;
+}
+function satHTML(sat, fz) {
+  const v = sat.state === 'new' ? 0 : sat.v, cls = fz ? 'frz' : sat.v < 30 ? 'low' : sat.v < 60 ? 'mid' : '';
+  return `<div class="sat"><div class="sat-top"><span>Сытость${fz ? ' · заморожено' : ''}</span><b>${sat.state === 'new' ? '—' : sat.v + '%'}</b></div><div class="sat-bar" role="progressbar" aria-label="Сытость" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${v}"><i class="${cls}" style="width:${v}%"></i></div></div>`;
+}
+function supCardHTML() {
+  const p = S.profile; if (!p.supps.length) return '';
+  const day = startOfDay(Date.now()), st = supDay(p, day), low = supLow(p);
+  if (!st.due.length && !low.length) return '';
+  const chips = st.due.map(s => { const on = st.taken.has(s.id); return `<button class="sup-chip${on ? ' on' : ''}" data-key="sc-${esc(s.id)}" data-act="supTake" data-id="${esc(s.id)}" data-day="${day}" aria-pressed="${on}" aria-label="${esc(s.name)}${on ? ', принято' : ''}">${icon(on ? 'check' : 'pill')}<span>${esc(s.name)}${s.dose ? `<small>${esc(doseTxt(s))}</small>` : ''}</span></button>`; }).join('');
+  return `<section class="sec"><div class="sec-head"><h2 class="h2">${st.due.length ? `Добавки · ${st.done} из ${st.due.length}` : 'Добавки'}</h2><button class="btn btn-sm btn-ghost" data-act="nav" data-v="supp">Все ${icon('chevron')}</button></div>
+    ${chips ? `<div class="sup-chips">${chips}</div>` : ''}${low.length ? `<p class="sup-low">${icon('box')}<span>Заканчивается: ${low.map(s => esc(s.name)).join(', ')}</span></p>` : ''}</section>`;
+}
+function dbgHTML() {
+  if (!DBG) return '';
+  const sh = dbgShift();
+  return `<section class="dbg" aria-label="Режим отладки"><b>Отладка</b><span>Сегодня: ${dayMonth(Date.now())} (${sh >= 0 ? '+' : ''}${sh} дн.)</span>
+    <div class="row"><button class="btn btn-sm" data-act="dbgDay" data-d="-1">−1 день</button><button class="btn btn-sm" data-act="dbgDay" data-d="1">+1 день</button><button class="btn btn-sm" data-act="dbgDay" data-d="0">Сброс</button>
+    <button class="btn btn-sm" data-act="dbgWorkout">+ тренировка</button><button class="btn btn-sm" data-act="dbgChests">+3 сундука</button><button class="btn btn-sm" data-act="dbgOpenAll">Открыть все</button></div></section>`;
+}
+function tileHTML(it, own, on, act, extra = '') {
+  return `<button class="tile${on ? ' on' : ''}${own ? '' : ' lock'}${it.s === 'bg' ? ' bgt' : ''}" style="--rc:${RAR[it.r].col}" data-key="t-${it.id}" data-act="${act}" data-id="${it.id}" aria-pressed="${!!on}" aria-label="${own ? esc(it.n) : 'Не найдена'}: ${RAR[it.r].n.toLowerCase()}, ${SLOTS[it.s].toLowerCase()}${on ? ', сейчас на напарнике' : ''}"><i class="rd"></i>${thumbSVG(it.id, null, !own)}<span>${own ? esc(it.n) : '???'}</span><small>${extra || RAR[it.r].s}</small></button>`;
+}
+
+function viewSupp() {
+  const head = headHTML('Добавки', `${icon('pill')} Свой план приёма`);
+  if (!ready()) return head + loadingHTML();
+  const p = S.profile, today = startOfDay(Date.now());
+  if (!p.supps.length) {
+    return `${head}<div class="empty sup-empty"><h3>Составьте свой план</h3><p>Креатин, витамины, протеин — отмечайте приём галочкой каждый день. Доза, время, дни недели, курсы и запас — как вам удобно. План видите только вы.</p></div>
+      <section class="sec"><div class="sec-head"><h2 class="h2">Быстрый старт</h2></div><div class="sup-quick">${SUP_QUICK.map(([n, d, u], i) => `<button class="chip" data-act="supQuick" data-i="${i}">${icon('plus')} ${esc(n)} <small>${esc(d)} ${esc(u)}</small></button>`).join('')}</div>
+      <button class="btn btn-primary btn-block" style="margin-top:14px" data-act="supNew">${icon('plus')} Своя добавка</button></section>`;
+  }
+  if (S.supOrder) {
+    const rows = p.supps.map((s, i) => `<div class="sup-ord" data-key="so-${esc(s.id)}"><span class="sup-ord-n">${i + 1}</span><span class="sup-ord-t"><b>${esc(s.name)}</b><small>${esc((SUP_WHEN.find(w => w[0] === s.when) || SUP_WHEN[5])[1])}${s.dose ? ' · ' + esc(doseTxt(s)) : ''}</small></span><button class="icon-btn" data-act="supMove" data-i="${i}" data-d="-1" aria-label="Выше: ${esc(s.name)}"${i ? '' : ' disabled'}>${icon('up')}</button><button class="icon-btn" data-act="supMove" data-i="${i}" data-d="1" aria-label="Ниже: ${esc(s.name)}"${i < p.supps.length - 1 ? '' : ' disabled'}>${icon('down')}</button></div>`).join('');
+    return `${head}<section class="sec" style="margin-top:4px"><div class="sec-head"><h2 class="h2">Порядок приёма</h2><button class="btn btn-sm btn-primary" data-act="supOrder">Готово</button></div><div class="panel sup-list">${rows}</div><p class="fine">В этом порядке добавки стоят в списке внутри каждого времени приёма.</p></section>`;
+  }
+  const day = Math.max(addDays(today, -6), Math.min(today, S.supDay || today)), st = supDay(p, day), streak = supStreak(p), low = supLow(p);
+  const lbl = day === today ? 'Сегодня' : day === addDays(today, -1) ? 'Вчера' : `${WD_FULL[new Date(day).getDay()]}, ${dayMonth(day)}`;
+  const row = (s, on) => `<div class="sup-row${on ? ' on' : ''}" data-key="sp-${esc(s.id)}"><button class="sup-check" data-act="supTake" data-id="${esc(s.id)}" data-day="${day}" aria-pressed="${on}" aria-label="${on ? 'Отменить приём' : 'Принял'}: ${esc(s.name)}">${icon('check')}</button><button class="sup-main" data-act="supEdit" data-id="${esc(s.id)}" aria-label="Изменить: ${esc(s.name)}"><b>${esc(s.name)}</b>${supSub(s, day) ? `<small>${esc(supSub(s, day))}</small>` : ''}</button></div>`;
+  const groups = SUP_WHEN.map(([k, l]) => { const items = st.due.filter(s => (SUP_WHEN.some(w => w[0] === s.when) ? s.when : 'any') === k); return items.length ? `<section class="sec" data-key="sg-${k}"><div class="sec-head"><h2 class="h2">${l}</h2><span class="h2">${items.filter(s => st.taken.has(s.id)).length}/${items.length}</span></div><div class="panel sup-list">${items.map(s => row(s, st.taken.has(s.id))).join('')}</div></section>` : ''; }).join('');
+  const rest = p.supps.filter(s => !st.due.includes(s));
+  const restH = rest.length ? `<section class="sec" data-key="sg-off"><div class="sec-head"><h2 class="h2">Не в этот день</h2></div><div class="panel sup-list">${rest.map(s => `<div class="sup-row off" data-key="sx-${esc(s.id)}"><span class="sup-check" aria-hidden="true">${icon('moon')}</span><button class="sup-main" data-act="supEdit" data-id="${esc(s.id)}" aria-label="Изменить: ${esc(s.name)}"><b>${esc(s.name)}</b>${supSub(s, day) ? `<small>${esc(supSub(s, day))}</small>` : ''}</button></div>`).join('')}</div></section>` : '';
+  const pct = st.due.length ? st.done / st.due.length * 100 : 0;
+  return `${head}
+    <div class="sup-day"><button class="icon-btn" data-act="supDayShift" data-d="-1" aria-label="Предыдущий день"${day <= addDays(today, -6) ? ' disabled' : ''}>${icon('back')}</button><b>${lbl}</b><button class="icon-btn" data-act="supDayShift" data-d="1" aria-label="Следующий день"${day >= today ? ' disabled' : ''}>${icon('chevron')}</button></div>
+    <section class="panel sup-sum${st.full ? ' full' : ''}"><div class="sup-sum-top"><div class="hs"><b>${st.done}<small>/${st.due.length}</small></b><span>принято</span></div><div class="hs"><b>${icon('flame')}${streak}</b><span>${plural(streak, ['день','дня','дней'])} подряд</span></div><div class="hs"><b>+10</b><span>XP за полный день</span></div></div>
+      <span class="q-bar"><i style="width:${pct.toFixed(1)}%"></i></span>${st.full ? `<p class="sup-done">${icon('check')} План на ${day === today ? 'сегодня' : 'этот день'} выполнен</p>` : !st.due.length ? '<p class="sup-done muted">В этот день по плану ничего нет</p>' : ''}</section>
+    ${low.length ? `<div class="banner warn">${'<div class="banner-t">' + icon('box') + `<span><b>Заканчивается запас:</b> ${low.map(s => esc(s.name) + (s.stock <= 0 ? ' — закончился' : ` — ≈ ${supLeft(s)} ${plural(supLeft(s), ['день','дня','дней'])}`)).join(', ')}. Обновите запас в карточке добавки.</span></div>`}</div>` : ''}
+    ${groups}${restH}
+    <div class="row sup-actions"><button class="btn btn-add" data-act="supNew">${icon('plus')} Добавить</button>${p.supps.length > 1 ? `<button class="btn" data-act="supOrder">${icon('swap')} Порядок</button>` : ''}</div>
+    <p class="fine">План видите только вы — партнёру он не передаётся. Полный день по плану — +10 XP, 7 и 30 дней подряд — достижения.</p>`;
+}
+
+/* ================= 2.2 sheets ================= */
+SHEETS.ward = sh => {
+  const p = curProf(), kind = charOf(p), m = mateOf(S.profile, S.workouts), coll = m.coll, cs = chestState(), slot = sh.slot || 'all';
+  const own = Object.keys(coll.cnt), cnt = s => own.filter(id => ITEM[id].s === s).length;
+  const tiles = ITEMS.filter(it => slot === 'all' || it.s === slot).map(it => tileHTML(it, coll.has(it.id), m.gear[it.s] === it.id, 'wear', coll.cnt[it.id] > 1 ? `×${coll.cnt[it.id]} · ${RAR[it.r].s}` : '')).join('');
+  return `${sheetHead('Гардероб', `${esc(mateName(kind))} · ${stName(m.stage, kind)}`)}<div class="sheet-body">
+    <div class="wardtop">${mateCell(kind, 'happy', { stage:m.stage.k, gear:m.gear, label:`${mateName(kind)} в гардеробе` }, 'mate-l')}<div class="wt-main">
+      <div class="wstat"><b>${coll.uniq} / ${ITEMS.length}</b><span>собрано вещей</span></div><div class="wbar"><i style="width:${(coll.uniq / ITEMS.length * 100).toFixed(1)}%"></i></div>
+      <div class="spark">${icon('spark', 'ic-f')} ${coll.sparks} ${plural(coll.sparks, ['искра','искры','искр'])}</div>
+      <div class="row"><button class="btn btn-sm" data-act="shop">Обменять искры</button>${cs.closed.length ? `<button class="btn btn-sm btn-primary" data-act="chestOpenNext">${icon('chest')} Сундуки: ${cs.closed.length}</button>` : ''}</div></div></div>
+    <div class="chips slots" role="group" aria-label="Слот">${[['all', 'Все', own.length], ...SLOT_ORDER.map(s => [s, SLOTS[s], cnt(s)])].map(([k, l, n]) => `<button class="chip" data-act="wardSlot" data-s="${k}" aria-pressed="${slot === k}">${l} ${n}</button>`).join('')}</div>
+    <div class="tiles">${tiles}</div>
+    <p class="hint2">Нажмите на вещь, чтобы надеть или снять. Рекорд в тренировке повышает шанс редкой вещи. Повторы дают искры: 100 — любая обычная вещь, 300 — редкая. Сундук — за тренировку от ${CH_MIN_SETS} рабочих подходов, один в день.</p></div>`;
+};
+SHEETS.shop = sh => {
+  const coll = collOf(S.profile, S.workouts), sel = sh.sel && ITEM[sh.sel], cost = sel ? (sel.r === 'r' ? 300 : 100) : 0;
+  const sec = (r, c) => { const list = POOL[r].filter(it => !coll.has(it.id)); return `<div class="sblock"><b>${r === 'c' ? 'Обычные' : 'Редкие'} · ${c} искр</b>${list.length ? `<div class="tiles">${list.map(it => tileHTML(it, true, sh.sel === it.id, 'shopSel', `${c} искр`)).join('')}</div>` : '<p class="fine">Все уже собраны.</p>'}</div>`; };
+  return `${sheetHead('Обмен искр', `${icon('spark', 'ic-f')} ${coll.sparks} ${plural(coll.sparks, ['искра','искры','искр'])}`)}<div class="sheet-body">
+    <p class="fine" style="margin-top:0">Повторная вещь из сундука = 10 искр. Выберите вещь, которой ещё нет. Легендарные вещи — только из сундуков.</p>
+    ${sec('c', 100)}${sec('r', 300)}</div>
+    <footer class="sheet-foot"><button class="btn" data-act="closeSheet">Назад</button><button class="btn btn-primary" data-act="shopBuy"${sel && coll.sparks >= cost ? '' : ' disabled'}>${sel ? (coll.sparks >= cost ? `Взять «${esc(sel.n)}» за ${cost}` : `Нужно ${cost} искр`) : 'Выберите вещь'}</button></footer>`;
+};
+SHEETS.chest = sh => {
+  const cs = chestState(), ch = cs.all.find(x => x.id === sh.cid);
+  if (!ch) return `${sheetHead('Сундук')}<div class="sheet-body"><p class="muted">Этот сундук больше не доступен: тренировку удалили.</p></div>`;
+  const kind = charOf(curProf()), m = mateOf(S.profile, S.workouts), type = ch.gold ? 'gold' : 'std';
+  const from = ch.starter ? 'Стартовый сундук' : `За «${esc(ch.title || 'Тренировка')}» · ${dayMonth(ch.start)}`;
+  const left = cs.closed.filter(x => x.id !== ch.id).length;
+  if (sh.phase !== 'open') {
+    const why = ch.gold ? 'Золотой сундук — за неделю со всеми заданиями. Внутри минимум редкая вещь.' : ch.prs ? `Рекорд${ch.prs > 1 ? 'ы' : ''} в тренировке ${ch.prs > 1 ? 'подняли' : 'поднял'} шанс редкой вещи.` : ch.starter ? 'Подарок к новой версии: напарник может носить вещи.' : 'Внутри — вещь для напарника.';
+    return `${closeOnly()}<div class="sheet-body"><div class="reveal"><button class="chest-tap${sh.phase === 'shake' ? ' busy' : ''}" data-act="chestOpen" aria-label="Открыть сундук">${chestSVG(type, false, 'c', sh.phase === 'shake' ? 'shake' : 'idle')}</button>
+      <div class="eyebrow">${from}</div><h2 id="sheet-title" class="big-title">${ch.gold ? 'Золотой сундук' : 'Сундук'}</h2><p>${why}</p></div></div>
+      <footer class="sheet-foot"><button class="btn btn-primary btn-lg btn-block" data-act="chestOpen"${sh.phase === 'shake' ? ' disabled' : ''}>${sh.phase === 'shake' ? 'Открываем…' : 'Открыть'}</button></footer>`;
+  }
+  const id = cs.op[ch.id], it = ITEM[id]; if (!it) return `${sheetHead('Сундук')}<div class="sheet-body"><p class="muted">Пусто.</p></div>`;
+  const preview = { ...m.gear, [it.s]:id }, on = m.gear[it.s] === id;
+  return `${closeOnly()}<div class="sheet-body"><div class="reveal rr-${it.r}">${chestSVG(type, true, it.r)}${mateCell(kind, 'fire', { stage:m.stage.k, gear:preview, still:true }, 'mate-r')}
+    <span class="rch" style="--rc:${RAR[it.r].col}">${RAR[it.r].n} · ${SLOTS[it.s]}</span><h2 id="sheet-title" class="big-title">${esc(it.n)}</h2>
+    <p>${sh.dup ? 'Такая вещь уже была — повтор превратился в 10 искр.' : 'Новая вещь в гардеробе.'}</p></div></div>
+    <footer class="sheet-foot">${on ? `<button class="btn" disabled>${icon('check')} На напарнике</button>` : `<button class="btn" data-act="chestWear" data-id="${id}">Надеть</button>`}${left ? `<button class="btn btn-primary" data-act="chestOpenNext">Ещё сундук · ${left}</button>` : `<button class="btn btn-primary" data-act="closeSheet">Готово</button>`}</footer>`;
+};
+SHEETS.grow = sh => {
+  const kind = charOf(curProf()), m = mateOf(S.profile, S.workouts), st = STAGES[sh.k] || STAGES[0], nx = STAGES[sh.k + 1], n = S.workouts.length;
+  return `${closeOnly()}<div class="sheet-body"><div class="done-hero grow-hero">${mateCell(kind, 'fire', { stage:st.k, gear:m.gear }, 'mate-g')}
+    <h2 id="sheet-title" class="big-title">${esc(mateName(kind))} ${vb(kind, 'вырос', 'выросла')}: ${stName(st, kind).toLowerCase()}!</h2><p>${GROW_TXT[st.k] || ''}</p>
+    ${nx ? `<span class="xp-chip">До «${stName(nx, kind)}» — ${cntW(nx.from - n)}</span>` : '<span class="xp-chip">Высшая стадия</span>'}</div></div>
+    <footer class="sheet-foot"><button class="btn btn-primary btn-lg btn-block" data-act="closeSheet">Ура!</button></footer>`;
+};
+SHEETS.sup = sh => {
+  const d = sh.d, unitOk = SUP_UNITS.includes(d.unit);
+  return `${sheetHead(sh.isNew ? 'Новая добавка' : 'Добавка')}<div class="sheet-body">
+    <label class="lbl">Название<input class="field" id="sup-name" data-in="supF" data-f="name" value="${esc(d.name)}" placeholder="Например, креатин" autocomplete="off" maxlength="40"></label>
+    <div class="sup-dose"><label class="lbl">Доза<input class="field" id="sup-dose" data-in="supF" data-f="dose" value="${esc(d.dose)}" placeholder="5" inputmode="decimal" autocomplete="off" maxlength="8"></label>
+      <div class="lbl">Единица<div class="chips wrap" role="group" aria-label="Единица">${SUP_UNITS.map(u => `<button class="chip" data-act="supSet" data-f="unit" data-v="${esc(u)}" aria-pressed="${d.unit === u}">${esc(u)}</button>`).join('')}${!unitOk && d.unit ? `<button class="chip" aria-pressed="true" disabled>${esc(d.unit)}</button>` : ''}</div></div></div>
+    <div class="lbl" style="margin-top:12px">Когда принимать<div class="chips wrap" role="group" aria-label="Время приёма">${SUP_WHEN.map(([k, l]) => `<button class="chip" data-act="supSet" data-f="when" data-v="${k}" aria-pressed="${d.when === k}">${l}</button>`).join('')}</div></div>
+    <div class="lbl" style="margin-top:12px">Дни недели<div class="chips wrap" role="group" aria-label="Дни недели"><button class="chip" data-act="supAllDays" aria-pressed="${!d.days.length}">Каждый день</button>${WD_ORDER.map(n => `<button class="chip" data-act="supDayT" data-v="${n}" aria-pressed="${d.days.includes(n)}">${WD[n]}</button>`).join('')}</div></div>
+    <div class="srow"><div class="srow-t"><b>Курс</b><span>${d.course ? 'Добавка появляется в плане только на время курса' : 'Без срока — принимать постоянно'}</span></div><button class="switch" role="switch" aria-checked="${!!d.course}" aria-label="Курс" data-act="supCourseT"></button></div>
+    ${d.course ? `<div class="sup-course"><label class="lbl">Начало<input class="field" type="date" id="sup-cf" data-in="supF" data-f="cf" value="${esc(d.cf)}"></label><div class="lbl">Длительность<div class="chips wrap" role="group" aria-label="Длительность курса">${[2, 4, 6, 8, 12].map(n => `<button class="chip" data-act="supSet" data-f="cw" data-v="${n}" aria-pressed="${+d.cw === n}">${n} нед.</button>`).join('')}</div></div></div>` : ''}
+    <label class="lbl" style="margin-top:12px">Запас<input class="field" id="sup-stock" data-in="supF" data-f="stock" value="${esc(d.stock)}" placeholder="Например, 300" inputmode="decimal" autocomplete="off" maxlength="9"></label>
+    <p class="fine" style="margin-top:6px">В тех же единицах, что и доза${d.unit ? ` (${esc(d.unit)})` : ''}. Каждая галочка уменьшает запас на дозу, а за неделю до конца появится напоминание. Пусто — не считать.</p>
+    <label class="lbl" style="margin-top:12px">Заметка<input class="field" id="sup-note" data-in="supF" data-f="note" value="${esc(d.note)}" placeholder="После еды, запивать водой" autocomplete="off" maxlength="60"></label>
+    ${sh.isNew ? '' : `<div class="srow"><div class="srow-t"><b>Пауза</b><span>Не показывать в плане, пока не включите снова</span></div><button class="switch" role="switch" aria-checked="${!!d.off}" aria-label="Пауза" data-act="supOffT"></button></div>`}
+  </div><footer class="sheet-foot">${sh.isNew ? '' : `<button class="btn ${sh.confirm ? 'btn-danger' : 'btn-danger-soft'}" data-act="supDel">${sh.confirm ? 'Точно удалить' : 'Удалить'}</button>`}<button class="btn btn-primary" data-act="supSave">Сохранить</button></footer>`;
+};
+
+/* ================= 2.2 actions ================= */
+function supDraft(s) {
+  const cf = s && s.cf ? s.cf : null;
+  return { name:s ? s.name : '', dose:s && s.dose != null ? String(s.dose) : '', unit:s ? (s.unit || '') : 'г', when:s ? (s.when || 'any') : 'am', days:s && Array.isArray(s.days) ? [...s.days] : [],
+    course:!!(s && s.cf && s.cd), cf: cf ? dayKey(cf) : dayKey(Date.now()), cw: s && s.cd ? Math.max(1, Math.round(s.cd / 7)) : 8, stock:s && s.stock != null ? fmtIn(s.stock) : '', note:s ? (s.note || '') : '', off:!!(s && s.off) };
+}
+function wardPoke() { const svg = $('#sheet-root .mate-l .ch'); if (svg && !RM) { svg.classList.remove('poke'); void svg.getBoundingClientRect(); svg.classList.add('poke'); } }
+function chestOpenId(cid) {
+  const cs = chestState(), ch = cs.all.find(x => x.id === cid); if (!ch) return;
+  S.sheets = S.sheets.filter(x => x.type !== 'chest');
+  openSheet({ type:'chest', cid, phase: cs.op[cid] ? 'open' : 'closed', dup:false });
+}
+Object.assign(A, {
+  mate: el => { A.poke(el); setTimeout(() => { if (!S.sheets.length) openSheet({ type:'ward', slot:'all' }); }, RM ? 0 : 420); },
+  ward: () => { if (top() && top().type === 'prof') S.sheets = []; openSheet({ type:'ward', slot:'all' }); },
+  wardSlot: el => { top().slot = el.dataset.s; render(); },
+  wear: el => {
+    const id = el.dataset.id, it = ITEM[id]; if (!it) return;
+    const coll = collOf(S.profile, S.workouts);
+    if (!coll.has(id)) { toast(`Пока не найдено · ${RAR[it.r].n.toLowerCase()} вещь`); buzz(6); return; }
+    const g = S.profile.gear = gearOf(S.profile, coll);
+    if (g[it.s] === id) delete g[it.s]; else g[it.s] = id;
+    buzz(10); saveProfile(); render(); wardPoke();
+  },
+  shop: () => openSheet({ type:'shop', sel:null }),
+  shopSel: el => { const sh = top(); sh.sel = sh.sel === el.dataset.id ? null : el.dataset.id; buzz(6); render(); },
+  shopBuy: () => {
+    const sh = top(), it = ITEM[sh.sel]; if (!it || it.r === 'l') return;
+    const coll = collOf(S.profile, S.workouts), cost = it.r === 'r' ? 300 : 100;
+    if (coll.has(it.id) || coll.sparks < cost) return;
+    S.profile.chest.buy.push({ id:it.id, at:Date.now(), c:cost });
+    S.profile.gear = Object.assign(gearOf(S.profile, collOf(S.profile, S.workouts)), { [it.s]:it.id });
+    saveProfile(); S.sheets.pop(); buzz([10, 40, 10]); toast(`«${it.n}» в гардеробе — уже на напарнике`); render(); wardPoke();
+  },
+  chestOpenNext: () => { const cs = chestState(); if (cs.closed.length) chestOpenId(cs.closed[0].id); },
+  chestOpenFor: el => chestOpenId(el.dataset.id),
+  chestOpen: () => {
+    const sh = top(); if (!sh || sh.type !== 'chest' || sh.phase !== 'closed') return;
+    const cs = chestState(), ch = cs.all.find(x => x.id === sh.cid); if (!ch) return;
+    if (!cs.op[ch.id]) {
+      const id = rollChest(ch), had = collOf(S.profile, S.workouts).has(id);
+      S.profile.chest.op[ch.id] = id; sh.dup = had; saveProfile();
+    }
+    const it = ITEM[S.profile.chest.op[ch.id]], reveal = () => {
+      if (top() !== sh) return;
+      sh.phase = 'open'; render();
+      buzz(it.r === 'l' ? [40, 60, 40, 60, 120] : it.r === 'r' ? [30, 50, 30, 50, 60] : [20, 40, 20]);
+      if (it.r !== 'c') { const r = $('#sheet-root .reveal .chest'); const b = r ? r.getBoundingClientRect() : { left:innerWidth / 2, top:innerHeight / 3, width:0, height:0 }; confetti(b.left + b.width / 2, b.top + b.height / 2, it.r === 'l' ? 110 : 60); }
+    };
+    if (RM) { reveal(); return; }
+    sh.phase = 'shake'; buzz(12); render(); setTimeout(reveal, 1350);
+  },
+  chestWear: el => {
+    const id = el.dataset.id, it = ITEM[id]; if (!it) return;
+    S.profile.gear = Object.assign(gearOf(S.profile, collOf(S.profile, S.workouts)), { [it.s]:id });
+    saveProfile(); buzz(10); toast(`${mateName(charOf(curProf()))} в обновке: «${it.n}»`); render();
+  },
+  freezeOn: el => {
+    const n = +el.dataset.d; if (!(n >= 1 && n <= 14) || !canFreeze(S.profile.freeze)) return;
+    const a = startOfDay(Date.now()); S.profile.freeze.push({ from:a, to:addDays(a, n - 1) });
+    saveProfile(); buzz([10, 40, 10]); toast(`Заморозка до ${dayMonth(addDays(a, n - 1))}`); render();
+  },
+  freezeOff: () => { const f = frozenNow(S.profile.freeze); if (!f) return; f.to = addDays(startOfDay(Date.now()), -1); saveProfile(); toast('Заморозка снята. С возвращением!'); render(); },
+  /* supplements */
+  supTake: el => {
+    const r = supToggle(el.dataset.id, +el.dataset.day || startOfDay(Date.now())); if (!r) return;
+    if (r.on) buzz(r.full ? [10, 40, 10] : 10); if (r.full) toast('Все добавки по плану · +10 XP');
+    S.bubble = null; render();
+  },
+  supDayShift: el => { const today = startOfDay(Date.now()), cur = Math.min(today, S.supDay || today); S.supDay = Math.max(addDays(today, -6), Math.min(today, addDays(cur, +el.dataset.d))); render(); },
+  supNew: () => openSheet({ type:'sup', isNew:true, id:uid(), d:supDraft(null), confirm:false }),
+  supQuick: el => { const q = SUP_QUICK[+el.dataset.i]; if (!q) return; const d = supDraft(null); d.name = q[0]; d.dose = q[1]; d.unit = q[2]; d.when = q[3]; openSheet({ type:'sup', isNew:true, id:uid(), d, confirm:false }); },
+  supEdit: el => { const s = S.profile.supps.find(x => x.id === el.dataset.id); if (s) openSheet({ type:'sup', isNew:false, id:s.id, d:supDraft(s), confirm:false }); },
+  supSet: el => { const sh = top(); sh.d[el.dataset.f] = el.dataset.v; render(); },
+  supAllDays: () => { top().d.days = []; render(); },
+  supDayT: el => { const d = top().d, v = +el.dataset.v, i = d.days.indexOf(v); if (i >= 0) d.days.splice(i, 1); else d.days.push(v); if (d.days.length === 7) d.days = []; render(); },
+  supCourseT: () => { const d = top().d; d.course = !d.course; render(); },
+  supOffT: () => { const d = top().d; d.off = !d.off; render(); },
+  supSave: () => {
+    const sh = top(), d = sh.d, name = (d.name || '').trim();
+    if (!name) { toast('Введите название'); const n = $('#sup-name'); if (n) n.focus(); return; }
+    const dose = parseNum(d.dose), stock = String(d.stock).trim() === '' ? null : parseNum(d.stock);
+    const cf = d.course ? keyDay(d.cf || dayKey(Date.now())) : null;
+    const s = { id:sh.id, name:name.slice(0, 40), dose: dose != null ? dose : (String(d.dose).trim() || ''), unit:String(d.unit || '').slice(0, 12), when:d.when || 'any', days:[...d.days].sort(), note:(d.note || '').trim().slice(0, 60) };
+    if (d.course && Number.isFinite(cf)) { s.cf = cf; s.cd = Math.max(1, +d.cw || 8) * 7; }
+    if (stock != null) s.stock = stock;
+    if (d.off) s.off = true;
+    const list = S.profile.supps, i = list.findIndex(x => x.id === sh.id);
+    if (i >= 0) list[i] = s; else list.push(s);
+    // the plan for today may have changed: refresh «full day» for today only, past days stay as they were
+    const today = startOfDay(Date.now()), st = supDay(S.profile, today), f = new Set(S.profile.sfull); if (st.full) f.add(dayKey(today)); else f.delete(dayKey(today)); S.profile.sfull = [...f].sort();
+    saveProfile(); S.sheets.pop(); buzz(10); toast(i >= 0 ? 'Сохранено' : `«${s.name}» в плане`); render();
+  },
+  supDel: () => {
+    const sh = top(); if (!sh.confirm) { sh.confirm = true; render(); return; }
+    S.profile.supps = S.profile.supps.filter(x => x.id !== sh.id);
+    Object.keys(S.profile.slog).forEach(k => { const l = S.profile.slog[k].filter(id => id !== sh.id); if (l.length) S.profile.slog[k] = l; else delete S.profile.slog[k]; });
+    saveProfile(); S.sheets.pop(); toast('Добавка удалена'); render();
+  },
+  supOrder: () => { S.supOrder = !S.supOrder; render(); },
+  supMove: el => { const l = S.profile.supps, i = +el.dataset.i, j = i + +el.dataset.d; if (j < 0 || j >= l.length) return; [l[i], l[j]] = [l[j], l[i]]; buzz(6); saveProfile(); render(); },
+  /* debug */
+  dbgDay: el => { const d = +el.dataset.d; try { localStorage.setItem('podhod-dbg-shift', String(d ? dbgShift() + d : 0)); } catch (e) { /* storage off */ } S.bubble = null; render(); toast(`Сегодня: ${dayMonth(Date.now())}`); },
+  dbgWorkout: () => {
+    const now = Date.now(), w = { id:uid(), title:'Тест', tpl:null, start:now - 3600000, end:now, exercises:[{ k:uid(), ex:'bench', sets:Array.from({ length:4 }, () => ({ w:60, r:8, done:true })) }, { k:uid(), ex:'squat', sets:Array.from({ length:4 }, () => ({ w:80, r:6, done:true })) }] };
+    commitWorkout(w);
+  },
+  dbgChests: () => { S.profile.chest.st.push(...[1, 2, 3].map(() => 'st-' + uid())); saveProfile(); toast('+3 сундука'); render(); },
+  dbgOpenAll: () => { const cs = chestState(); cs.closed.forEach(ch => { S.profile.chest.op[ch.id] = rollChest(ch); }); saveProfile(); toast(`Открыто: ${cs.closed.length}`); render(); },
+});
+Object.assign(IN, {
+  supF: el => { const sh = top(); if (sh && sh.d) sh.d[el.dataset.f] = el.value; },
+});
+
 /* ================= events ================= */
 document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const fn = A[el.dataset.act]; if (fn) { e.preventDefault(); fn(el, e); } });
 document.addEventListener('input', e => { const el = e.target; if (el.dataset && el.dataset.in && IN[el.dataset.in]) IN[el.dataset.in](el, e); });
@@ -3299,6 +4176,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && el.id === 'wl-name') { e.preventDefault(); A.welcomeSave(); }
   if (e.key === 'Enter' && el.id === 'np-name') { e.preventDefault(); A.profCreate(); }
   if (e.key === 'Enter' && el.id === 'cp-name') { e.preventDefault(); el.blur(); }
+  if (e.key === 'Enter' && el.id && el.id.startsWith('sup-')) { e.preventDefault(); el.blur(); }
   if (e.key === 'Enter' && !e.shiftKey && el.id === 'chat-in') { e.preventDefault(); A.chatSend(); }
 });
 window.addEventListener('hashchange', () => { const v = location.hash.slice(1); if (VIEWS.includes(v) && v !== S.view) { S.editing = null; S.view = v; S.sheets = []; render(); window.scrollTo(0, 0); } });
