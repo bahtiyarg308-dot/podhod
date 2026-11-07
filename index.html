@@ -552,6 +552,7 @@ textarea.field{height:auto;min-height:76px;padding:10px 14px;resize:vertical;lin
 .choice b{display:block;font-weight:700;font-size:15px}
 .choice small{display:block;font-size:13px;color:var(--muted);margin-top:2px}
 .choice .ic{width:28px;height:28px;color:var(--accent)}
+.choice button.pri{border-color:var(--accent);background:var(--accent-soft)}
 a.btn{text-decoration:none}
 .err{color:var(--bad);font-size:13px;margin-top:10px}
 .fr-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
@@ -699,7 +700,7 @@ a.btn{text-decoration:none}
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '1.1.0';
+const APP_VERSION = '1.2.0';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -1206,11 +1207,23 @@ const SY = { busy:false, again:false, pushT:null };
 function rebuildCustom() { RCUSTOM = {}; Object.values(S.remote).forEach(m => ((m.profile && m.profile.custom) || []).forEach(e => { if (e && e.id) RCUSTOM[e.id] = e; })); }
 function ensureSids() { let ch = false; ensureMeta().profiles.forEach(p => { if (!p.sid) { p.sid = uid() + uid().slice(-4); ch = true; } }); if (ch) saveMeta(); }
 function schedulePush() { if (!syncCfg()) return; clearTimeout(SY.pushT); SY.pushT = setTimeout(() => syncNow(), 2500); }
+/* Each install has its own device id. It lets a phone notice that another phone writes into the same member file —
+   that happens when a partner picked «это я» instead of «я новый участник», and then neither sees the other. */
+const devId = () => { const m = ensureMeta(); if (!m.dev) { m.dev = uid() + uid().slice(-4); saveMeta(); } return m.dev; };
+const lc = s => String(s || '').trim().toLowerCase();
+const writerKey = m => m.dev ? 'd:' + m.dev : 'n:' + lc(m.name);
+function writtenByOther(p, m) {
+  const trust = (S.meta.sync && S.meta.sync.trust) || [];
+  if (m.dev) return m.dev !== devId() && !trust.includes('d:' + m.dev);
+  const a = lc(m.name), b = lc(p.name); // files from older app versions have no device id — compare names
+  return !!a && !!b && a !== b && !trust.includes('n:' + a);
+}
+function writtenByMe(p, m) { return m.dev ? m.dev === devId() : lc(m.name) === lc(p && p.name); }
 function payload(pid) {
   const p = profiles().find(x => x.id === pid) || {};
   const d = pid === S.pid ? { profile:S.profile, workouts:S.workouts, active:S.active } : (S.store[pid] || {});
   const prof = normP(d.profile), share = !!(S.meta.sync && S.meta.sync.shareBody);
-  return { v:1, id:p.sid, name:p.name || '', color:p.color || 'red',
+  return { v:1, id:p.sid, dev:devId(), name:p.name || '', color:p.color || 'red',
     profile:{ goal:prof.goal, custom:prof.custom, body: share ? prof.body : [] },
     workouts:(d.workouts || []).map(w => clean(w)), deleted:prof.deleted.slice(-800), kudos:prof.kudos,
     live: d.active ? { start:d.active.start, title:d.active.title || '' } : null };
@@ -1268,18 +1281,35 @@ async function syncNow(force) {
     let files = null;
     if (r.status === 200) { S.sync.etag = r.headers.get('ETag'); const j = await r.json(); files = await readMembers(j.files); }
     else if (r.status !== 304) throw { code:'http', status:r.status };
+    const out = {};
     if (files) {
-      const mine = new Map(profiles().filter(p => p.sid).map(p => [p.sid, p.id]));
-      const rem = {}; let localChanged = false;
+      const mine = new Map(profiles().filter(p => p.sid).map(p => [p.sid, p]));
+      const left = c.left || [], keepLeft = [];
+      const rem = {}, found = {}; let localChanged = false;
       for (const [sid, m] of Object.entries(files)) {
-        if (mine.has(sid)) { const pid = mine.get(sid); if (mergeMember(pid, m)) { localChanged = true; KV.set('p:' + pid, S.store[pid]); } }
-        else rem[sid] = m;
+        const p = mine.get(sid);
+        if (p) {
+          // another phone writes into this member: don't mix its workouts into ours, show a warning instead
+          if (writtenByOther(p, m)) { found[p.id] = { name:m.name || '', key:writerKey(m), at:m.updated || Date.now() }; continue; }
+          if (mergeMember(p.id, m)) { localChanged = true; KV.set('p:' + p.id, S.store[p.id]); }
+        } else if (left.includes(sid) && profiles().some(q => writtenByMe(q, m))) {
+          out[`m-${sid}.json`] = null; keepLeft.push(sid); // our own stale file from before «Разделить» — remove it
+        } else rem[sid] = m;
       }
+      c.left = keepLeft.length ? keepLeft : undefined;
+      const prev = c.clash || {}, next = {};
+      for (const p of profiles()) {
+        if (!p.sid) continue;
+        const x = found[p.id] || prev[p.id];
+        if (!x || !files[p.sid]) continue; // the other phone deleted the shared file — conflict is over
+        const moved = Object.values(rem).some(m => writerKey(m) === x.key || (x.name && lc(m.name) === lc(x.name)));
+        if (found[p.id] || (!moved && Date.now() - x.at < 7 * DAY)) next[p.id] = x;
+      }
+      c.clash = Object.keys(next).length ? next : undefined;
       S.remote = rem; S.rd = {}; rebuildCustom(); KV.set('remote', rem);
       S.sync.files = new Set(Object.keys(files));
       if (localChanged) loadProfileData();
     }
-    const out = {};
     for (const p of profiles()) {
       if (!p.sid) continue;
       const pl = payload(p.id), hh = hash(JSON.stringify(pl));
@@ -1296,7 +1326,7 @@ async function syncNow(force) {
     saveMeta(); setSync('ok'); S.sync.last = Date.now();
     notifyRemote();
   } catch (e) {
-    S.meta.syncHash = prevHashes;
+    S.meta.syncHash = prevHashes; S.sync.etag = null;
     if (e && e.code === 'auth') setSync('error', 'Ключ доступа не работает: его удалили или у него истёк срок. Создайте новый и подключитесь заново.');
     else if (e && e.code === 'gone') setSync('error', 'Общее пространство не найдено — возможно, его удалили на GitHub.');
     else if (e && e.code === 'http') setSync('error', `GitHub ответил ошибкой ${e.status}. Попробуем ещё раз позже.`);
@@ -1323,7 +1353,16 @@ function notifyRemote() {
 }
 const inviteCode = () => { const c = syncCfg(); if (!c) return ''; return 'PDH1-' + btoa(JSON.stringify({ g:c.gist, t:c.token })).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
 function parseCode(s) {
-  try { const b = String(s).replace(/\s+/g, '').replace(/^PDH1-/i, '').replace(/-/g, '+').replace(/_/g, '/'); const j = JSON.parse(atob(b + '==='.slice((b.length + 3) % 4))); return j && j.g && j.t ? j : null; } catch (e) { return null; }
+  // the code may arrive inside a forwarded message («Код для общих тренировок…: PDH1-…») — find it anywhere in the text
+  try { const mt = String(s).replace(/\s+/g, '').match(/PDH1-([A-Za-z0-9_-]+)/i); if (!mt) return null; const b = mt[1].replace(/-/g, '+').replace(/_/g, '/'); const j = JSON.parse(atob(b + '==='.slice((b.length + 3) % 4))); return j && j.g && j.t ? j : null; } catch (e) { return null; }
+}
+function clashHTML(where) {
+  const cl = syncCfg() && S.meta.sync.clash; if (!cl) return '';
+  return Object.entries(cl).map(([pid, x]) => {
+    const p = profiles().find(q => q.id === pid); if (!p) return '';
+    const other = x.name && lc(x.name) !== lc(p.name) ? ` — там имя «${esc(x.name)}»` : '';
+    return `<div class="banner warn"${where ? ` style="margin-top:0;margin-bottom:12px"` : ''}><div class="banner-t">${icon('users')}<span><b>Два телефона в одном профиле.</b> Ещё один телефон${other} записывает тренировки в профиль «${esc(pname(p))}», поэтому вы не видите друг друга. Если это ваш партнёр, нажмите «Разделить» на любом из двух телефонов.</span></div><div class="banner-a"><button class="btn btn-sm btn-primary" data-act="syncSplit" data-id="${esc(pid)}">Разделить</button><button class="btn btn-sm btn-ghost" data-act="syncTrust" data-id="${esc(pid)}">Это тоже я</button></div></div>`;
+  }).join('');
 }
 function kudosFor(wid) { const sid = curProf().sid; if (!sid) return []; const out = []; Object.values(S.remote).forEach(m => { const t = m.kudos && m.kudos[sid + '/' + wid]; if (t) out.push({ m, t }); }); return out; }
 const agoText = ms => { const s = (Date.now() - ms) / 1000; if (s < 60) return 'только что'; if (s < 3600) return `${Math.floor(s / 60)} мин назад`; if (s < 86400) return `в ${hm(ms)}`; return relDays(ms); };
@@ -1652,6 +1691,7 @@ function bannersHTML() {
   let h = '';
   if (S.updateReady) h += `<div class="banner"><div class="banner-t">${icon('download')}<span><b>Вышло обновление.</b> Нажмите, чтобы установить — данные не пропадут.</span></div><div class="banner-a"><button class="btn btn-sm btn-primary" data-act="applyUpdate">Обновить</button></div></div>`;
   const m = S.meta || {};
+  h += clashHTML();
   if (S.sync.status === 'error' && syncCfg()) h += `<div class="banner warn"><div class="banner-t">${icon('cloud')}<span><b>Синхронизация остановилась.</b> ${esc(S.sync.msg)}</span></div><div class="banner-a"><button class="btn btn-sm btn-primary" data-act="settings">Настройки</button></div></div>`;
   if (!syncCfg() && !(m.pairHide > Date.now())) h += `<div class="banner"><div class="banner-t">${icon('users')}<span><b>Тренируетесь вдвоём в разных залах?</b> Подключите партнёра — будете видеть тренировки и рекорды друг друга.</span></div><div class="banner-a"><button class="btn btn-sm btn-primary" data-act="syncSetup">Подключить</button><button class="btn btn-sm btn-ghost" data-act="hidePair" aria-label="Скрыть">${icon('x')}</button></div></div>`;
   if (!isStandalone() && !(m.installHide > Date.now()) && (S.installEvt || isIOS() || /android/i.test(navigator.userAgent))) {
@@ -2159,7 +2199,7 @@ SHEETS.help = () => `${sheetHead('Как пользоваться')}<div class="
   <p>Данные хранятся только на этом устройстве. Раз в пару недель нажимайте <b>Настройки → Резервная копия → Сохранить</b> и отправляйте файл себе в «Избранное» в Telegram, в Google Диск или «Файлы». При смене телефона установите приложение заново и нажмите «Восстановить из файла».</p>
   <h3>5. Вдвоём, в разных залах</h3>
   <ol><li>Один человек открывает <b>Настройки → Синхронизация → Настроить → «Я настраиваю первым»</b> и создаёт бесплатный ключ на GitHub (приложение подскажет, куда нажать).</li><li>Затем нажимает «Код для партнёра» и отправляет код второму.</li><li>Второй открывает <b>Настройки → Синхронизация → Настроить → «У меня есть код»</b> и вставляет его.</li></ol>
-  <p>После этого на главной появится «Неделя вместе»: тренировки, рекорды и уровень партнёра, а ещё реакции — огонь, сердце и звезда. Обмен идёт, когда есть интернет, а в зале всё работает и без него. Синхронизация заодно служит облачной копией: на новом телефоне подключитесь тем же кодом и выберите «Я — …».</p>
+  <p>После этого на главной появится «Неделя вместе»: тренировки, рекорды и уровень партнёра, а ещё реакции — огонь, сердце и звезда. Обмен идёт, когда есть интернет, а в зале всё работает и без него. Синхронизация заодно служит облачной копией: на новом телефоне подключитесь тем же кодом и выберите «Это мой профиль — …». Если код вам прислал партнёр, всегда выбирайте «Я новый участник».</p>
   <h3>6. Один телефон на двоих</h3>
   <p>Добавьте второй профиль: нажмите на кружок с буквой вверху.</p>
 </div>`;
@@ -2181,10 +2221,18 @@ SHEETS.sync = sh => {
     ${sh.err ? `<p class="err">${esc(sh.err)}</p>` : ''}
   </div><footer class="sheet-foot"><button class="btn" data-act="syncStep" data-step="">Назад</button><button class="btn btn-primary" data-act="syncJoin"${sh.busy ? ' disabled' : ''}>${sh.busy ? 'Подключаю…' : 'Подключиться'}</button></footer>`;
   if (sh.step === 'pick') return `${sheetHead('Кто вы?')}<div class="sheet-body">
-    <p style="color:var(--ink-2);font-size:14px;margin-bottom:14px">Если вы уже пользовались «Подходом» на другом телефоне, выберите себя — ваши тренировки перенесутся сюда. Если нет — нажмите «Я новый участник».</p>
-    <div class="choice">${(sh.members || []).map(m => `<button data-act="syncPickMe" data-sid="${esc(m.id)}">${ava(m, 'lg')}<span><b>Я — ${esc(m.name || 'без имени')}</b><small>${m.workouts.length} ${plural(m.workouts.length, ['тренировка','тренировки','тренировок'])} · перенести на этот телефон</small></span></button>`).join('')}
-    <button data-act="syncPickNew">${icon('plus')}<span><b>Я новый участник</b><small>Мои тренировки с этого телефона добавятся к общим</small></span></button></div>
+    <p style="color:var(--ink-2);font-size:14px;margin-bottom:14px">Если код вам прислал партнёр — нажмите <b>«Я новый участник»</b>. У каждого будет свой профиль, и вы будете видеть тренировки друг друга.</p>
+    <div class="choice"><button class="pri" data-act="syncPickNew">${icon('plus')}<span><b>Я новый участник</b><small>Создать мой профиль рядом с партнёром</small></span></button></div>
+    <p class="fine" style="margin:20px 0 8px">Только если вы переносите <b>свой</b> профиль со старого телефона:</p>
+    <div class="choice">${(sh.members || []).map(m => `<button data-act="syncPickAsk" data-sid="${esc(m.id)}">${ava(m, 'lg')}<span><b>Это мой профиль — ${esc(m.name || 'без имени')}</b><small>${m.workouts.length} ${plural(m.workouts.length, ['тренировка','тренировки','тренировок'])}${m.updated ? ` · обновлялся ${agoText(m.updated)}` : ''}</small></span></button>`).join('')}</div>
   </div>`;
+  if (sh.step === 'confirm') {
+    const m = (sh.members || []).find(x => x.id === sh.sid) || {}, nm = esc(m.name || 'без имени'), fresh = m.updated && Date.now() - m.updated < 2 * DAY;
+    return `${sheetHead(`Вы — ${nm}?`)}<div class="sheet-body">
+    <p style="color:var(--ink-2);font-size:14px;margin-bottom:12px">Этот телефон станет ещё одним телефоном участника «${nm}»: его тренировки перенесутся сюда, и дальше оба телефона будут писать в один профиль.</p>
+    <div class="banner warn" style="margin-top:0"><div class="banner-t">${icon('users')}<span><b>Если «${nm}» — ваш партнёр, вернитесь и выберите «Я новый участник».</b> Иначе вы окажетесь в одном профиле и не увидите друг друга.${fresh ? ` Этот профиль обновлялся ${agoText(m.updated)} — похоже, им сейчас пользуются на другом телефоне.` : ''}</span></div></div>
+  </div><footer class="sheet-foot"><button class="btn" data-act="syncPickMe" data-sid="${esc(m.id || '')}">Да, я — ${nm}</button><button class="btn btn-primary" data-act="syncPickNew">Я новый участник</button></footer>`;
+  }
   return `${sheetHead('Синхронизация с партнёром')}<div class="sheet-body">
     <p style="color:var(--ink-2);font-size:14px;margin-bottom:14px">Телефоны будут видеть тренировки, рекорды и уровни друг друга, даже если вы ходите в разные залы. Без интернета всё работает как обычно — обмен произойдёт, когда появится связь.</p>
     <div class="choice">
@@ -2220,7 +2268,7 @@ SHEETS.set = () => {
   return `${sheetHead('Настройки', esc(pname(curProf())))}<div class="sheet-body">
     <div class="srow"><div class="srow-t"><b>Как пользоваться</b><span>Установка, работа в зале, резервные копии</span></div><button class="btn btn-sm" data-act="help">${icon('help')} Открыть</button></div>
     <div class="sblock"><b>Синхронизация с партнёром</b>${syncCfg() ? `
-      <p class="fine" style="margin:0 0 10px;${S.sync.status === 'error' ? 'color:var(--bad)' : ''}">${esc(syncStatusText())}${Object.keys(S.remote).length ? ` · с вами: ${Object.values(S.remote).map(r => esc(r.name || 'партнёр')).join(', ')}` : ' · партнёр ещё не подключился'}</p>
+      ${clashHTML(true)}<p class="fine" style="margin:0 0 10px;${S.sync.status === 'error' ? 'color:var(--bad)' : ''}">${esc(syncStatusText())}${Object.keys(S.remote).length ? ` · с вами: ${Object.values(S.remote).map(r => esc(r.name || 'партнёр')).join(', ')}` : ' · партнёр ещё не подключился'}</p>
       <div class="row"><button class="btn btn-sm btn-primary" data-act="syncInvite">${icon('link')} Код для партнёра</button><button class="btn btn-sm" data-act="syncRefresh">${icon('repeat')} Обновить</button><button class="btn btn-sm btn-danger-soft" data-act="syncOff">${S.syncOffConfirm ? 'Точно отключить?' : 'Отключить'}</button></div>
       <div class="srow" style="border:0;padding-bottom:0"><div class="srow-t"><b>Показывать вес тела</b><span>Партнёр увидит ваши записи веса</span></div><button class="switch" role="switch" aria-checked="${!!S.meta.sync.shareBody}" aria-label="Показывать вес тела партнёру" data-act="toggleShareBody"></button></div>`
       : `<p class="fine" style="margin:0 0 10px">Ваши телефоны будут видеть тренировки и рекорды друг друга, даже если вы в разных залах. Бесплатно, через ваш GitHub.</p><button class="btn btn-sm btn-primary" data-act="syncSetup">${icon('users')} Настроить</button>`}</div>
@@ -2349,6 +2397,7 @@ const A = {
   },
   syncJoin: async () => {
     const sh = top(), j = parseCode(sh.code || '');
+    if (!j && /ghp_|github_pat_|gho_/.test(sh.code || '')) { sh.err = 'Это ключ GitHub, а не код. Попросите партнёра открыть Настройки → Синхронизация → «Код для партнёра» и прислать код, который начинается с PDH1-.'; render(); return; }
     if (!j) { sh.err = 'Код не распознан. Скопируйте его целиком — он начинается с PDH1-.'; render(); return; }
     sh.busy = true; sh.err = ''; render();
     try {
@@ -2366,14 +2415,33 @@ const A = {
       else { ensureSids(); toast('Подключено!'); syncNow(true); }
     } catch (e) { sh.busy = false; sh.err = typeof e === 'string' ? e : 'Нет связи с GitHub. Проверьте интернет и попробуйте ещё раз.'; render(); }
   },
+  syncPickAsk: el => { const sh = top(); sh.sid = el.dataset.sid; sh.step = 'confirm'; render(); },
   syncPickMe: el => {
     const sh = top(), m = (sh.members || []).find(x => x.id === el.dataset.sid); if (!m) return;
     const p = ensureMeta().profiles.find(x => x.id === S.pid); if (!p) return;
-    p.sid = m.id; if (!p.name) p.name = m.name; if (COLORS[m.color]) p.color = m.color; saveMeta();
+    p.sid = m.id; if (!p.name) p.name = m.name; if (COLORS[m.color]) p.color = m.color;
+    // the old phone of the same person is expected to write here too — don't warn about it
+    const c = S.meta.sync; if (c) c.trust = [...new Set([...(c.trust || []), 'n:' + lc(m.name), ...(m.dev ? ['d:' + m.dev] : [])])].slice(-20);
+    saveMeta();
     flush(); syncCur(); mergeMember(S.pid, m); KV.set('p:' + S.pid, S.store[S.pid]); loadProfileData(); applyAccent();
     S.sheets = []; S.bubble = null; toast('Готово! Ваши тренировки перенесены на этот телефон'); render(); syncNow(true);
   },
   syncPickNew: () => { S.sheets = []; ensureSids(); toast('Подключено! Теперь вы видите тренировки друг друга'); buzz([10, 40, 10]); render(); syncNow(true); },
+  syncSplit: el => {
+    const c = syncCfg(), p = c && ensureMeta().profiles.find(x => x.id === el.dataset.id); if (!p || !p.sid) return;
+    // this phone gets its own member file; the old shared file stays with the other phone (we delete it only if we wrote it last)
+    c.left = [...new Set([...(c.left || []), p.sid])]; p.sid = uid() + uid().slice(-4);
+    if (c.clash) { delete c.clash[p.id]; if (!Object.keys(c.clash).length) c.clash = undefined; }
+    if (S.meta.syncHash) delete S.meta.syncHash[p.id];
+    saveMeta(); S.sync.etag = null; S.sync.files = null;
+    toast('Готово! Теперь у вас отдельный профиль — партнёр появится через минуту'); buzz([10, 40, 10]); render(); syncNow(true);
+  },
+  syncTrust: el => {
+    const c = syncCfg(), x = c && c.clash && c.clash[el.dataset.id]; if (!x) return;
+    c.trust = [...new Set([...(c.trust || []), x.key])].slice(-20);
+    delete c.clash[el.dataset.id]; if (!Object.keys(c.clash).length) c.clash = undefined;
+    saveMeta(); S.sync.etag = null; render(); syncNow(true);
+  },
   syncInvite: () => { S.sheets = []; openSheet({ type:'invite' }); },
   copyCode: () => {
     const code = inviteCode(), sel = () => { const t = $('#inv-code'); if (t) { t.focus(); t.select(); } };
