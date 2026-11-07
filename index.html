@@ -973,6 +973,34 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 @keyframes eat{0%,100%{transform:none}20%{transform:translateY(-10px) scale(1.06,.94)}40%{transform:translateY(0) scale(.95,1.05)}60%{transform:translateY(-4px)}80%{transform:scale(1.03,.97)}}
 @keyframes yum{0%{opacity:0;transform:translate(-50%,8px) scale(.8)}15%{opacity:1;transform:translate(-50%,0) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-14px)}}
 @keyframes kbob{0%,100%{transform:rotate(0)}6%{transform:rotate(-4deg)}12%{transform:rotate(4deg)}18%{transform:rotate(0)}}
+/* ---------- 2.4: rank emblem, ladder, daily gift, pets and auras ---------- */
+.rk{width:36px;height:42px;flex:none;display:block}
+.rk .rk-n{font:700 15px var(--f-display);fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.35);stroke-width:2.4px}
+.rk.big{width:92px;height:106px;margin:0 auto}
+.lvl .rk{margin:-6px 0}
+@media (max-width:380px){.lvl-main b{white-space:normal;line-height:1.15}.lvl{gap:10px}}
+.rank-hero .rk{margin-bottom:8px;animation:pop-in .5s var(--spring) both}
+.ranks{display:grid;gap:4px;margin-top:10px}
+.rkrow{display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;align-items:center;padding:6px 8px;border-radius:12px;opacity:.55}
+.rkrow .rk{width:30px;height:35px;filter:grayscale(1)}
+.rkrow.on{opacity:1}
+.rkrow.on .rk{filter:none}
+.rkrow.cur{background:var(--accent-soft)}
+.rkrow b{display:block;font-weight:600;font-size:14px}
+.rkrow small{font-size:12px;color:var(--muted)}
+.giftbtn{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:16px;background:color-mix(in oklab, var(--gold-fill) 14%, var(--surface));border:1px solid color-mix(in oklab, var(--gold-fill) 40%, transparent);text-align:left;color:var(--ink);font-weight:600}
+.giftbtn>.ic:first-child{width:28px;height:28px;color:var(--gold);animation:kbob 2.6s ease-in-out infinite}
+.giftbtn span{flex:1;min-width:0;display:grid;gap:2px}
+.giftbtn small{font-size:12px;font-weight:400;color:var(--ink-2)}
+.giftbtn>.ic:last-child{color:var(--muted)}
+.ch .g-pt{animation:ptf 3.2s ease-in-out infinite}
+.ch .g-pet{animation:petbob 2.4s ease-in-out infinite}
+.reveal.rr-e .mate{box-shadow:0 0 0 2px #B67CFF,0 0 26px rgba(182,124,255,.35)}
+.news-top{display:grid;grid-template-columns:92px minmax(0,1fr);gap:14px;align-items:center;margin-bottom:14px}
+.news-top .rk.big{width:80px;height:92px}
+.news-rank{display:block;font:600 22px/1.15 var(--f-display);text-transform:uppercase;margin:2px 0 4px}
+@keyframes ptf{0%,100%{transform:translateY(0);opacity:.95}50%{transform:translateY(-3px);opacity:.5}}
+@keyframes petbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
 /* iPhone zooms the page into any field with text smaller than 16px — keep fields at 16px on touch screens */
 @media (pointer:coarse){input.field,select.field,textarea.field,.set-in,.composer textarea,input[type="search"]{font-size:16px}}
 @keyframes sh{to{background-position:-200% 0}}
@@ -1033,7 +1061,7 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.3.0';
+const APP_VERSION = '2.4.0';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -1152,6 +1180,7 @@ const ICONS = {
   snow:'<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.6 4.6L12 7l2.4-2.4M9.6 19.4L12 17l2.4 2.4"/>',
   box:'<path d="M4 7.8l8-4 8 4v8.4l-8 4-8-4z"/><path d="M4 7.8l8 4 8-4M12 11.8v8.4"/>',
   back:'<path d="M14.5 6l-6 6 6 6"/>',
+  gift:'<rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v8h14v-8M12 8.5v12M12 8.5c-1.5-3.8-6-4.4-6-1.8 0 1.4 2.4 1.8 6 1.8zM12 8.5c1.5-3.8 6-4.4 6-1.8 0 1.4-2.4 1.8-6 1.8z"/>',
   user:'<circle cx="12" cy="8.5" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/>',
   sound:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.2 6.4a7.6 7.6 0 0 1 0 11.2"/>',
 };
@@ -1223,6 +1252,8 @@ const STAGES = [
   { k:2, name:'Взрослый', f:'Взрослая', from:20 },
   { k:3, name:'Атлет', f:'Атлет', from:60 },
   { k:4, name:'Легенда', f:'Легенда', from:150 },
+  { k:5, name:'Мифический', f:'Мифическая', from:300 },
+  { k:6, name:'Бессмертный', f:'Бессмертная', from:500 },
 ];
 const stageOf = n => STAGES.reduce((a, s) => n >= s.from ? s : a, STAGES[0]);
 const tfm = (sx, sy, dy = 0, ox = 50, oy = 97) => `translate(${ox} ${oy + dy}) scale(${sx} ${sy}) translate(${-ox} ${-oy})`;
@@ -1232,6 +1263,8 @@ const STAGE_T = [ // characters with a separate torso
   { all:tfm(1.03, 1.03), torso:tfm(1.26, 1.08), head:'' },
   { all:tfm(1.05, 1.05), torso:tfm(1.36, 1.13), head:'' },
   { all:tfm(1.05, 1.05), torso:tfm(1.36, 1.13), head:'' },
+  { all:tfm(1.05, 1.05), torso:tfm(1.36, 1.13), head:'' },
+  { all:tfm(1.05, 1.05), torso:tfm(1.36, 1.13), head:'' },
 ];
 const STAGE_T1 = [ // one-piece characters (owl, plate)
   { all:tfm(.8, .8), head:'' },
@@ -1239,17 +1272,19 @@ const STAGE_T1 = [ // one-piece characters (owl, plate)
   { all:tfm(1.03, 1.03), head:tfm(1.1, 1) },
   { all:tfm(1.05, 1.05), head:tfm(1.16, 1.02) },
   { all:tfm(1.05, 1.05), head:tfm(1.16, 1.02) },
+  { all:tfm(1.05, 1.05), head:tfm(1.16, 1.02) },
+  { all:tfm(1.05, 1.05), head:tfm(1.16, 1.02) },
 ];
 /* anchor points in the 100×100 viewBox: top = crown, hr = head radius (hats are drawn for 27),
    eye = [x, y, half distance between eyes], neck / waist / hand on the torso, ns = neck item scale */
 const ANCH = {
-  cat:   { top:[50,22.5], hr:27.5, eye:[50,47,11], neck:[50,74], waist:[50,89], hand:[75,86], abs:[50,88] },
-  fox:   { top:[50,24.5], hr:28,   eye:[50,44,12], neck:[50,75], waist:[50,89], hand:[75,86], abs:[50,88] },
-  panda: { top:[50,22.5], hr:27.5, eye:[50,48,12], neck:[50,75], waist:[50,89], hand:[75,86], abs:[50,88] },
-  owl:   { top:[50,20],   hr:28,   eye:[50,44,13], neck:[50,62], waist:[50,85], hand:[83,75], abs:[50,76] },
-  dog:   { top:[50,23.5], hr:26.5, eye:[50,46,11], neck:[50,74], waist:[50,89], hand:[75,86], abs:[50,88] },
-  dragon:{ top:[50,24.5], hr:27,   eye:[50,45,12], neck:[50,73], waist:[50,89], hand:[75,86], abs:[50,88] },
-  plate: { top:[50,15.5], hr:31,   eye:[50,43,11], neck:[50,80], ns:.78, waist:[50,83], hand:[86,74], hs:1, abs:[50,80], round:1 },
+  cat:   { top:[50,22.5], hr:27.5, eye:[50,47,11], neck:[50,74], waist:[50,89], hand:[75,86], abs:[50,88], back:[50,80] },
+  fox:   { top:[50,24.5], hr:28,   eye:[50,44,12], neck:[50,75], waist:[50,89], hand:[75,86], abs:[50,88], back:[50,80] },
+  panda: { top:[50,22.5], hr:27.5, eye:[50,48,12], neck:[50,75], waist:[50,89], hand:[75,86], abs:[50,88], back:[50,80] },
+  owl:   { top:[50,20],   hr:28,   eye:[50,44,13], neck:[50,62], waist:[50,85], hand:[83,75], abs:[50,76], back:[50,64], bf:[50,79], bfs:.75 },
+  dog:   { top:[50,23.5], hr:26.5, eye:[50,46,11], neck:[50,74], waist:[50,89], hand:[75,86], abs:[50,88], back:[50,80] },
+  dragon:{ top:[50,24.5], hr:27,   eye:[50,45,12], neck:[50,73], waist:[50,89], hand:[75,86], abs:[50,88], back:[50,80] },
+  plate: { top:[50,15.5], hr:31,   eye:[50,43,11], neck:[50,80], ns:.78, waist:[50,83], hand:[86,74], hs:1, abs:[50,80], round:1, back:[50,56], bs:1.25, bf:[50,80], bfs:.8 },
 };
 const CH_FEM = { fox:1, panda:1, owl:1 };
 const vb = (kind, m, f) => CH_FEM[kind] ? f : m;
@@ -1263,9 +1298,11 @@ function partsOf(kind) {
 }
 
 /* ---- 60 items: 5 slots × (8 common, 3 rare, 1 legendary) ---- */
-const RAR = { c:{ n:'Обычная', s:'Обычная', col:'#9AA1AD' }, r:{ n:'Редкая', s:'Редкая', col:'#4CC3FF' }, l:{ n:'Легендарная', s:'Легенда', col:'#F2C230' } };
-const SLOTS = { head:'Голова', eyes:'Глаза', neck:'Шея и корпус', hand:'В руке', bg:'Фон' };
-const SLOT_ORDER = ['head', 'eyes', 'neck', 'hand', 'bg'];
+const RAR = { c:{ n:'Обычная', s:'Обычная', col:'#9AA1AD' }, r:{ n:'Редкая', s:'Редкая', col:'#4CC3FF' }, e:{ n:'Эпическая', s:'Эпик', col:'#B67CFF' }, l:{ n:'Легендарная', s:'Легенда', col:'#F2C230' } };
+const SLOTS = { head:'Голова', eyes:'Глаза', neck:'Шея и корпус', hand:'В руке', back:'Спина', pet:'Спутник', aura:'Аура', bg:'Фон' };
+const SLOT_ORDER = ['head', 'eyes', 'neck', 'hand', 'back', 'pet', 'aura', 'bg'];
+const SLOT_BASE = ['head', 'eyes', 'neck', 'hand', 'bg'];
+const MON_IN = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
 const HALO = (cx, cy, rx, ry) => `<ellipse class="g-halo" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#pd-gold)"/>`;
 const PAW = (x, y) => `<circle class="g-paw" cx="${x}" cy="${y}" r="4.4"/>`;
 const LEAF = (x, y, a) => `<ellipse class="g-leaf" cx="${x}" cy="${y}" rx="4.4" ry="2" transform="rotate(${a} ${x} ${y})"/>`;
@@ -1338,8 +1375,102 @@ const ITEMS = [
   { id:'aurora', s:'bg', r:'r', n:'Северное сияние', d:'<rect class="b-dark" width="100" height="100"/><path class="b-x" style="fill:none;stroke:#3EDC8F;stroke-width:9;opacity:.45;stroke-linecap:round" d="M-5 34 Q20 16 45 30 T105 22"/><path class="b-neon" style="stroke-width:6;opacity:.5;stroke-linecap:round" d="M-5 48 Q25 30 50 44 T105 36"/><path class="b-star" style="fill:#fff;opacity:.8" d="M12 12h1v1h-1Z M30 8h1v1h-1Z M70 10h1v1h-1Z M88 16h1v1h-1Z M56 6h1v1h-1Z"/><path class="b-x" style="fill:#0F1A2C" d="M-5 84 L20 66 L40 78 L62 60 L105 82 V105 H-5Z"/>' },
   { id:'neon', s:'bg', r:'l', n:'Неоновый фон', d:'<rect class="b-dark" width="100" height="100"/><path class="b-neon w" d="M0 74 H100 M0 80 H100 M0 88 H100 M0 99 H100 M50 64 L50 100 M50 64 L22 100 M50 64 L-6 100 M50 64 L78 100 M50 64 L106 100"/><circle class="b-neon g" cx="50" cy="44" r="21"/><circle class="b-neon" cx="50" cy="44" r="21"/><path class="b-dark" d="M26 46 H74 V49 H26Z M26 52 H74 V54 H26Z M26 57 H74 V58.5 H26Z"/><path class="b-neon w" d="M0 64 H100"/><path class="b-star" d="M16 18l1.4 3.2 3.2 1.4-3.2 1.4L16 27.2l-1.4-3.2-3.2-1.4 3.2-1.4z M86 26l1 2.3 2.3 1-2.3 1L86 32.6l-1-2.3-2.3-1 2.3-1z"/>' },
 ];
+/* ---- 2.4: 75 more items, three new slots (back, pet, aura), epic rarity, seasonal items (mo = months 0..11) ---- */
+const FX = (c, d, extra = '') => `<path style="fill:${c}${extra}" d="${d}"/>`;
+const HEART = 'M0 4.5 C-6 0 -6 -5.5 -2.6 -5.5 C-1.1 -5.5 0 -4.3 0 -3 C0 -4.3 1.1 -5.5 2.6 -5.5 C6 -5.5 6 0 0 4.5Z';
+const STAR5 = r => { let p = ''; for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, q = i % 2 ? r * .45 : r; p += (i ? 'L' : 'M') + (q * Math.cos(a)).toFixed(2) + ' ' + (q * Math.sin(a)).toFixed(2); } return p + 'Z'; };
+const FLAME = 'M0 -9 Q5 -3 4 2 Q3 6 0 6 Q-3 6 -4 2 Q-5 -3 0 -9Z';
+const WING = 'M-12 -6 Q-38 -28 -46 -4 Q-40 2 -34 1 Q-41 9 -33 13 Q-27 11 -24 9 Q-27 16 -19 17 Q-15 12 -12 4Z';
+const mirW = (d, cls, st = '') => `<path class="${cls}"${st ? ` style="${st}"` : ''} d="${d}"/><path class="${cls}"${st ? ` style="${st}"` : ''} transform="scale(-1 1)" d="${d}"/>`;
+ITEMS.push(
+  /* head */
+  { id:'snapback', s:'head', r:'c', t:-15, n:'Кепка задом наперёд', d:'<path class="g-a" d="M-22 8 Q-23 -12 0 -12.5 Q23 -12 22 8Z"/><path class="g-sd" style="stroke-width:1.2;opacity:.55" d="M0 -12 V7 M-11 -9.5 Q-13.5 -1 -13 7.5 M11 -9.5 Q13.5 -1 13 7.5"/><circle class="g-b" cx="0" cy="-12.6" r="2.3"/><path class="g-b" d="M-7 8.5 Q0 0 7 8.5Z"/><path class="g-sd" style="stroke-width:1.6" d="M-22 8.3 Q0 5 22 8.3"/>' },
+  { id:'earhat', s:'head', r:'c', t:-21, n:'Шапка с ушками', d:'<circle class="g-a" cx="-14" cy="-13" r="6.5"/><circle class="g-a" cx="14" cy="-13" r="6.5"/><circle class="g-b" cx="-14" cy="-13" r="3.2"/><circle class="g-b" cx="14" cy="-13" r="3.2"/><path class="g-a" d="M-21.5 9 Q-23 -15 0 -15.5 Q23 -15 21.5 9Z"/><rect class="g-b" x="-23.5" y="3" width="47" height="10" rx="5"/>' },
+  { id:'ninja', s:'head', r:'c', t:3, n:'Повязка ниндзя', d:'<path class="g-b" d="M-23 10 Q-34 6 -41 13 Q-33 13 -24 13.5Z M-23 12.5 Q-31 17 -35 25 Q-29 19 -22 15Z"/><path class="g-b" d="M-24.5 8.5 Q0 3 24.5 8.5 L24.5 14.5 Q0 9 -24.5 14.5Z"/><rect class="g-silver" x="-5" y="5.2" width="10" height="6" rx="1.5"/><circle class="g-silver2" cx="0" cy="8.2" r="1.4"/>' },
+  { id:'cowboy', s:'head', r:'c', t:-16, n:'Ковбойская шляпа', d:'<path class="g-a" d="M-15 6 Q-17 -14 -7 -15.5 Q0 -11 7 -15.5 Q17 -14 15 6Z"/><path class="g-b" d="M-15 1 H15 V6 H-15Z"/><path class="g-b" d="M-35 5 Q-30 13 0 11.5 Q30 13 35 5 Q30 1 0 4 Q-30 1 -35 5Z"/>' },
+  { id:'hockey', s:'head', r:'r', t:-16, n:'Хоккейный шлем', d:'<path class="g-a" d="M-25.5 13 Q-26.5 -15 0 -15.5 Q26.5 -15 25.5 13 L20 13 Q0 6 -20 13Z"/><path class="g-w" d="M-3.5 -15.4 H3.5 V6.6 H-3.5Z"/><path class="g-w" d="M-28 6 h7.5 v13 h-7.5z M20.5 6 h7.5 v13 h-7.5z"/><path class="g-b" d="M-14 -6 h5 v3 h-5z M9 -6 h5 v3 h-5z"/>' },
+  { id:'santa', s:'head', r:'r', t:-20, mo:[11, 0], n:'Шапка Деда Мороза', d:'<path style="fill:#E23B3B" d="M-22 9 Q-20 -14 6 -18 Q22 -20 31 -7 Q20 -12 12 -8 Q20 0 22 9Z"/><rect class="g-w" x="-24.5" y="3.5" width="49" height="10.5" rx="5.2"/><circle class="g-w" cx="31.5" cy="-7" r="5.2"/>' },
+  { id:'pumpkin', s:'head', r:'r', t:-26, mo:[9], n:'Шлем-тыква', d:'<path style="fill:#3E8E41" d="M-1.5 -16 Q0 -23 6 -24 L7 -21 Q3 -20 2 -16Z"/><ellipse style="fill:#F28A2E" cx="0" cy="-2" rx="27" ry="16"/><path style="fill:none;stroke:#C8641A;stroke-width:1.6" d="M-9 -17 Q-14 -2 -9 13 M9 -17 Q14 -2 9 13 M0 -18 V14"/><path style="fill:#2A1A0A" d="M-14 -4 l4 -4 l4 4z M6 -4 l4 -4 l4 4z"/>' },
+  { id:'viking', s:'head', r:'e', t:-23, n:'Шлем викинга', d:'<path style="fill:#EFE3C8" d="M-21 1 Q-34 -6 -36 -23 Q-28 -12 -18 -9Z M21 1 Q34 -6 36 -23 Q28 -12 18 -9Z"/><path class="g-silver" d="M-24 10 Q-25 -14.5 0 -15 Q25 -14.5 24 10Z"/><path class="g-a" d="M-24.5 5 H24.5 V11 H-24.5Z"/><path class="g-silver2" d="M-2.5 -15 H2.5 V5 H-2.5Z"/><circle class="g-w" cx="-15" cy="8" r="1.3"/><circle class="g-w" cx="0" cy="8" r="1.3"/><circle class="g-w" cx="15" cy="8" r="1.3"/>' },
+  { id:'halo', s:'head', r:'e', t:-18, n:'Нимб', d:HALO(0, -12, 24, 10) + '<ellipse cx="0" cy="-12" rx="17" ry="4.6" style="fill:none;stroke:#FFF3B8;stroke-width:3.4"/><ellipse cx="0" cy="-12" rx="17" ry="4.6" style="fill:none;stroke:#F2C230;stroke-width:1.4"/>' },
+  { id:'flamecrown', s:'head', r:'l', t:-25, n:'Огненная корона', d:HALO(0, -6, 30, 22) + FX('#FF6A2E', 'M-19 6 L-21 -9 Q-15 -5 -13 -16 Q-7 -8 -4 -23 Q0 -12 4 -23 Q7 -8 13 -16 Q15 -5 21 -9 L19 6Z') + FX('#FFD23F', 'M-12 6 L-13 -4 Q-9 -2 -7 -10 Q-3 -4 0 -15 Q3 -4 7 -10 Q9 -2 13 -4 L12 6Z') + '<path class="g-gold2" d="M-19.6 1.5 H19.6 L19 8 H-19Z"/><circle class="g-gem" cx="0" cy="4.7" r="2.2"/>' },
+  /* eyes */
+  { id:'monocle', s:'eyes', r:'c', n:'Монокль', d:'<circle class="g-glass" cx="11.5" cy="0" r="7.6"/><circle class="g-sm" style="stroke-width:2.2" cx="11.5" cy="0" r="7.6"/><path class="g-sm" style="stroke-width:1" d="M18.6 3 Q23 12 16 22"/><path class="g-hl" d="M8 -3.5 L10.5 -4.6"/>' },
+  { id:'heartglasses', s:'eyes', r:'c', n:'Очки-сердечки', d:'<path class="g-sm" style="stroke-width:2" d="M-4.5 -1 Q0 -3.5 4.5 -1 M-19 -1 L-23 -3 M19 -1 L23 -3"/><g transform="translate(-11.5 1) scale(1.45)">' + FX('#FF5C8A', HEART, ';opacity:.9') + '</g><g transform="translate(11.5 1) scale(1.45)">' + FX('#FF5C8A', HEART, ';opacity:.9') + '</g><path class="g-hl" d="M-15 -3 L-13 -4 M8 -4 L10 -3"/>' },
+  { id:'starglasses', s:'eyes', r:'c', n:'Очки-звёзды', d:'<path class="g-sm" style="stroke-width:2" d="M-4 -1 Q0 -3.5 4 -1"/><path class="g-a" transform="translate(-11.5 0.5)" d="' + STAR5(9) + '"/><path class="g-a" transform="translate(11.5 0.5)" d="' + STAR5(9) + '"/><circle class="g-lens" style="opacity:.55" cx="-11.5" cy="1" r="3.2"/><circle class="g-lens" style="opacity:.55" cx="11.5" cy="1" r="3.2"/>' },
+  { id:'glasses3d', s:'eyes', r:'r', n:'3D-очки', d:'<rect class="g-w" x="-21.5" y="-6.5" width="43" height="13" rx="3"/><rect style="fill:#FF3B4E;opacity:.9" x="-19" y="-4.3" width="14.5" height="8.6" rx="2"/><rect style="fill:#2EC9F2;opacity:.9" x="4.5" y="-4.3" width="14.5" height="8.6" rx="2"/><path class="g-a" d="M-21.5 -6.5 H21.5 V-4 H-21.5Z"/>' },
+  { id:'vr', s:'eyes', r:'r', n:'VR-шлем', d:'<path class="g-b" d="M-31 -2.5 H-22 V2.5 H-31Z M22 -2.5 H31 V2.5 H22Z"/><rect class="g-k" x="-23" y="-9" width="46" height="18" rx="6.5"/><rect class="g-a" x="-20.5" y="-6.5" width="41" height="13" rx="5"/><circle class="g-cy" cx="-14" cy="0" r="1.6"/><circle class="g-cy" cx="-9" cy="0" r="1.6"/><path class="g-hl" d="M8 -3.5 H15"/>' },
+  { id:'laser', s:'eyes', r:'e', n:'Лазерный взгляд', d:'<path style="fill:none;stroke:#FF2D55;stroke-width:2.4;opacity:.85;stroke-linecap:round" d="M-11.5 0 L-32 15 M11.5 0 L32 15"/><circle style="fill:#FF2D55;opacity:.3" cx="-11.5" cy="0" r="8.5"/><circle style="fill:#FF2D55;opacity:.3" cx="11.5" cy="0" r="8.5"/><circle style="fill:#FF2D55" cx="-11.5" cy="0" r="4.6"/><circle style="fill:#FF2D55" cx="11.5" cy="0" r="4.6"/><circle class="g-w" cx="-10.4" cy="-1.3" r="1.5"/><circle class="g-w" cx="12.6" cy="-1.3" r="1.5"/>' },
+  { id:'diamondglasses', s:'eyes', r:'l', n:'Бриллиантовые очки', d:HALO(0, 0, 32, 14) + '<path style="fill:#D8F7FF" d="M-20.5 -3 L-15.5 -7.5 H-7.5 L-2.5 -3 L-11.5 7.5Z M20.5 -3 L15.5 -7.5 H7.5 L2.5 -3 L11.5 7.5Z"/><path style="fill:none;stroke:#F2C230;stroke-width:1.6;stroke-linejoin:round" d="M-20.5 -3 L-15.5 -7.5 H-7.5 L-2.5 -3 L-11.5 7.5Z M20.5 -3 L15.5 -7.5 H7.5 L2.5 -3 L11.5 7.5Z M-2.5 -3 Q0 -5 2.5 -3"/><path style="fill:none;stroke:#fff;stroke-width:.8;opacity:.9" d="M-20.5 -3 H-2.5 M-15.5 -7.5 L-13 -3 L-11.5 7.5 M-7.5 -7.5 L-10 -3 M20.5 -3 H2.5 M15.5 -7.5 L13 -3 L11.5 7.5 M7.5 -7.5 L10 -3"/>' },
+  /* neck */
+  { id:'bowtie', s:'neck', r:'c', n:'Бабочка', d:'<path class="g-a" d="M0 3 L-10 -2.5 V8.5Z M0 3 L10 -2.5 V8.5Z"/><rect class="g-b" x="-2.6" y="0.2" width="5.2" height="5.6" rx="1.4"/>' },
+  { id:'tie', s:'neck', r:'c', n:'Галстук', d:'<path class="g-b" d="M-3.4 -1 H3.4 L2.4 4 H-2.4Z"/><path class="g-a" d="M-2.4 4 H2.4 L4.6 18 L0 22.5 L-4.6 18Z"/><path class="g-sd" style="stroke-width:1.1;opacity:.7" d="M-3 9 L3 7 M-3.8 14 L3.8 11.5 M-3 19 L3 16.5"/>' },
+  { id:'beads', s:'neck', r:'c', n:'Бусы', d:[[-14,-2],[-12,2],[-9,5],[-5,7],[0,8],[5,7],[9,5],[12,2],[14,-2]].map(([x, y], i) => `<circle class="${i % 2 ? 'g-b' : 'g-a'}" cx="${x}" cy="${y}" r="2.5"/>`).join('') },
+  { id:'lei', s:'neck', r:'r', n:'Гавайские цветы', d:[[-15,-2],[-11.5,3],[-6,6.5],[0,8],[6,6.5],[11.5,3],[15,-2]].map(([x, y], i) => `<circle style="fill:${i % 2 ? '#FFD23F' : '#FF7AA8'}" cx="${x}" cy="${y}" r="3.6"/><circle style="fill:${i % 2 ? '#FF7AA8' : '#FFD23F'}" cx="${x}" cy="${y}" r="1.3"/>`).join('') },
+  { id:'xmasscarf', s:'neck', r:'r', mo:[11, 0], n:'Новогодний шарф', d:'<path style="fill:#E23B3B" d="M-20 -3 Q0 8 20 -3 L21 4 Q0 15 -21 4Z"/><path style="fill:#E23B3B" d="M10 6 L17 5 L19 21 L12 21.5Z"/><path class="g-w" d="M-13 2 l3 1 l-.4 6 l-3 -1z M-3 4.6 h3 v6.3 h-3z M7 3.5 l3 -1 l.4 6.2 l-3 1z M10.8 10 L17.6 9.3 L17.9 11.5 L11 12.2Z M11.4 15.5 L18.2 14.9 L18.4 17 L11.6 17.6Z"/>' },
+  { id:'sash', s:'neck', r:'e', n:'Лента чемпиона', d:'<path class="g-a" d="M-17 -3.5 L-10.5 -5 L16 18.5 L9.5 21Z"/><path style="fill:none;stroke:#F2C230;stroke-width:1.1" d="M-16 -1.5 L10.5 21 M-11.5 -4.6 L15 18.6"/><circle class="g-gold" cx="-1" cy="7.5" r="4.6"/><circle class="g-gold2" cx="-1" cy="7.5" r="2.6"/>' },
+  { id:'platinum', s:'neck', r:'l', n:'Платиновая медаль', d:HALO(0, 12, 14, 14) + '<path class="g-gold" d="M-11 -4 L-5 -4 L1.5 9 L-4.5 9Z"/><path class="g-w" d="M11 -4 L5 -4 L-1.5 9 L4.5 9Z"/><circle style="fill:#E9EEF4" cx="0" cy="14" r="7.4"/><circle style="fill:#C9D3DE" cx="0" cy="14" r="5.2"/><path style="fill:#fff" d="' + STAR5(3.6).replace(/(-?\d+\.\d+) (-?\d+\.\d+)/g, (m, x, y) => `${x} ${(+y + 14).toFixed(2)}`) + '"/>' },
+  /* hand */
+  { id:'banana', s:'hand', r:'c', n:'Банан', d:FX('#FFD23F', 'M-4 -18 Q9 -12 5 2 Q3 -9 -7 -15Z') + FX('#7A5A1E', 'M-4 -18 l-3 -1.5 l-.6 3.2z M4.6 1.5 l.8 2 l-1.6 -.4z') + PAW(-1, -1) },
+  { id:'racket', s:'hand', r:'c', n:'Теннисная ракетка', d:'<rect class="g-b" x="-1.6" y="-9" width="3.2" height="11" rx="1.4"/><ellipse class="g-sm" style="stroke-width:2.2" cx="0" cy="-19" rx="7" ry="9"/><path class="g-sd" style="stroke-width:.6;opacity:.8" d="M-6 -22 H6 M-6.6 -19 H6.6 M-6 -16 H6 M-3 -27 V-11 M0 -28 V-10 M3 -27 V-11"/>' + PAW(0, 0) },
+  { id:'ball', s:'hand', r:'c', n:'Баскетбольный мяч', d:'<circle style="fill:#F28A2E" cx="0" cy="-8" r="8"/><path style="fill:none;stroke:#7A3A0A;stroke-width:1" d="M-8 -8 H8 M0 -16 V0 M-5.5 -14 Q-1 -8 -5.5 -2 M5.5 -14 Q1 -8 5.5 -2"/>' + PAW(-4, 0) },
+  { id:'probar', s:'hand', r:'c', n:'Протеиновый батончик', d:'<g transform="rotate(-30)"><rect class="g-a" x="-11" y="-4" width="22" height="8" rx="2"/><path class="g-b" d="M-11 -4 l-2 1 v6 l2 1z M11 -4 l2 1 v6 l-2 1z"/><rect class="g-w" style="opacity:.85" x="-5" y="-2.2" width="10" height="4.4" rx="1"/></g>' + PAW(0, 0) },
+  { id:'kb32', s:'hand', r:'r', n:'Гиря 32 кг', d:'<g transform="translate(0 -6)"><path class="g-k" style="fill:none;stroke:#1C1D21;stroke-width:3.4" d="M-6 3 Q-6.5 -5 0 -5 Q6.5 -5 6 3"/><circle class="g-k" cx="0" cy="9" r="8.6"/><rect class="g-a" x="-8.4" y="7" width="16.8" height="4.6"/><text x="0" y="17.4" text-anchor="middle" style="font:700 5px sans-serif;fill:#fff">32</text></g>' + PAW(0, -9) },
+  { id:'sledge', s:'hand', r:'r', n:'Кувалда', d:'<g transform="rotate(-24)"><rect class="g-b" x="-1.4" y="-26" width="2.8" height="30" rx="1.2"/><rect class="g-k" x="-7" y="-31" width="14" height="8" rx="1.6"/><rect class="g-a" x="-7" y="-28.4" width="14" height="2.4"/></g>' + PAW(0, 0) },
+  { id:'torch', s:'hand', r:'e', n:'Факел', d:'<circle style="fill:#FF9A2E;opacity:.3" cx="0" cy="-21" r="9"/>' + `<g transform="translate(0 -20) scale(1.25)">${FX('#FF6A2E', FLAME)}${FX('#FFD23F', 'M0 -4 Q2.6 -1 2 2 Q1.5 4 0 4 Q-1.5 4 -2 2 Q-2.6 -1 0 -4Z')}</g>` + '<path class="g-gold" d="M-4.5 -13 H4.5 L2 3 H-2Z"/><path class="g-gold2" d="M-4.5 -13 H4.5 V-10.5 H-4.5Z"/>' + PAW(0, -2) },
+  { id:'goldbell', s:'hand', r:'l', n:'Золотая гантель', d:HALO(0, -2, 16, 10) + '<g transform="rotate(-28)"><rect class="g-gold2" x="-8.5" y="-1.6" width="17" height="3.2" rx="1.6"/><rect class="g-gold" x="-14" y="-7" width="6" height="14" rx="2"/><rect class="g-gold" x="8" y="-7" width="6" height="14" rx="2"/><path class="g-hl" d="M-12 -4.5 V3 M10 -4.5 V3"/></g>' + PAW(0, 0) },
+  /* backgrounds */
+  { id:'forest', s:'bg', r:'c', n:'Лес', d:'<rect class="b-0" width="100" height="100"/><path class="b-1" d="M4 70 L16 30 L28 70Z M70 68 L84 26 L98 68Z M30 72 L40 44 L50 72Z"/><path class="b-2" d="M-6 78 L8 40 L22 78Z M78 80 L92 44 L106 80Z"/><path class="b-3" d="M0 82 Q50 74 100 82 V100 H0Z"/>' },
+  { id:'winter', s:'bg', r:'c', n:'Зимний парк', d:'<rect class="b-0" width="100" height="100"/><path class="b-2" d="M10 72 L20 40 L30 72Z M74 70 L86 36 L98 70Z"/><path class="b-snow" d="M14 52 L20 40 L26 52 Q20 49 14 52Z M80 50 L86 36 L92 50 Q86 47 80 50Z"/><path class="b-snow" style="opacity:.9" d="M0 78 Q50 70 100 78 V100 H0Z"/><path class="b-snow" d="M20 12h1.6v1.6h-1.6Z M48 22h1.6v1.6h-1.6Z M66 8h1.6v1.6h-1.6Z M84 18h1.6v1.6h-1.6Z M36 34h1.6v1.6h-1.6Z M8 28h1.6v1.6h-1.6Z M58 40h1.6v1.6h-1.6Z"/>' },
+  { id:'ring', s:'bg', r:'c', n:'Боксёрский ринг', d:'<rect class="b-0" width="100" height="100"/><path class="b-2" d="M0 76 H100 V100 H0Z"/><rect class="b-3" x="4" y="30" width="5" height="48"/><rect class="b-3" x="91" y="30" width="5" height="48"/><path style="fill:none;stroke:var(--cm);stroke-width:2;opacity:.7" d="M6 36 H94 M6 48 H94 M6 60 H94"/><path class="b-lane" d="M0 84 H100"/>' },
+  { id:'desert', s:'bg', r:'c', n:'Пустыня', d:'<rect class="b-0" width="100" height="100"/><circle class="b-1" cx="24" cy="24" r="10"/><path class="b-2" d="M0 66 Q25 56 50 64 T100 60 V100 H0Z"/><path class="b-3" d="M0 80 Q30 70 60 80 T100 78 V100 H0Z"/><path class="b-3" d="M82 66 v-14 a3 3 0 0 1 6 0 v14 M82 58 h-4 v-5 M88 60 h4 v-6" style="fill:none;stroke:color-mix(in oklab, var(--cm) 30%, #0C0D10);stroke-width:3;stroke-linecap:round"/>' },
+  { id:'homegym', s:'bg', r:'c', n:'Домашний зал', d:'<rect class="b-0" width="100" height="100"/><rect class="b-1" x="8" y="14" width="26" height="30" rx="2"/><path class="b-lane" d="M21 14 V44 M8 29 H34"/><path class="b-2" d="M0 74 H100 V100 H0Z"/><ellipse class="b-1" cx="50" cy="88" rx="38" ry="7"/><path class="b-3" d="M84 74 v-20 h8 v20Z"/><circle class="b-2" cx="88" cy="48" r="8"/>' },
+  { id:'space', s:'bg', r:'r', n:'Космос', d:'<rect style="fill:#0B0B1E" width="100" height="100"/><path style="fill:#fff;opacity:.85" d="M10 12h1v1h-1Z M30 6h1v1h-1Z M60 14h1v1h-1Z M90 8h1v1h-1Z M16 40h1v1h-1Z M84 44h1v1h-1Z M50 30h1v1h-1Z M6 70h1v1h-1Z M94 76h1v1h-1Z"/><circle class="b-3" style="fill:var(--cm);opacity:.85" cx="80" cy="24" r="9"/><ellipse cx="80" cy="24" rx="16" ry="4" style="fill:none;stroke:#FFD23F;stroke-width:1.6;opacity:.8" transform="rotate(-18 80 24)"/><circle style="fill:#B8BDC8" cx="16" cy="88" r="22"/><circle style="fill:#9EA3AE" cx="10" cy="80" r="4"/>' },
+  { id:'sakura', s:'bg', r:'r', n:'Сакура', d:'<rect class="b-0" width="100" height="100"/><path style="fill:none;stroke:#5A3A30;stroke-width:3;stroke-linecap:round" d="M100 18 Q74 22 62 36 M78 22 Q72 10 64 8 M0 28 Q18 30 28 42"/>' + [[62,36],[66,30],[70,26],[64,10],[72,14],[84,20],[92,16],[28,42],[22,36],[14,32],[6,28]].map(([x, y], i) => `<circle style="fill:${i % 2 ? '#FFB7CE' : '#FF8FB2'}" cx="${x}" cy="${y}" r="${3 + i % 3}"/>`).join('') + '<path class="b-2" d="M0 82 Q50 74 100 82 V100 H0Z"/><path style="fill:#FFB7CE" d="M30 60l2 1-1 2z M52 50l2 1-1 2z M80 64l2 1-1 2z"/>' },
+  { id:'storm', s:'bg', r:'r', n:'Гроза', d:'<rect class="b-dark" width="100" height="100"/><path style="fill:#2C2F3A" d="M-4 24 Q6 8 22 14 Q30 2 46 10 Q60 0 70 12 Q86 6 104 20 V30 H-4Z"/><path style="fill:#FFD23F" d="M60 28 L50 48 H58 L50 66 L70 42 H61 L68 28Z"/><path style="fill:none;stroke:#7CC8F2;stroke-width:1;opacity:.5" d="M10 40 l-4 10 M24 52 l-4 10 M84 38 l-4 10 M90 60 l-4 10 M36 70 l-4 10"/><path class="b-2" d="M0 84 H100 V100 H0Z"/>' },
+  { id:'volcano', s:'bg', r:'e', n:'Вулкан', d:'<rect style="fill:#2A0F14" width="100" height="100"/><circle style="fill:#FF6A2E;opacity:.25" cx="56" cy="34" r="26"/><path style="fill:#1A0A0E" d="M10 100 L42 34 H70 L100 100Z"/><path style="fill:#FF6A2E" d="M46 34 H66 L62 46 L66 62 L58 52 L54 70 L52 48Z"/><path style="fill:#FFD23F;opacity:.8" d="M50 20 l2 -6 l2 6z M60 16 l2 -6 l2 6z M44 26 l2 -5 l2 5z"/>' },
+  { id:'podium', s:'bg', r:'e', n:'Пьедестал', d:'<rect class="b-0" width="100" height="100"/><path style="fill:#fff;opacity:.08" d="M30 0 L44 70 H56 L70 0Z"/><rect class="b-2" x="34" y="62" width="32" height="38"/><rect class="b-1" x="4" y="72" width="30" height="28"/><rect class="b-1" x="66" y="78" width="30" height="22"/><text x="50" y="94" text-anchor="middle" style="font:700 12px sans-serif;fill:#F2C230">1</text><text x="19" y="94" text-anchor="middle" style="font:700 10px sans-serif;fill:#D3D8DF">2</text><text x="81" y="95" text-anchor="middle" style="font:700 10px sans-serif;fill:#C07A3E">3</text><path style="fill:#F2C230" d="M14 20h3v3h-3Z M80 14h3v3h-3Z M26 40h2v2h-2Z M72 34h2v2h-2Z"/><path style="fill:#FF5C8A" d="M40 10h3v3h-3Z M88 30h2v2h-2Z M8 46h2v2h-2Z"/>' },
+  { id:'olympus', s:'bg', r:'l', n:'Олимп', d:'<rect style="fill:#2A2210" width="100" height="100"/>' + Array.from({ length:12 }, (_, i) => { const a = i * Math.PI / 6, d = .1; return `<path style="fill:#F2C230;opacity:.18" d="M50 46 L${(50 + 80 * Math.cos(a - d)).toFixed(1)} ${(46 + 80 * Math.sin(a - d)).toFixed(1)} L${(50 + 80 * Math.cos(a + d)).toFixed(1)} ${(46 + 80 * Math.sin(a + d)).toFixed(1)}Z"/>`; }).join('') + '<path style="fill:#F2E6C2" d="M14 40 L50 26 L86 40Z"/><rect style="fill:#F2E6C2" x="16" y="40" width="68" height="4"/>' + [20, 34, 48, 62, 76].map(x => `<rect style="fill:#F2E6C2" x="${x}" y="44" width="5" height="30"/>`).join('') + '<rect style="fill:#C8940C" x="12" y="74" width="76" height="5"/><path style="fill:#fff;opacity:.85" d="M-4 90 Q10 78 26 86 Q40 76 56 86 Q72 78 86 86 Q96 80 106 88 V100 H-4Z"/>' },
+  /* back: drawn behind the body, origin at the middle of the torso */
+  { id:'backpack', s:'back', r:'c', n:'Рюкзак', d:'<rect class="g-a" x="-30" y="-25" width="60" height="36" rx="12"/><path class="g-b" d="M-9 -29 Q0 -35 9 -29 L7 -25 Q0 -29 -7 -25Z"/><rect class="g-b" x="-30" y="-10" width="60" height="4"/>', f:'<path class="g-b" d="M-17 -9 Q-15 2 -16 13 L-12 13 Q-11 2 -13 -9Z M17 -9 Q15 2 16 13 L12 13 Q11 2 13 -9Z"/>' },
+  { id:'yogamat', s:'back', r:'c', n:'Коврик для йоги', d:'<g transform="translate(0 -14) rotate(-22)"><rect class="g-a" x="-46" y="-6.5" width="92" height="13" rx="6.5"/><circle class="g-b" cx="46" cy="0" r="6.5"/><circle class="g-a" cx="46" cy="0" r="3.2"/><path class="g-sd" style="stroke-width:1.4" d="M-30 -6.5 V6.5 M28 -6.5 V6.5"/></g>', f:'<path class="g-b" d="M15 -11 L-13 12 L-10 14.5 L18 -8.5Z"/>' },
+  { id:'skate', s:'back', r:'c', n:'Скейтборд', d:'<g transform="translate(26 -18) rotate(14)"><rect class="g-a" x="-7.5" y="-32" width="15" height="64" rx="7.5"/><path class="g-b" d="M-7.5 -23 h15 v5 h-15z M-7.5 18 h15 v5 h-15z"/><circle class="g-k" cx="-9.5" cy="-20.5" r="2.9"/><circle class="g-k" cx="9.5" cy="-20.5" r="2.9"/><circle class="g-k" cx="-9.5" cy="20.5" r="2.9"/><circle class="g-k" cx="9.5" cy="20.5" r="2.9"/></g>', f:'<path class="g-b" d="M13 -10 Q15 2 14 13 L10 13 Q11 2 9 -10Z"/>' },
+  { id:'cape', s:'back', r:'r', n:'Плащ героя', d:'<path class="g-a" d="M-21 -17 Q-41 3 -38 23 L38 23 Q41 3 21 -17Z"/><path class="g-b" d="M-27 2 Q-30 14 -28 23 H-19 Q-21 12 -27 2Z M27 2 Q30 14 28 23 H19 Q21 12 27 2Z"/>', f:'<path style="fill:none;stroke:#C8940C;stroke-width:1.4" d="M-11 -9 Q0 -4 11 -9"/><circle class="g-gold" cx="-11" cy="-9" r="2.6"/><circle class="g-gold" cx="11" cy="-9" r="2.6"/>' },
+  { id:'guitar', s:'back', r:'r', n:'Гитара', d:'<g transform="translate(-24 8) rotate(52)"><rect style="fill:#5A3A20" x="-2.3" y="-62" width="4.6" height="54" rx="1"/><rect style="fill:#2A1A0E" x="-3.8" y="-70" width="7.6" height="9" rx="1.6"/><path style="fill:#C98A4B" d="M0 -12 C-13 -12 -14 -1 -9 3 C-15 9 -13 22 0 22 C13 22 15 9 9 3 C14 -1 13 -12 0 -12Z"/><circle style="fill:#2A1A0E" cx="0" cy="3" r="3.4"/></g>', f:'<path style="fill:#5A3A20" d="M-17 11 L14 -12 L16.5 -9 L-14.5 14Z"/>' },
+  { id:'jetpack', s:'back', r:'r', n:'Реактивный ранец', d:'<rect class="g-silver" x="-30" y="-20" width="12" height="30" rx="6"/><rect class="g-silver" x="18" y="-20" width="12" height="30" rx="6"/><rect class="g-a" x="-30" y="-10" width="12" height="5"/><rect class="g-a" x="18" y="-10" width="12" height="5"/><g transform="translate(-24 16)">' + FX('#FF6A2E', FLAME) + '</g><g transform="translate(24 16)">' + FX('#FF6A2E', FLAME) + '</g>' },
+  { id:'angelwings', s:'back', r:'e', n:'Крылья ангела', d:mirW(WING, '', 'fill:#FFFFFF') + mirW('M-20 -3 Q-32 -8 -38 -2 M-20 3 Q-30 4 -33 9 M-18 8 Q-24 12 -24 15', '', 'fill:none;stroke:#C9D3DE;stroke-width:1.2;stroke-linecap:round') },
+  { id:'batwings', s:'back', r:'e', mo:[9], n:'Крылья летучей мыши', d:mirW('M-12 -4 L-46 -18 Q-41 -8 -46 1 Q-38 -3 -36 8 Q-30 2 -26 11 Q-21 3 -13 6Z', '', 'fill:#2A2233') + mirW('M-14 -2 L-44 -15 M-14 0 L-38 -1 M-14 3 L-28 9', '', 'fill:none;stroke:#4A3A5A;stroke-width:1') },
+  { id:'butterfly', s:'back', r:'e', n:'Крылья бабочки', d:mirW('M-8 -4 Q-30 -34 -44 -14 Q-42 2 -10 0Z', 'g-a') + mirW('M-8 2 Q-34 4 -34 20 Q-20 26 -8 6Z', 'g-b') + mirW('M-30 -16 m-3 0 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0 M-24 12 m-2 0 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0', 'g-w') },
+  { id:'phoenix', s:'back', r:'l', n:'Огненные крылья', d:HALO(0, -2, 52, 26) + mirW(WING, '', 'fill:#FF6A2E') + mirW('M-14 -2 Q-34 -20 -40 -3 Q-34 0 -30 1 Q-34 8 -28 10 Q-22 8 -14 4Z', '', 'fill:#FFD23F') },
+  { id:'goldcape', s:'back', r:'l', n:'Плащ чемпиона', d:HALO(0, 4, 40, 22) + '<path class="g-gold" d="M-18 -12 Q-35 6 -32 23 L32 23 Q35 6 18 -12Z"/><path class="g-gold2" d="M-32 23 Q-31 18 -29 15 L29 15 Q31 18 32 23Z M-24 2 Q-27 12 -25 15 H-18 Q-20 8 -24 2Z M24 2 Q27 12 25 15 H18 Q20 8 24 2Z"/><path class="g-hl" d="M-20 -6 Q-28 6 -27 12"/>', f:'<path style="fill:none;stroke:#C8940C;stroke-width:1.4" d="M-11 -9 Q0 -4 11 -9"/><circle class="g-gold" cx="-11" cy="-9" r="2.8"/><circle class="g-gold" cx="11" cy="-9" r="2.8"/>' },
+  /* pet: a little friend at the feet, origin = its feet */
+  { id:'duck', s:'pet', r:'c', n:'Утёнок', d:'<ellipse style="fill:#FFD23F" cx="1" cy="-6" rx="8" ry="6"/><circle style="fill:#FFD23F" cx="-3" cy="-14" r="5"/><path style="fill:#FF8A3D" d="M-8 -14 L-12 -12.5 L-8 -11.5Z"/><circle style="fill:#1C1D21" cx="-4.5" cy="-15" r="1"/><path style="fill:#F2B23A" d="M3 -8 Q8 -10 9 -5 Q5 -5 3 -8Z"/>' },
+  { id:'dumbbuddy', s:'pet', r:'c', n:'Гантелька', d:'<rect class="g-b" x="-7" y="-10" width="14" height="4" rx="2"/><rect class="g-a" x="-11" y="-15" width="5" height="14" rx="2"/><rect class="g-a" x="6" y="-15" width="5" height="14" rx="2"/><circle style="fill:#fff" cx="-2.4" cy="-8" r="1.6"/><circle style="fill:#fff" cx="2.4" cy="-8" r="1.6"/><circle style="fill:#1C1D21" cx="-2.2" cy="-7.8" r=".8"/><circle style="fill:#1C1D21" cx="2.6" cy="-7.8" r=".8"/><path class="g-b" d="M-8 -1 v1.5 h3 M8 -1 v1.5 h-3" style="fill:none;stroke-width:1.4"/>' },
+  { id:'ballbuddy', s:'pet', r:'c', n:'Мячик', d:'<circle class="g-a" cx="0" cy="-8" r="8"/><path class="g-sd" style="stroke-width:1" d="M-8 -8 Q0 -4 8 -8 M0 -16 Q-4 -8 0 0"/><circle style="fill:#fff" cx="-3" cy="-10" r="1.9"/><circle style="fill:#fff" cx="3" cy="-10" r="1.9"/><circle style="fill:#1C1D21" cx="-2.8" cy="-9.8" r="1"/><circle style="fill:#1C1D21" cx="3.2" cy="-9.8" r="1"/><path style="fill:none;stroke:#1C1D21;stroke-width:1;stroke-linecap:round" d="M-2 -6 Q0 -4.5 2 -6"/>' },
+  { id:'snail', s:'pet', r:'c', n:'Улитка', d:'<path style="fill:#E8D9B0" d="M-11 0 Q-12 -4 -8 -4 H8 Q11 -4 11 0Z"/><path style="fill:#E8D9B0" d="M-9 -4 Q-11 -10 -8 -12 L-7 -4Z"/><circle style="fill:#1C1D21" cx="-8.2" cy="-12" r="1"/><circle class="g-a" cx="2" cy="-9" r="7.5"/><path class="g-sd" style="stroke-width:1.4" d="M2 -9 m0 0 a2.4 2.4 0 1 1 2.4 -2.4 a4.6 4.6 0 1 1 -6 -3"/>' },
+  { id:'hamster', s:'pet', r:'r', n:'Хомяк', d:'<ellipse style="fill:#E3A462" cx="0" cy="-7" rx="9" ry="7.5"/><circle style="fill:#E3A462" cx="-6" cy="-13" r="2.6"/><circle style="fill:#E3A462" cx="6" cy="-13" r="2.6"/><ellipse style="fill:#FFF1DE" cx="0" cy="-5" rx="5.5" ry="4.5"/><circle style="fill:#1C1D21" cx="-3" cy="-9" r="1.1"/><circle style="fill:#1C1D21" cx="3" cy="-9" r="1.1"/><circle style="fill:#FF8FA3" cx="0" cy="-7" r=".9"/>' },
+  { id:'parrot', s:'pet', r:'r', n:'Попугай', d:'<ellipse style="fill:#3EB86A" cx="0" cy="-9" rx="5.5" ry="8"/><circle style="fill:#3EB86A" cx="0" cy="-17" r="4.6"/><path style="fill:#F2B23A" d="M-3.4 -17 Q-6.5 -15 -4 -13 Q-3 -15 -2.4 -15.5Z"/><circle style="fill:#1C1D21" cx="-1" cy="-18" r="1"/><path style="fill:#E23B3B" d="M3 -12 Q8 -6 5 0 Q2 -5 1 -10Z"/><path style="fill:#2C8BD6" d="M-2 -1 L0 4 L2 -1Z"/>' },
+  { id:'cactus', s:'pet', r:'r', n:'Кактус', d:'<path style="fill:#C8641A" d="M-6 -6 H6 L5 0 H-5Z"/><rect style="fill:#4FA35B" x="-3.5" y="-20" width="7" height="15" rx="3.5"/><path style="fill:#4FA35B" d="M-3.5 -12 h-3 a2 2 0 0 1 -2 -2 v-3 a1.4 1.4 0 0 1 2.8 0 v2 h2.2Z M3.5 -10 h3 a2 2 0 0 0 2 -2 v-4 a1.4 1.4 0 0 0 -2.8 0 v3 h-2.2Z"/><circle style="fill:#FF7AA8" cx="0" cy="-21" r="2.2"/><circle style="fill:#1C1D21" cx="-1.4" cy="-14" r=".8"/><circle style="fill:#1C1D21" cx="1.4" cy="-14" r=".8"/>' },
+  { id:'robot', s:'pet', r:'e', n:'Робот-тренер', d:'<rect class="g-silver2" x="-6" y="-7" width="12" height="7" rx="2"/><rect class="g-silver" x="-8" y="-19" width="16" height="12" rx="3"/><rect style="fill:#121317" x="-6" y="-17" width="12" height="7" rx="2"/><rect class="g-cy" x="-4.4" y="-15" width="2.6" height="2.6" rx=".6"/><rect class="g-cy" x="1.8" y="-15" width="2.6" height="2.6" rx=".6"/><path class="g-silver2" d="M-.6 -19 v-3 h1.2 v3Z"/><circle class="g-a" cx="0" cy="-23" r="1.8"/>' },
+  { id:'ghost', s:'pet', r:'e', n:'Привидение', d:'<path style="fill:#F4F6FA;opacity:.92" d="M-8 0 V-12 A8 8 0 0 1 8 -12 V0 L5 -2.6 L2.6 0 L0 -2.6 L-2.6 0 L-5 -2.6Z"/><circle style="fill:#1C1D21" cx="-3" cy="-12" r="1.4"/><circle style="fill:#1C1D21" cx="3" cy="-12" r="1.4"/><ellipse style="fill:#1C1D21" cx="0" cy="-8" rx="1.6" ry="2"/>' },
+  { id:'starling', s:'pet', r:'l', n:'Звёздный дух', d:HALO(0, -11, 13, 13) + '<path class="g-gold" transform="translate(0 -11)" d="' + STAR5(10) + '"/><circle style="fill:#1C1D21" cx="-2.6" cy="-12" r="1.1"/><circle style="fill:#1C1D21" cx="2.6" cy="-12" r="1.1"/><path style="fill:none;stroke:#1C1D21;stroke-width:1;stroke-linecap:round" d="M-1.8 -9 Q0 -7.6 1.8 -9"/>' },
+  { id:'phoenixling', s:'pet', r:'l', n:'Фениксёнок', d:HALO(0, -10, 13, 12) + FX('#FF6A2E', 'M-7 -2 Q-12 -10 -5 -14 Q-4 -20 1 -20 Q6 -20 6 -14 Q12 -12 8 -4 Q4 0 -7 -2Z') + FX('#FFD23F', 'M-6 -16 Q-9 -24 -4 -26 Q-4 -21 -2 -19Z M2 -19 Q2 -25 6 -27 Q7 -22 4 -18Z') + '<circle style="fill:#1C1D21" cx="2" cy="-15" r="1.1"/><path style="fill:#F2B23A" d="M6 -14 L9.5 -13 L6 -12Z"/>' },
+  /* aura: particles around the character (p) and an optional layer behind it (bk) */
+  { id:'sweat', s:'aura', r:'c', n:'Капли пота', p:FX('#7CC8F2', 'M0 -4 Q3 0 3 1.6 A3 3 0 0 1 -3 1.6 Q-3 0 0 -4Z') },
+  { id:'notes', s:'aura', r:'c', n:'Ноты', p:'<path class="g-a" d="M-2.6 2.6 a2 1.6 0 1 0 .1 0Z M-.7 2.6 V-5 L3.4 -6 V-3.6 L-.7 -2.6"/>' },
+  { id:'bubbles', s:'aura', r:'c', n:'Пузыри', p:'<circle class="g-sm" style="stroke-width:1.2" cx="0" cy="0" r="3.4"/><path class="g-hl" style="stroke-width:.9" d="M-1.6 -1.6 L-.6 -2.4"/>' },
+  { id:'hearts', s:'aura', r:'r', n:'Сердечки', p:FX('#FF5C8A', HEART) },
+  { id:'snowfx', s:'aura', r:'r', mo:[11, 0, 1], n:'Снежинки', p:'<path style="fill:none;stroke:#E8F4FF;stroke-width:1.1;stroke-linecap:round" d="M0 -4.5 V4.5 M-3.9 -2.25 L3.9 2.25 M-3.9 2.25 L3.9 -2.25"/>' },
+  { id:'leaves', s:'aura', r:'r', mo:[8, 9, 10], n:'Листопад', p:FX('#F28A2E', 'M-4 3 Q-4 -4 4 -4 Q4 3 -4 3Z') + '<path style="fill:none;stroke:#A85A12;stroke-width:.7" d="M-4 3 L3 -3"/>' },
+  { id:'flames', s:'aura', r:'e', n:'Пламя', p:FX('#FF6A2E', FLAME) + FX('#FFD23F', 'M0 -3 Q2 -.5 1.6 2 Q1.2 3.6 0 3.6 Q-1.2 3.6 -1.6 2 Q-2 -.5 0 -3Z') },
+  { id:'bolts', s:'aura', r:'e', n:'Молнии', p:FX('#FFD23F', 'M1 -6 L-3 1 H0 L-1.5 6 L3.5 -1 H.5 L2 -6Z') },
+  { id:'rainbow', s:'aura', r:'l', n:'Радуга', bk:['#FF5C5C', '#FFB020', '#FFE45C', '#3EDC8F', '#4CC3FF', '#A88BFF'].map((c, i) => `<path d="M${8 + i * 3.6} 74 A${42 - i * 3.6} ${42 - i * 3.6} 0 0 1 ${92 - i * 3.6} 74" style="fill:none;stroke:${c};stroke-width:3.6;opacity:.75"/>`).join(''), p:'<path class="g-gold" d="M0 -3.4 L.9 -.9 L3.4 0 L.9 .9 L0 3.4 L-.9 .9 L-3.4 0 L-.9 -.9Z"/>' },
+  { id:'galaxy', s:'aura', r:'l', n:'Звёздный вихрь', bk:'<circle cx="50" cy="56" r="46" style="fill:#7A4CFF;opacity:.16"/><path d="M50 56 m-36 0 a36 22 -20 1 0 72 0 a36 22 -20 1 0 -72 0" style="fill:none;stroke:#B67CFF;stroke-width:1.6;opacity:.55"/>', p:'<path class="g-gold" d="M0 -4 L1 -1 L4 0 L1 1 L0 4 L-1 1 L-4 0 L-1 -1Z"/>' },
+);
 const ITEM = Object.fromEntries(ITEMS.map(i => [i.id, i]));
-const POOL = { c:ITEMS.filter(i => i.r === 'c'), r:ITEMS.filter(i => i.r === 'r'), l:ITEMS.filter(i => i.r === 'l') };
+const POOL = { c:ITEMS.filter(i => i.r === 'c'), r:ITEMS.filter(i => i.r === 'r'), e:ITEMS.filter(i => i.r === 'e'), l:ITEMS.filter(i => i.r === 'l') };
+const inSeason = (it, ms = Date.now()) => !it.mo || it.mo.includes(new Date(ms).getMonth());
+const AUR_POS = [[12, 24, 0], [89, 30, .7], [7, 54, 1.4], [93, 62, .35], [24, 9, 1.05], [79, 10, 1.75]];
 function gearAt(kind, it) {
   const A = ANCH[kind] || ANCH.cat;
   if (it.s === 'head') return `<g transform="translate(${A.top[0]} ${A.top[1]}) scale(${(A.hr / 27).toFixed(3)})">${it.d}</g>`;
@@ -1354,29 +1485,34 @@ const gearItem = (g, s) => g && g[s] && ITEM[g[s]] && ITEM[g[s]].s === s ? ITEM[
 function charSVG(kind, mood = 'calm', o = {}) {
   const c = CHARS[kind] || CHARS.cat, A = ANCH[kind] || ANCH.cat, st = o.stage == null ? 1 : o.stage, g = o.gear || {};
   const { torso, head } = partsOf(kind), one = !torso, T = (one ? STAGE_T1 : STAGE_T)[st] || STAGE_T[1], hw = A.round ? '' : T.head;
-  const hat = gearItem(g, 'head'), eyes = gearItem(g, 'eyes'), neck = gearItem(g, 'neck'), hand = gearItem(g, 'hand');
+  const hat = gearItem(g, 'head'), eyes = gearItem(g, 'eyes'), neck = gearItem(g, 'neck'), hand = gearItem(g, 'hand'), back = gearItem(g, 'back'), pet = gearItem(g, 'pet'), aura = gearItem(g, 'aura');
   const abs = st >= 3 ? `<g transform="translate(${A.abs[0]} ${A.abs[1]})">${ABS}</g>` : '';
   const band = st >= 3 && !hat ? `<g transform="translate(${A.top[0]} ${A.top[1]}) scale(${(A.hr / 27).toFixed(3)})">${BAND(st >= 4)}</g>` : '';
-  const gid = 'au-' + hash(String(o.color || 'acc')), glow = st >= 4 ? `<defs><radialGradient id="${gid}"><stop offset="0" style="stop-color:var(--cm);stop-opacity:.5"/><stop offset=".55" style="stop-color:var(--cm);stop-opacity:.18"/><stop offset="1" style="stop-color:var(--cm);stop-opacity:0"/></radialGradient></defs><circle class="g-aura" cx="50" cy="58" r="52" fill="url(#${gid})"/>` : '';
-  const sparks = st >= 4 ? '<path class="c-spark" d="M10 26l1.8 4.2 4.2 1.8-4.2 1.8L10 38l-1.8-4.2L4 32l4.2-1.8z"/><path class="c-spark" style="animation-delay:.7s" d="M90 46l1.4 3.2 3.2 1.4-3.2 1.4L90 55.2l-1.4-3.2-3.2-1.4 3.2-1.4z"/><path class="c-spark" style="animation-delay:1.3s" d="M84 6l1.2 2.8 2.8 1.2-2.8 1.2L84 14l-1.2-2.8L80 10l2.8-1.2z"/>' : '';
-  const torsoG = one ? '' : `<g${T.torso ? ` transform="${T.torso}"` : ''}>${torso}${abs}${neck ? gearAt(kind, neck) : ''}${hand ? gearAt(kind, hand) : ''}</g>`;
+  const gc = st >= 6 ? '#F2C230' : 'var(--cm)', gid = 'au-' + hash(String(o.color || 'acc') + (st >= 6 ? 'g' : '')), glow = st >= 4 ? `<defs><radialGradient id="${gid}"><stop offset="0" style="stop-color:${gc};stop-opacity:.5"/><stop offset=".55" style="stop-color:${gc};stop-opacity:.18"/><stop offset="1" style="stop-color:${gc};stop-opacity:0"/></radialGradient></defs><circle class="g-aura" cx="50" cy="58" r="52" fill="url(#${gid})"/>${st >= 5 ? `<circle class="g-aura" cx="50" cy="57" r="47" style="fill:none;stroke:${gc};stroke-width:1.2;opacity:.45"/>` : ''}` : '';
+  const sparks = (st >= 5 ? '<path class="c-spark" style="animation-delay:.4s" d="M20 84l1.2 2.8 2.8 1.2-2.8 1.2L20 92l-1.2-2.8L16 88l2.8-1.2z"/><path class="c-spark" style="animation-delay:1.1s" d="M70 4l1 2.3 2.3 1-2.3 1L70 10.6l-1-2.3-2.3-1 2.3-1z"/>' : '') + (st >= 4 ? '<path class="c-spark" d="M10 26l1.8 4.2 4.2 1.8-4.2 1.8L10 38l-1.8-4.2L4 32l4.2-1.8z"/><path class="c-spark" style="animation-delay:.7s" d="M90 46l1.4 3.2 3.2 1.4-3.2 1.4L90 55.2l-1.4-3.2-3.2-1.4 3.2-1.4z"/><path class="c-spark" style="animation-delay:1.3s" d="M84 6l1.2 2.8 2.8 1.2-2.8 1.2L84 14l-1.2-2.8L80 10l2.8-1.2z"/>' : '');
+  const bf = A.bf || A.back, bfs = A.bfs || A.bs, backF = back && back.f ? `<g transform="translate(${bf[0]} ${bf[1]})${bfs ? ` scale(${bfs})` : ''}">${back.f}</g>` : '';
+  const torsoG = one ? '' : `<g${T.torso ? ` transform="${T.torso}"` : ''}>${torso}${backF}${abs}${neck ? gearAt(kind, neck) : ''}${hand ? gearAt(kind, hand) : ''}</g>`;
   let fit = '';
-  if (hat) { const sc = (one ? [.8, 1, 1.03, 1.05, 1.05] : [.86, 1, 1.03, 1.05, 1.05])[st] || 1, top = A.top[1] - (st === 0 && !one ? 2 : 0) + (hat.t == null ? -15 : hat.t) * A.hr / 27, y = 97 - (97 - top) * sc; if (y < 2) fit = tfm(+(95 / (97 - y)).toFixed(3), +(95 / (97 - y)).toFixed(3)); }
-  const headG = `<g${hw ? ` transform="${hw}"` : ''}>${head}${charFace(c.face, mood)}${one ? abs : ''}${band}${one && neck ? gearAt(kind, neck) : ''}${eyes ? gearAt(kind, eyes) : ''}${hat ? gearAt(kind, hat) : ''}${one && hand ? gearAt(kind, hand) : ''}</g>`;
+  if (hat) { const sc = (one ? [.8, 1, 1.03, 1.05, 1.05, 1.05, 1.05] : [.86, 1, 1.03, 1.05, 1.05, 1.05, 1.05])[st] || 1, top = A.top[1] - (st === 0 && !one ? 2 : 0) + (hat.t == null ? -15 : hat.t) * A.hr / 27, y = 97 - (97 - top) * sc; if (y < 2) fit = tfm(+(95 / (97 - y)).toFixed(3), +(95 / (97 - y)).toFixed(3)); }
+  const headG = `<g${hw ? ` transform="${hw}"` : ''}>${head}${one ? backF : ''}${charFace(c.face, mood)}${one ? abs : ''}${band}${one && neck ? gearAt(kind, neck) : ''}${eyes ? gearAt(kind, eyes) : ''}${hat ? gearAt(kind, hat) : ''}${one && hand ? gearAt(kind, hand) : ''}</g>`;
   const fx = mood === 'sleepy' ? '<text class="c-z" x="76" y="20">z</text><text class="c-z c-z2" x="85" y="10">z</text>'
     : mood === 'fire' ? '<path class="c-spark" d="M84 8l2.4 5.6 5.6 2.4-5.6 2.4L84 24l-2.4-5.6-5.6-2.4 5.6-2.4z"/><path class="c-spark" style="animation-delay:.6s" d="M12 58l1.6 3.8 3.8 1.6-3.8 1.6L12 68.8l-1.6-3.8-3.8-1.6 3.8-1.6z"/>' : '';
   const style = o.color ? ` style="--cm:${o.color}"` : '';
-  return `<svg class="ch m-${mood} st-${st}${o.cls ? ' ' + o.cls : ''}${o.still ? ' still' : ''}" viewBox="0 0 100 100"${style}${o.label ? ` role="img" aria-label="${esc(o.label)}"` : ' aria-hidden="true"'}>${glow}<g class="c-hop"><g class="c-all"><g${T.all ? ` transform="${T.all}"` : ''}>${fit ? `<g transform="${fit}">` : ''}${c.back}${torsoG}${headG}${fit ? '</g>' : ''}</g></g></g>${sparks}${fx}</svg>`;
+  const bt = one ? hw : T.torso, backG = back ? `<g${bt ? ` transform="${bt}"` : ''}><g transform="translate(${A.back[0]} ${A.back[1]})${A.bs ? ` scale(${A.bs})` : ''}">${back.d}</g></g>` : '';
+  const auraBk = aura && aura.bk ? aura.bk : '', auraP = aura && aura.p ? AUR_POS.map(([x, y, dl]) => `<g transform="translate(${x} ${y})"><g class="g-pt" style="animation-delay:${dl}s">${aura.p}</g></g>`).join('') : '';
+  const petG = pet ? `<g transform="translate(15 97) scale(1.3)"><g class="g-pet">${pet.d}</g></g>` : '';
+  return `<svg class="ch m-${mood} st-${st}${o.cls ? ' ' + o.cls : ''}${o.still ? ' still' : ''}" viewBox="0 0 100 100"${style}${o.label ? ` role="img" aria-label="${esc(o.label)}"` : ' aria-hidden="true"'}>${glow}${auraBk}<g class="c-hop"><g class="c-all"><g${T.all ? ` transform="${T.all}"` : ''}>${fit ? `<g transform="${fit}">` : ''}${backG}${c.back}${torsoG}${headG}${fit ? '</g>' : ''}</g></g></g>${petG}${auraP}${sparks}${fx}</svg>`;
 }
 const bgSVG = (id, color) => { const it = ITEM[id]; return it && it.s === 'bg' ? `<svg class="chbg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"${color ? ` style="--cm:${color}"` : ''} aria-hidden="true">${it.d}</svg>` : ''; };
 /* character in a framed cell, optionally on a background */
 const mateCell = (kind, mood, o = {}, cls = '') => `<span class="mate${cls ? ' ' + cls : ''}${o.gear && gearItem({ bg:o.gear.bg }, 'bg') ? ' has-bg' : ''}">${o.gear && o.gear.bg ? bgSVG(o.gear.bg, o.color) : ''}${charSVG(kind, mood, o)}</span>`;
-const THUMB_VB = { head:'-33 -25 66 46', eyes:'-28 -13 56 26', neck:'-27 -8 54 32', hand:'-18 -26 36 34', bg:'0 18 100 72' };
+const THUMB_VB = { head:'-33 -25 66 46', eyes:'-28 -13 56 26', neck:'-27 -8 54 32', hand:'-18 -30 36 38', back:'-48 -38 96 64', pet:'-15 -29 30 31', bg:'0 18 100 72' };
 function thumbSVG(id, color, locked) {
   const it = ITEM[id]; if (!it) return '';
   if (it.s === 'bg') return `<svg class="chbg thumb bgthumb${locked ? ' sil' : ''}" viewBox="${THUMB_VB.bg}" preserveAspectRatio="xMidYMid slice"${color ? ` style="--cm:${color}"` : ''} aria-hidden="true">${it.d}</svg>`;
+  if (it.s === 'aura') { const pts = it.bk ? [[22, 28], [78, 22], [86, 60]] : [[-9, 3], [0, -4], [9, 2]]; return `<svg class="ch still thumb${locked ? ' sil' : ''}" viewBox="${it.bk ? '0 10 100 70' : '-16 -11 32 21'}"${color ? ` style="--cm:${color}"` : ''} aria-hidden="true">${it.bk || ''}${it.p ? pts.map(([x, y]) => `<g transform="translate(${x} ${y})${it.bk ? ' scale(2.2)' : ''}">${it.p}</g>`).join('') : ''}</svg>`; }
   const vbx = it.at === 'waist' ? '-28 -14 56 30' : THUMB_VB[it.s];
-  return `<svg class="ch still thumb${locked ? ' sil' : ''}" viewBox="${vbx}"${color ? ` style="--cm:${color}"` : ''} aria-hidden="true">${it.d}</svg>`;
+  return `<svg class="ch still thumb${locked ? ' sil' : ''}" viewBox="${vbx}"${color ? ` style="--cm:${color}"` : ''} aria-hidden="true">${it.d}${it.f || ''}</svg>`;
 }
 function chestSVG(kind = 'std', open = false, rar = 'c', cls = '') {
   const gold = kind === 'gold', body = gold ? 'k-gold' : 'k-body', band = gold ? 'k-gold2' : 'k-band';
@@ -1676,9 +1812,17 @@ function weekStreak(list = S.workouts) {
 }
 
 /* ================= gamification: ranks, weekly quests, goal streaks, achievements ================= */
-const TITLES = ['Новичок','Любитель','Регулярный','Уверенный','Опытный','Продвинутый','Сильный','Атлет','Мастер','Эксперт','Элита','Легенда'];
-const lvlNeed = k => 60 * k * (k - 1);           // total XP needed to reach level k
-function levelOf(xp) { let k = 1; while (xp >= lvlNeed(k + 1)) k++; const a = lvlNeed(k), b = lvlNeed(k + 1); return { k, title: TITLES[Math.min(k, TITLES.length) - 1] + (k > TITLES.length ? ' ' + (k - TITLES.length + 1) : ''), cur: xp - a, need: b - a, pct: Math.min(100, (xp - a) / (b - a) * 100), xp }; }
+const RANKS = ['Новичок','Любитель','III юношеский','II юношеский','I юношеский','III разряд','II разряд','I разряд','КМС','Мастер спорта','МСМК','ЗМС','Чемпион города','Чемпион страны','Чемпион Европы','Чемпион мира','Рекордсмен','Легенда спорта','Титан','Олимпиец'];
+const RANK_COL = ['#8E9399','#A9AEB5','#B8743A','#C4823F','#D09048','#8C99A6','#A9B5C1','#C5CFD9','#2FBF7A','#E0A800','#F2C230','#FFD23F','#FF8A70','#FF6B6B','#F2476E','#D93670','#A88BFF','#8E6BFF','#3EA8F2','#2ED3CC'];
+const rankIdx = k => Math.floor((k - 1) / 5);
+const rankName = k => rankIdx(k) < RANKS.length ? RANKS[rankIdx(k)] : 'Бессмертный ' + (rankIdx(k) - RANKS.length + 1);
+const lvlNeed = k => 100 * (k - 1) + 20 * k * (k - 1); // total XP needed to reach level k: about 6 years of steady training to level 100
+function rankBadge(k, cls = '') {
+  const r = rankIdx(k), c = r < RANK_COL.length ? RANK_COL[r] : '#FFD23F', div = (k - 1) % 5 + 1;
+  const dots = [0, 1, 2, 3, 4].map(i => `<circle cx="${12 + i * 4}" cy="34.5" r="1.45" style="fill:${i < div ? '#fff' : 'rgba(0,0,0,.28)'}"/>`).join('');
+  return `<svg class="rk${cls ? ' ' + cls : ''}" viewBox="0 0 40 46" aria-hidden="true"><path d="M20 1.5 L37.5 7.5 V22 C37.5 33 29 40.5 20 44.5 C11 40.5 2.5 33 2.5 22 V7.5Z" style="fill:${c}"/><path d="M20 5.5 L33.5 10.2 V22 C33.5 30.6 27 36.6 20 40 C13 36.6 6.5 30.6 6.5 22 V10.2Z" style="fill:rgba(0,0,0,.2)"/>${r >= 20 ? '<path d="M14 4 L20 1 L26 4 L24 7 H16Z" style="fill:#fff;opacity:.8"/>' : ''}<text x="20" y="27" text-anchor="middle" class="rk-n">${k}</text>${dots}</svg>`;
+}
+function levelOf(xp) { let k = 1; while (xp >= lvlNeed(k + 1)) k++; const a = lvlNeed(k), b = lvlNeed(k + 1); return { k, title:rankName(k), rank:rankIdx(k), div:(k - 1) % 5 + 1, cur: xp - a, need: b - a, pct: Math.min(100, (xp - a) / (b - a) * 100), xp }; }
 const workoutXP = (w, Dx = D) => 40 + Math.min(40, wStats(w).sets * 2) + (Dx.prCount[w.id] || 0) * 15;
 function weekCounts(list) { const m = new Map(); list.forEach(w => { const k = weekStart(w.start); m.set(k, (m.get(k) || 0) + 1); }); return m; }
 const ctxLocal = () => ({ workouts:S.workouts, profile:S.profile, D, local:true });
@@ -1745,7 +1889,7 @@ function gameStats(c = ctxLocal()) {
   const pull = Math.max(0, ...((c.D.hist.pullup || []).map(h => h.maxR || 0)));
   return { n:c.workouts.length, prs:c.D.prEvents.length, tonTotal, early, owl, heavy, sets, bestStreak, goalWeeks:weeks.length, tpls:c.profile.templates.length, bodyN:c.profile.body.length, profiles:profiles().length + Object.keys(S.remote).length,
     bench:mw('bench'), squat:mw('squat'), dead:mw('deadlift'), hip:mw('hip-thrust'), pull, quests:ql.done, perfect:ql.perfect, questXP:ql.xp,
-    chests:Math.max(0, coll.opened - coll.old), uniq:coll.uniq, legend:own.some(id => ITEM[id].r === 'l'), slotsAll:SLOT_ORDER.every(s => own.some(id => ITEM[id].s === s)), stage:stageOf(c.workouts.length).k, supBest:c.local ? supBest(c.profile) : 0 };
+    chests:Math.max(0, coll.opened - coll.old), uniq:coll.uniq, legend:own.some(id => ITEM[id].r === 'l'), epic:own.some(id => ITEM[id].r === 'e'), slotsAll:SLOT_BASE.every(s => own.some(id => ITEM[id].s === s)), slotsAll8:SLOT_ORDER.every(s => own.some(id => ITEM[id].s === s)), gifts:+((c.profile.chest || {}).gift || {}).n || 0, stage:stageOf(c.workouts.length).k, supBest:c.local ? supBest(c.profile) : 0 };
 }
 const BADGES = [
   ['first','Старт','Первая тренировка в журнале','1', s => s.n >= 1],
@@ -1787,6 +1931,12 @@ const BADGES = [
   ['wardrobe','Полный гардероб','Вещь для каждого слота: голова, глаза, шея, рука и фон','@shirt', s => s.slotsAll],
   ['sup7','Режим','7 дней подряд все добавки по плану','@pill', s => s.supBest >= 7],
   ['sup30','Железная дисциплина','30 дней подряд все добавки по плану','30д', s => s.supBest >= 30],
+  ['epic1','Эпично','Найти эпическую вещь','@spark', s => s.epic],
+  ['coll75','Большой гардероб','Собрать 75 разных вещей','75', s => s.uniq >= 75],
+  ['collAll','Полная коллекция','Собрать все вещи до одной','@trophy', s => s.uniq >= ITEMS.length],
+  ['fashion','Модник','Вещь для каждого из 8 слотов: со спиной, спутником и аурой','@shirt', s => s.slotsAll8],
+  ['mythic','Мифический напарник','Напарник дорос до стадии «Мифический»','@star', s => s.stage >= 5],
+  ['gift7','Неделя подарков','Забрать 7 подарков дня','@gift', s => s.gifts >= 7],
 ];
 function unlockedBadges(st = gameStats()) { return BADGES.filter(b => b[4](st)).map(b => b[0]); }
 function totalXP(st = gameStats(), c = ctxLocal()) { return c.workouts.reduce((a, w) => a + workoutXP(w, c.D), 0) + st.goalWeeks * 60 + unlockedBadges(st).length * 30 + st.questXP + (c.local ? supXP(c.profile) : Math.max(0, Math.min(1e6, +c.profile.sx || 0))); }
@@ -1888,7 +2038,7 @@ function payload(pid) {
   const prof = normP(d.profile), share = !!(S.meta.sync && S.meta.sync.shareBody);
   return { v:1, id:p.sid, dev:devId(), name:p.name || '', color:p.color || 'red', char:charOf(p),
     profile:{ goal:prof.goal, custom:prof.custom, body: share ? prof.body : [], meas: share ? prof.meas : [], gear:prof.gear, freeze:prof.freeze.slice(-24),
-      chest: prof.chest ? { v:1, at:prof.chest.at, st:prof.chest.st, op:prof.chest.op, buy:prof.chest.buy, old:prof.chest.old || 0 } : undefined, sx:supShared(prof) },
+      chest: prof.chest ? { v:1, at:prof.chest.at, st:prof.chest.st, op:prof.chest.op, buy:prof.chest.buy, old:prof.chest.old || 0, rk:prof.chest.rk, gift:prof.chest.gift } : undefined, sx:supShared(prof) },
     workouts:(d.workouts || []).map(w => clean(w)), deleted:prof.deleted.slice(-800), kudos:prof.kudos,
     live: d.active ? { start:d.active.start, title:d.active.title || '' } : null };
 }
@@ -2003,6 +2153,8 @@ function mergeMember(pid, rem) {
     if (rc) {
       Object.entries(rc.op || {}).forEach(([k, v]) => { if (!lc.op[k] && ITEM[v]) { lc.op[k] = v; changed = true; } });
       (rc.buy || []).forEach(b => { if (ITEM[b.id] && !lc.buy.some(x => x.at === b.at && x.id === b.id)) { lc.buy.push({ id:b.id, at:b.at, c:+b.c || 0 }); changed = true; } });
+      if (Number.isFinite(rc.rk) && !(lc.rk >= rc.rk)) { lc.rk = rc.rk; changed = true; }
+      if (rc.gift && +rc.gift.n > (+(lc.gift || {}).n || 0)) { lc.gift = { d:String(rc.gift.d || ''), n:+rc.gift.n, s:+rc.gift.s || 0 }; changed = true; }
       if (rc.at && Array.isArray(rc.st) && (!lc.at || rc.at < lc.at)) { lc.st = rc.st.slice(0, 12); lc.at = rc.at; lc.old = Math.max(+lc.old || 0, +rc.old || 0); changed = true; }
     } else if (fresh.length) { lc.imp = [...new Set([...(lc.imp || []), ...fresh])]; changed = true; } // an older app version: no chest avalanche
   }
@@ -2263,7 +2415,7 @@ setInterval(() => {
 const SND_DEF = { on:true, vol:2, train:true, game:true, ui:true };
 const sndCfg = () => Object.assign({}, SND_DEF, (S.meta && S.meta.snd) || {});
 const SFX_CAT = { tap:'ui', tab:'ui', toggle:'ui', close:'ui', send:'ui', set:'train', unset:'train', tick:'train', count:'train', pr:'train', start:'train', finish:'train', level:'train',
-  shake:'game', openc:'game', openr:'game', openl:'game', equip:'game', locked:'game', buy:'game', grow:'game', mate:'game', nom:'game', like:'game', sup:'game', supFull:'game' };
+  shake:'game', openc:'game', openr:'game', opene:'game', openl:'game', gift:'game', rank:'game', equip:'game', locked:'game', buy:'game', grow:'game', mate:'game', nom:'game', like:'game', sup:'game', supFull:'game' };
 const SFXN = { n:0 };
 let sfxOut = null, noiseBuf = null;
 function sfxBus() {
@@ -2318,6 +2470,9 @@ const SFX = {
   shake:o => [0, .22, .45, .67, .9, 1.12].forEach(t => { hiss(o, t, .06, .25, 900, null, 4); tone(o, 170, t, .07, .25, 'sine', 120); }),
   openc:o => { hiss(o, 0, .35, .16, 400, 3000, 1.5); tone(o, 1047, .12, .5, .2); tone(o, 2093, .12, .35, .06); },
   openr:o => { hiss(o, 0, .35, .16, 400, 3500, 1.5); tone(o, 1047, .12, .4, .2); tone(o, 1568, .26, .55, .2); [2637, 3136, 3520].forEach((f, i) => tone(o, f, .4 + i * .06, .18, .06)); },
+  opene:o => { hiss(o, 0, .38, .17, 350, 3800, 1.5); arp(o, [880, 1109, 1319], .09, .35, .2, 'triangle', .1); [2217, 2637, 3322].forEach((f, i) => tone(o, f, .42 + i * .07, .22, .06)); tone(o, 1760, .4, .7, .07, 'sine', null, .06); },
+  gift:o => { tone(o, 1319, 0, .08, .14, 'triangle'); tone(o, 1760, .08, .12, .14, 'triangle'); tone(o, 2637, .18, .3, .07); },
+  rank:o => { SFX.level(o); [523, 784, 1047].forEach(f => tone(o, f, .9, .9, .1, 'triangle', null, .08)); },
   openl:o => { hiss(o, 0, .4, .18, 300, 4000, 1.5); arp(o, [784, 988, 1175, 1568], .09, .35, .2, 'triangle', .1); [1568, 1976, 2349].forEach(f => tone(o, f, .5, 1.1, .08, 'sine', null, .08)); [2637, 3136, 3520, 4186].forEach((f, i) => tone(o, f, .55 + i * .08, .2, .05)); },
   equip:o => { hiss(o, 0, .12, .1, 2500, 6000, 1, 'highpass'); tone(o, 880, .06, .07, .18, 'sine', 1320); },
   locked:o => tone(o, 196, 0, .12, .2, 'triangle', 150),
@@ -2485,8 +2640,9 @@ function render() {
   try { if (fid && typeof ae.selectionStart === 'number') sel = [ae.selectionStart, ae.selectionEnd]; } catch (e) { sel = null; }
   CH = {};
   if (!S.welcomed && S.metaLoaded && !S.meta && ready() && !S.sheets.length) { S.welcomed = true; S.sheets.push({ type:'welcome', name:'', color:'lime', char:'cat', key:uid() }); applyAccent('lime'); }
-  if (S.metaLoaded && S.meta && !S.meta.v22seen && ready() && !S.sheets.length && !S.active) { S.meta.v22seen = true; S.meta.v23seen = true; S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v23seen && ready() && !S.sheets.length && !S.active) { S.meta.v23seen = true; saveMeta(); S.sheets.push({ type:'news23', key:uid() }); }
+  if (S.metaLoaded && S.meta && !S.meta.v22seen && ready() && !S.sheets.length && !S.active) { S.meta.v22seen = true; S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v23seen && ready() && !S.sheets.length && !S.active) { S.meta.v23seen = true; S.meta.v24seen = true; saveMeta(); S.sheets.push({ type:'news23', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v24seen && ready() && !S.sheets.length && !S.active) { S.meta.v24seen = true; saveMeta(); S.sheets.push({ type:'news24', key:uid() }); }
   if (S.view === 'chat' && S.metaLoaded && !pairOn()) S.view = 'today';
   const main = $('#main');
   const vk = [S.view, S.pid, S.view === 'today' && S.active ? 'live:' + S.active.id : '', S.view === 'editor' && S.editing ? S.editing.id : '', ready() ? 'r' : 'l'].join('|');
@@ -2573,6 +2729,7 @@ function heroHTML() {
   const eat = !RM && S.eatUntil > Date.now();
   const streakSub = gs.curMet ? 'серия недель' : gs.frozen ? 'серия · заморожена' : gs.n ? `серия · ещё ${gs.left} за ${gs.daysLeft} ${plural(gs.daysLeft, ['день','дня','дней'])}` : 'серия недель';
   const gold = cs.closed.some(c => c.gold);
+  if (S.profile.chest && !S.sheets.length && (S.profile.chest.rk == null || L.rank > S.profile.chest.rk)) setTimeout(() => { const nr = rankSync(); if (nr != null && !S.sheets.length) { openSheet({ type:'rankup', r:nr }); sfx('rank'); confetti(innerWidth / 2, innerHeight * .35, 110); } else render(); }, 0);
   return `<section class="hero" aria-label="Напарник и прогресс недели">
     <button class="ch-btn mate${mt.gear.bg ? ' has-bg' : ''}${eat ? ' eat' : ''}" data-act="mate" aria-label="${esc(mateName(kind))}, ${stName(mt.stage, kind).toLowerCase()}: открыть гардероб">${mt.gear.bg ? bgSVG(mt.gear.bg) : ''}${charSVG(kind, m.mood, { cls:S.poke ? 'poke' : '', stage:mt.stage.k, gear:mt.gear }).replace('<svg ', `<svg data-mood="${m.mood}${S.poke}${kind}" `)}${eat ? '<span class="yum" aria-hidden="true">Ням!</span>' : ''}</button>
     <div class="hero-main"><p class="bubble" data-key="bubble-${hash(S.bubble.text)}">${esc(S.bubble.text)}</p>
@@ -2581,7 +2738,8 @@ function heroHTML() {
         <div class="hs${!gs.curMet && gs.n && !gs.frozen ? ' warn' : ''}"><b>${icon(gs.frozen ? 'snow' : 'flame')}${gs.n}</b><span>${streakSub}</span></div>
       </div></div>
     <div class="sat-row">${satHTML(sat, fz)}<button class="stg" data-act="ward" aria-label="Стадия: ${stName(mt.stage, kind)}${nx ? `, до стадии «${stName(nx, kind)}» ${cntW(nx.from - S.workouts.length)}` : ''}. Открыть гардероб">${stName(mt.stage, kind)}<small>${nx ? `до «${stName(nx, kind)}» ${nx.from - S.workouts.length}` : 'высшая стадия'}</small></button></div>
-    <button class="lvl" data-act="awards" aria-label="Уровень ${L.k}: ${esc(L.title)}"><span class="lvl-n">${L.k}</span><span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></button>
+    <button class="lvl" data-act="awards" aria-label="Уровень ${L.k}: ${esc(L.title)}">${rankBadge(L.k)}<span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></button>
+    ${giftToday() ? `<button class="giftbtn" data-act="gift">${icon('gift')}<span><b>Подарок дня</b><small>Искры, а каждый седьмой — сундук</small></span>${icon('chevron')}</button>` : ''}
     ${cs.closed.length ? `<button class="chestbtn" data-act="chestOpenNext">${chestSVG(gold ? 'gold' : 'std', false)}<span><b>Сундуки: ${cs.closed.length}</b><small>${gold ? 'Есть золотой! ' : ''}Внутри — вещи для напарника</small></span>${icon('chevron')}</button>` : ''}
   </section>`;
 }
@@ -2805,7 +2963,7 @@ const METRICS = {
 function awardsPanel() {
   const st = gameStats(), L = levelOf(totalXP(st)), un = new Set(unlockedBadges(st));
   return `<section class="panel lvl-card" aria-label="Уровень и достижения">
-    <button class="lvl" style="margin-top:0" data-act="awards"><span class="lvl-n">${L.k}</span><span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></button>
+    <button class="lvl" style="margin-top:0" data-act="awards">${rankBadge(L.k)}<span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></button>
     <div class="medals">${BADGES.map((b, i) => medalHTML(b, i, un.has(b[0]), false, false)).join('')}</div>
     <p class="fine" style="margin:0">Получено ${un.size} из ${BADGES.length}. Нажмите на значок, чтобы узнать условия.</p>
   </section>`;
@@ -3097,7 +3255,7 @@ SHEETS.done = sh => {
   const nb = (sh.newBadges || []).map(id => { const i = BADGES.findIndex(b => b[0] === id); return i >= 0 ? medalHTML(BADGES[i], i, true, true, true) : ''; }).join('');
   return `${closeOnly()}<div class="sheet-body"><div class="done-hero">${(() => { const k = charOf(curProf()), mt = mateOf(S.profile, S.workouts); return charSVG(k, pr || sh.lvlUp ? 'fire' : 'happy', { stage:mt.stage.k, gear:mt.gear }); })()}<h2 id="sheet-title" class="big-title">${sh.lvlUp ? 'Новый уровень' : pr ? 'Новые рекорды' : 'Тренировка завершена'}</h2><p>${esc(w.title || 'Тренировка')} · записано в журнал</p><span class="xp-chip">+${sh.xpGain} XP</span></div>
     <div class="kv k4"><div><b ${cnt(st.dur, 'dur')}>${fmtDur(st.dur)}</b><span>время</span></div><div><b ${cnt(st.vol, 'ton')}>${ton(st.vol)}</b><span>объём</span></div><div><b ${cnt(st.sets, 'int')}>${st.sets}</b><span>подходов</span></div><div class="${pr ? 'is-pr' : ''}"><b ${cnt(pr, 'int')}>${pr}</b><span>${plural(pr, ['рекорд','рекорда','рекордов'])}</span></div></div>
-    <div class="lvl-up">${sh.lvlUp ? `<p class="lvl-new">Уровень ${L.k} · ${esc(L.title)}</p>` : ''}<div class="lvl"><span class="lvl-n">${L.k}</span><span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></div></div>
+    <div class="lvl-up">${sh.lvlUp ? `<p class="lvl-new">Уровень ${L.k} · ${esc(L.title)}</p>` : ''}<div class="lvl">${rankBadge(L.k)}<span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></div></div>
     ${nb ? `<div class="sblock" style="border:0;padding-bottom:0"><b>Новые достижения</b><div class="medal-list">${nb}</div></div>` : ''}
     ${(sh.newQuests || []).length ? `<div class="sblock" style="border:0;padding-bottom:0"><b>Задания недели</b><ul class="pr-list news">${sh.newQuests.map(t => `<li>${icon('check')}<span><b>${esc(t)}</b> · +${QXP} XP</span></li>`).join('')}</ul></div>` : ''}
     ${prList ? `<ul class="pr-list">${prList}</ul>` : ''}${doneChestHTML(w)}</div>
@@ -3120,9 +3278,9 @@ SHEETS.awards = () => {
   const st = gameStats(), xp = totalXP(st), L = levelOf(xp), un = new Set(unlockedBadges(st));
   const order = BADGES.map((b, i) => [b, i]).filter(([b]) => b[0] !== 'pair' || pairOn() || un.has('pair')).sort((a, b) => (un.has(b[0][0]) ? 1 : 0) - (un.has(a[0][0]) ? 1 : 0));
   return `${sheetHead('Уровень и достижения', `${xp} XP всего`)}<div class="sheet-body">
-    <div class="lvl" style="margin-top:0"><span class="lvl-n">${L.k}</span><span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">ещё ${L.need - L.cur} XP</span></div>
+    <div class="lvl" style="margin-top:0">${rankBadge(L.k)}<span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">ещё ${L.need - L.cur} XP</span></div>
     <p class="fine">Опыт: 40 за тренировку, по 2 за рабочий подход (до 40), 15 за рекорд, 60 за неделю с выполненной целью, ${QXP} за задание недели (+${QBONUS} за все три), 30 за каждое достижение и 10 за день, когда все добавки приняты по плану.</p>
-    <div class="sblock"><b>Достижения · ${un.size} из ${order.length}</b><div class="medal-list">${order.map(([b, i]) => medalHTML(b, i, un.has(b[0]), false, true)).join('')}</div></div>
+    ${rankLadder(L.k, xp)}<div class="sblock"><b>Достижения · ${un.size} из ${order.length}</b><div class="medal-list">${order.map(([b, i]) => medalHTML(b, i, un.has(b[0]), false, true)).join('')}</div></div>
   </div>`;
 };
 
@@ -3299,7 +3457,7 @@ SHEETS.friend = sh => {
   return `${sheetHead(esc(m.name || 'Партнёр'), live ? 'Сейчас тренируется' : (m.workouts[0] ? 'Последняя тренировка ' + relDays(m.workouts[0].start) : 'Пока без тренировок'))}<div class="sheet-body">
     ${(() => { const mt = mateOf(c.profile, m.workouts), sat = satietyOf(m.workouts, c.profile.freeze), fz = frozenNow(c.profile.freeze), nx = STAGES[mt.stage.k + 1], k = charOf(m);
       return `<div class="fr-top" style="--accent:${pcolor(m)}">${mateCell(k, mateMood(m.workouts, c.profile.goal, live, c.profile.freeze), { color:pcolor(m), stage:mt.stage.k, gear:mt.gear, label:mateName(k) }, 'mate-f')}<div><div class="stg">${esc(mateName(k))} · ${stName(mt.stage, k)}<small>${nx ? `до «${stName(nx, k)}» ${nx.from - m.workouts.length}` : 'высшая стадия'}</small></div>${satHTML(sat, fz)}<p class="fine" style="margin:0">Гардероб: <b style="color:var(--ink)">${mt.coll.uniq} из ${ITEMS.length}</b></p></div></div>`; })()}
-    <div class="lvl" style="margin-top:0;--accent:${col(m)[1]}"><span class="lvl-n" style="background:${col(m)[0]};color:${col(m)[2]}">${L.k}</span><span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%;background:${col(m)[0]}"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></div>
+    <div class="lvl" style="margin-top:0;--accent:${col(m)[1]}">${rankBadge(L.k)}<span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%;background:${col(m)[0]}"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></div>
     <div class="kv k4" style="margin-top:12px"><div><b>${wk.n}</b><span>на этой неделе</span></div><div><b>${streak}</b><span>серия, недель</span></div><div><b>${m.workouts.length}</b><span>всего</span></div><div class="is-pr"><b>${c.D.prEvents.length}</b><span>рекордов</span></div></div>
     <p class="fine">Задания недели: <b style="color:var(--ink)">${qd} из 3</b></p>
     ${body ? `<p class="fine">Вес тела: <b style="color:var(--ink)">${nf(body.w, 1)} кг</b> · ${dShort(body.d)}</p>` : ''}
@@ -3440,6 +3598,7 @@ function commitWorkout(w) {
   S.sheets = []; S.bubble = null; S.ateAt = Date.now(); buzz([30, 60, 30]); sfx(l1 > l0 ? 'level' : 'finish');
   const newQuests = questsFor(ctxLocal(), weekStart(w.start)).filter(x => x.done && !q0.has(x.id)).map(x => x.t);
   go('log'); openSheet({ type:'done', id:w.id, prs:D.prCount[w.id] || 0, xpGain:xp1 - xp0, xpAfter:xp1, lvlUp:l1 > l0, newBadges, newQuests });
+  const nr = rankSync(); if (nr != null) setTimeout(() => { openSheet({ type:'rankup', r:nr }); sfx('rank'); confetti(innerWidth / 2, innerHeight * .35, 110); }, g1 > g0 ? 2200 : 1200);
   if (g1 > g0) { openSheet({ type:'grow', k:g1 }); setTimeout(() => confetti(innerWidth / 2, innerHeight * .35, 110), RM ? 0 : 350); setTimeout(() => sfx('grow'), 900); }
   if (isStandalone() && !S.persisted) requestPersist();
 }
@@ -3590,7 +3749,7 @@ const A = {
   wlColor: el => { top().color = el.dataset.c; applyAccent(el.dataset.c); render(); },
   welcomeSave: () => {
     const sh = top(), name = (sh.name || '').trim();
-    S.meta = { profiles:[{ id:'main', name, color:sh.color || 'lime', char:sh.char || 'cat' }], cur:'main', theme:'auto', mode:sh.mode === 'pair' ? 'pair' : 'solo', v2seen:true, v22seen:true, v23seen:true, chatSeen:Date.now() }; saveMeta(); applyAccent();
+    S.meta = { profiles:[{ id:'main', name, color:sh.color || 'lime', char:sh.char || 'cat' }], cur:'main', theme:'auto', mode:sh.mode === 'pair' ? 'pair' : 'solo', v2seen:true, v22seen:true, v23seen:true, v24seen:true, chatSeen:Date.now() }; saveMeta(); applyAccent();
     S.sheets = []; S.bubble = null; render(); buzz([10, 40, 10]); toast(name ? `Привет, ${name}! Поехали` : 'Поехали!');
   },
   startEmpty: () => startWorkout(null),
@@ -3874,6 +4033,7 @@ function mateMood(list, goal, live, fr) {
 
 /* ---- chests: one per real workout (6+ working sets), one per calendar day; the contents follow from the workout id ---- */
 const CH_MIN_SETS = 6;
+const SHOP_COST = { c:100, r:300, e:700 };
 const CCACHE = new WeakMap();
 function workoutChests(c) {
   const goal = c.profile.goal || 3, hit = CCACHE.get(c.D);
@@ -3897,28 +4057,29 @@ function workoutChests(c) {
 }
 function chestState(c = ctxLocal()) {
   const ch = c.profile.chest || {}, op = ch.op || {};
-  const st = (Array.isArray(ch.st) ? ch.st : []).map(id => ({ id, start:ch.at || 0, title:'', prs:0, gold:false, starter:true }));
+  const st = (Array.isArray(ch.st) ? ch.st : []).map(id => { const m = /^rk-(\d+)-/.exec(id); return { id, start:ch.at || 0, title:'', prs:0, gold:!!m, starter:true, rank:m ? +m[1] : null, gift:id.startsWith('gf-') }; });
   const all = [...st, ...workoutChests(c)];
   return { all, closed:all.filter(x => !op[x.id]), op };
 }
 function rollChest(ch) {
-  const r = mulberry32(seed32(ch.id + 'chest')), x = r();
-  let L = .05, R = .25;
-  if (ch.prs >= 1) { L = .08; R = .32; }
-  if (ch.prs >= 3) { L = .1; R = .38; }
-  if (ch.gold) { L = Math.max(L, .2); R = 1 - L; }
-  const rar = x < L ? 'l' : x < L + R ? 'r' : 'c', pool = POOL[rar];
+  const r = mulberry32(seed32(ch.id + 'chest')), x = r(), at = ch.start || Date.now();
+  let L = .03, E = .07, R = .22;
+  if (ch.prs >= 1) { L = .05; E = .1; R = .27; }
+  if (ch.prs >= 3) { L = .07; E = .12; R = .3; }
+  if (ch.gold) { L = Math.max(L, .1); E = Math.max(E, .2); R = 1 - L - E; }
+  const rar = x < L ? 'l' : x < L + E ? 'e' : x < L + E + R ? 'r' : 'c', pool = POOL[rar].filter(i => inSeason(i, at));
   return pool[Math.floor(r() * pool.length)].id;
 }
 /* collection: items from opened chests + bought; duplicates turn into sparks (10 each) */
 function collOf(prof, workouts) {
   const ch = (prof && prof.chest) || {}, op = ch.op || {}, ids = new Set((workouts || []).map(w => w.id)), cnt = {};
   let total = 0, opened = 0;
-  Object.entries(op).forEach(([cid, it]) => { if (!ITEM[it] || (!cid.startsWith('st-') && !ids.has(cid))) return; cnt[it] = (cnt[it] || 0) + 1; total++; opened++; });
+  Object.entries(op).forEach(([cid, it]) => { if (!ITEM[it] || (!/^(st|rk|gf)-/.test(cid) && !ids.has(cid))) return; cnt[it] = (cnt[it] || 0) + 1; total++; opened++; });
   const buy = (Array.isArray(ch.buy) ? ch.buy : []).filter(b => b && ITEM[b.id]);
   buy.forEach(b => { cnt[b.id] = (cnt[b.id] || 0) + 1; total++; });
   const uniq = Object.keys(cnt).length, spent = buy.reduce((a, b) => a + (+b.c || 0), 0);
-  return { cnt, uniq, total, opened, old:+ch.old || 0, sparks:Math.max(0, (total - uniq) * 10 - spent), has:id => !!cnt[id] };
+  const gift = ch.gift && +ch.gift.s > 0 ? +ch.gift.s : 0;
+  return { cnt, uniq, total, opened, old:+ch.old || 0, sparks:Math.max(0, (total - uniq) * 10 + gift - spent), has:id => !!cnt[id] };
 }
 function gearOf(prof, coll) {
   const g = {}, src = (prof && prof.gear && typeof prof.gear === 'object') ? prof.gear : {};
@@ -3941,7 +4102,7 @@ function ensureChest() {
   return ch;
 }
 const mateName = k => CHARS[k] ? CHARS[k].name : 'Напарник';
-const GROW_TXT = ['', 'Подрос и окреп — больше не малыш.', 'Плечи шире, шаг увереннее.', 'Повязка чемпиона и пресс кубиками.', 'Сияние и искры — так выглядит легенда.'];
+const GROW_TXT = ['', 'Подрос и окреп — больше не малыш.', 'Плечи шире, шаг увереннее.', 'Повязка чемпиона и пресс кубиками.', 'Сияние и искры — так выглядит легенда.', 'Второй круг сияния и звёздная пыль.', 'Золотое сияние — навсегда.'];
 const bubbleKey = m => m.mood + '|' + (m.sd ? m.sd.done + '/' + m.sd.due.length : '');
 const cntW = n => `${n} ${plural(n, ['тренировка','тренировки','тренировок'])}`;
 
@@ -4039,7 +4200,7 @@ function dbgHTML() {
     <button class="btn btn-sm" data-act="dbgWorkout">+ тренировка</button><button class="btn btn-sm" data-act="dbgChests">+3 сундука</button><button class="btn btn-sm" data-act="dbgOpenAll">Открыть все</button></div></section>`;
 }
 function tileHTML(it, own, on, act, extra = '') {
-  return `<button class="tile${on ? ' on' : ''}${own ? '' : ' lock'}${it.s === 'bg' ? ' bgt' : ''}" style="--rc:${RAR[it.r].col}" data-key="t-${it.id}" data-act="${act}" data-id="${it.id}" aria-pressed="${!!on}" aria-label="${own ? esc(it.n) : 'Не найдена'}: ${RAR[it.r].n.toLowerCase()}, ${SLOTS[it.s].toLowerCase()}${on ? ', сейчас на напарнике' : ''}"><i class="rd"></i>${thumbSVG(it.id, null, !own)}<span>${own ? esc(it.n) : '???'}</span><small>${extra || RAR[it.r].s}</small></button>`;
+  return `<button class="tile${on ? ' on' : ''}${own ? '' : ' lock'}${it.s === 'bg' ? ' bgt' : ''}" style="--rc:${RAR[it.r].col}" data-key="t-${it.id}" data-act="${act}" data-id="${it.id}" aria-pressed="${!!on}" aria-label="${own ? esc(it.n) : 'Не найдена'}: ${RAR[it.r].n.toLowerCase()}, ${SLOTS[it.s].toLowerCase()}${on ? ', сейчас на напарнике' : ''}"><i class="rd"></i>${thumbSVG(it.id, null, !own)}<span>${own ? esc(it.n) : '???'}</span><small>${extra || (it.mo && !own ? 'сезон' : RAR[it.r].s)}</small></button>`;
 }
 
 function viewSupp() {
@@ -4084,24 +4245,24 @@ SHEETS.ward = sh => {
       <div class="row"><button class="btn btn-sm" data-act="shop">Обменять искры</button>${cs.closed.length ? `<button class="btn btn-sm btn-primary" data-act="chestOpenNext">${icon('chest')} Сундуки: ${cs.closed.length}</button>` : ''}</div></div></div>
     <div class="chips slots" role="group" aria-label="Слот">${[['all', 'Все', own.length], ...SLOT_ORDER.map(s => [s, SLOTS[s], cnt(s)])].map(([k, l, n]) => `<button class="chip" data-act="wardSlot" data-s="${k}" aria-pressed="${slot === k}">${l} ${n}</button>`).join('')}</div>
     <div class="tiles">${tiles}</div>
-    <p class="hint2">Нажмите на вещь, чтобы надеть или снять. Рекорд в тренировке повышает шанс редкой вещи. Повторы дают искры: 100 — любая обычная вещь, 300 — редкая. Сундук — за тренировку от ${CH_MIN_SETS} рабочих подходов, один в день.</p></div>`;
+    <p class="hint2">Нажмите на вещь, чтобы надеть или снять. Рекорд в тренировке повышает шанс редкой вещи. Повторы и подарки дня дают искры: 100 — обычная вещь, 300 — редкая, 700 — эпическая. Сундук — за тренировку от ${CH_MIN_SETS} рабочих подходов (один в день), за каждый новый ранг и за каждый седьмой подарок дня. Сезонные вещи выпадают только в свой месяц.</p></div>`;
 };
 SHEETS.shop = sh => {
-  const coll = collOf(S.profile, S.workouts), sel = sh.sel && ITEM[sh.sel], cost = sel ? (sel.r === 'r' ? 300 : 100) : 0;
-  const sec = (r, c) => { const list = POOL[r].filter(it => !coll.has(it.id)); return `<div class="sblock"><b>${r === 'c' ? 'Обычные' : 'Редкие'} · ${c} искр</b>${list.length ? `<div class="tiles">${list.map(it => tileHTML(it, true, sh.sel === it.id, 'shopSel', `${c} искр`)).join('')}</div>` : '<p class="fine">Все уже собраны.</p>'}</div>`; };
+  const coll = collOf(S.profile, S.workouts), sel = sh.sel && ITEM[sh.sel], cost = sel ? SHOP_COST[sel.r] : 0;
+  const sec = (r, c) => { const list = POOL[r].filter(it => !coll.has(it.id) && inSeason(it)); return `<div class="sblock"><b>${r === 'c' ? 'Обычные' : r === 'r' ? 'Редкие' : 'Эпические'} · ${c} искр</b>${list.length ? `<div class="tiles">${list.map(it => tileHTML(it, true, sh.sel === it.id, 'shopSel', `${c} искр`)).join('')}</div>` : '<p class="fine">Все уже собраны.</p>'}</div>`; };
   return `${sheetHead('Обмен искр', `${icon('spark', 'ic-f')} ${coll.sparks} ${plural(coll.sparks, ['искра','искры','искр'])}`)}<div class="sheet-body">
-    <p class="fine" style="margin-top:0">Повторная вещь из сундука = 10 искр. Выберите вещь, которой ещё нет. Легендарные вещи — только из сундуков.</p>
-    ${sec('c', 100)}${sec('r', 300)}</div>
+    <p class="fine" style="margin-top:0">Повтор из сундука — 10 искр, подарок дня — от 5 до 15. Выберите вещь, которой ещё нет. Легендарные — только из сундуков, сезонные — только в свой месяц.</p>
+    ${sec('c', 100)}${sec('r', 300)}${sec('e', 700)}</div>
     <footer class="sheet-foot"><button class="btn" data-act="closeSheet">Назад</button><button class="btn btn-primary" data-act="shopBuy"${sel && coll.sparks >= cost ? '' : ' disabled'}>${sel ? (coll.sparks >= cost ? `Взять «${esc(sel.n)}» за ${cost}` : `Нужно ${cost} искр`) : 'Выберите вещь'}</button></footer>`;
 };
 SHEETS.chest = sh => {
   const cs = chestState(), ch = cs.all.find(x => x.id === sh.cid);
   if (!ch) return `${sheetHead('Сундук')}<div class="sheet-body"><p class="muted">Этот сундук больше не доступен: тренировку удалили.</p></div>`;
   const kind = charOf(curProf()), m = mateOf(S.profile, S.workouts), type = ch.gold ? 'gold' : 'std';
-  const from = ch.starter ? 'Стартовый сундук' : `За «${esc(ch.title || 'Тренировка')}» · ${dayMonth(ch.start)}`;
+  const from = ch.rank != null ? `За ранг «${esc(rankName(ch.rank * 5 + 1))}»` : ch.gift ? 'Подарок за 7 дней' : ch.starter ? 'Стартовый сундук' : `За «${esc(ch.title || 'Тренировка')}» · ${dayMonth(ch.start)}`;
   const left = cs.closed.filter(x => x.id !== ch.id).length;
   if (sh.phase !== 'open') {
-    const why = ch.gold ? 'Золотой сундук — за неделю со всеми заданиями. Внутри минимум редкая вещь.' : ch.prs ? `Рекорд${ch.prs > 1 ? 'ы' : ''} в тренировке ${ch.prs > 1 ? 'подняли' : 'поднял'} шанс редкой вещи.` : ch.starter ? 'Подарок к новой версии: напарник может носить вещи.' : 'Внутри — вещь для напарника.';
+    const why = ch.rank != null ? 'Награда за новый ранг. Внутри минимум редкая вещь, а шанс эпической и легендарной выше.' : ch.gift ? 'Каждый седьмой подарок дня — сундук.' : ch.gold ? 'Золотой сундук — за неделю со всеми заданиями. Внутри минимум редкая вещь.' : ch.prs ? `Рекорд${ch.prs > 1 ? 'ы' : ''} в тренировке ${ch.prs > 1 ? 'подняли' : 'поднял'} шанс редкой вещи.` : ch.starter ? 'Подарок к новой версии: напарник может носить вещи.' : 'Внутри — вещь для напарника.';
     return `${closeOnly()}<div class="sheet-body"><div class="reveal"><button class="chest-tap${sh.phase === 'shake' ? ' busy' : ''}" data-act="chestOpen" aria-label="Открыть сундук">${chestSVG(type, false, 'c', sh.phase === 'shake' ? 'shake' : 'idle')}</button>
       <div class="eyebrow">${from}</div><h2 id="sheet-title" class="big-title">${ch.gold ? 'Золотой сундук' : 'Сундук'}</h2><p>${why}</p></div></div>
       <footer class="sheet-foot"><button class="btn btn-primary btn-lg btn-block" data-act="chestOpen"${sh.phase === 'shake' ? ' disabled' : ''}>${sh.phase === 'shake' ? 'Открываем…' : 'Открыть'}</button></footer>`;
@@ -4165,7 +4326,7 @@ Object.assign(A, {
   shopSel: el => { const sh = top(); sh.sel = sh.sel === el.dataset.id ? null : el.dataset.id; buzz(6); render(); },
   shopBuy: () => {
     const sh = top(), it = ITEM[sh.sel]; if (!it || it.r === 'l') return;
-    const coll = collOf(S.profile, S.workouts), cost = it.r === 'r' ? 300 : 100;
+    const coll = collOf(S.profile, S.workouts), cost = SHOP_COST[it.r];
     if (coll.has(it.id) || coll.sparks < cost) return;
     S.profile.chest.buy.push({ id:it.id, at:Date.now(), c:cost });
     S.profile.gear = Object.assign(gearOf(S.profile, collOf(S.profile, S.workouts)), { [it.s]:it.id });
@@ -4270,6 +4431,52 @@ Object.assign(A, {
   sndCat: el => { const m = ensureMeta(), c = sndCfg(), k = el.dataset.k; c[k] = !c[k]; m.snd = c; saveMeta(); render(); sfx(k === 'train' ? 'set' : k === 'game' ? 'mate' : 'tap'); },
   sndDemo: () => { const m = ensureMeta(); if (!sndCfg().on) { m.snd = Object.assign(sndCfg(), { on:true }); saveMeta(); render(); } sfx('pr'); setTimeout(() => sfx('openr'), 900); setTimeout(() => sfx('mate'), 2000); },
 });
+/* ================= 2.4: ranks with rewards, daily gift ================= */
+/* every new rank (5 levels) brings a golden chest; the first run gives one chest for the current rank */
+function rankSync() {
+  const ch = S.profile.chest; if (!ch) return null;
+  const r = rankIdx(levelOf(totalXP(gameStats())).k);
+  if (ch.rk == null) { ch.rk = r; ch.st.push(`rk-${r}-${uid()}`); markDirty(); schedulePush(); return null; }
+  if (r <= ch.rk) return null;
+  for (let i = ch.rk + 1; i <= r; i++) ch.st.push(`rk-${i}-${uid()}`);
+  ch.rk = r; saveProfile(); return r;
+}
+const giftToday = () => { const ch = S.profile.chest; return !!ch && ((ch.gift || {}).d || '') !== dayKey(Date.now()); };
+function rankLadder(k, xp) {
+  const cur = rankIdx(k), last = Math.max(RANKS.length - 1, cur);
+  const rows = Array.from({ length:last + 1 }, (_, i) => { const lv = i * 5 + 1, on = k >= lv; return `<div class="rkrow${on ? ' on' : ''}${i === cur ? ' cur' : ''}">${rankBadge(lv)}<span><b>${esc(rankName(lv))}</b><small>уровни ${lv}–${lv + 4}${i === cur ? ' · вы здесь' : on ? ' · пройден' : ` · ещё ${nf(lvlNeed(lv) - xp, 0)} XP`}</small></span></div>`; }).join('');
+  return `<div class="sblock"><b>Лестница рангов · ${cur + 1} из ${last + 1}</b><p class="fine" style="margin:4px 0 0">Каждый ранг — 5 уровней и золотой сундук в награду. После «Олимпийца» начинаются ранги «Бессмертный» без потолка.</p><div class="ranks">${rows}</div></div>`;
+}
+const levelXP = () => totalXP(gameStats());
+SHEETS.rankup = sh => {
+  const k = sh.r * 5 + 1, cs = chestState(), ch = cs.closed.find(x => x.rank === sh.r), nx = k + 5;
+  return `${closeOnly()}<div class="sheet-body"><div class="done-hero rank-hero">${rankBadge(k, 'big')}<div class="eyebrow">Новый ранг</div><h2 id="sheet-title" class="big-title">${esc(rankName(k))}</h2>
+    <p>Уровень ${k}. Следующий ранг — «${esc(rankName(nx))}» на ${nx} уровне.</p><span class="xp-chip">Награда: золотой сундук</span></div></div>
+    <footer class="sheet-foot">${ch ? `<button class="btn" data-act="closeSheet">Позже</button><button class="btn btn-primary" data-act="chestOpenFor" data-id="${esc(ch.id)}">${icon('chest')} Открыть сундук</button>` : '<button class="btn btn-primary btn-block" data-act="closeSheet">Отлично</button>'}</footer>`;
+};
+SHEETS.news24 = () => {
+  const L = levelOf(levelXP()), k = charOf(curProf()), mt = mateOf(S.profile, S.workouts), n = chestState().closed.length;
+  return `${sheetHead('Что нового', 'Версия ' + APP_VERSION)}<div class="sheet-body">
+  <div class="news-top">${rankBadge(L.k, 'big')}<div><div class="eyebrow">Ваш ранг</div><b class="news-rank">${esc(L.title)}</b><span class="fine">Уровень ${L.k} из 100 · дальше «Бессмертный»</span></div></div>
+  <ul class="pr-list news">
+    <li>${icon('trophy')}<span><b>100 уровней и 20 рангов</b> — от новичка через разряды, КМС и мастера спорта до олимпийца. За каждый ранг — золотой сундук</span></li>
+    <li>${icon('shirt')}<span><b>${ITEMS.length} вещей</b> — новые слоты: спина (плащи и крылья), спутник и аура. Эпическая редкость и сезонные вещи</span></li>
+    <li>${icon('gift')}<span><b>Подарок дня</b> — заходите за искрами, каждый седьмой подарок — сундук. Пропуски ничего не сжигают</span></li>
+    <li>${icon('star')}<span><b>Новые стадии</b> — «Мифический» после 300 тренировок и «Бессмертный» после 500</span></li>
+  </ul>
+  <div style="display:grid;place-items:center;margin-top:12px">${mateCell(k, 'happy', { stage:mt.stage.k, gear:mt.gear }, 'mate-g')}</div>
+</div><footer class="sheet-foot">${n ? `<button class="btn" data-act="closeSheet">Позже</button><button class="btn btn-primary" data-act="chestOpenNext">${icon('chest')} Сундуки · ${n}</button>` : '<button class="btn btn-primary btn-block" data-act="closeSheet">Готово</button>'}</footer>`;
+};
+Object.assign(A, {
+  gift: () => {
+    const ch = S.profile.chest; if (!ch || !giftToday()) return;
+    const g = ch.gift = Object.assign({ d:'', n:0, s:0 }, ch.gift || {}); g.d = dayKey(Date.now()); g.n = (+g.n || 0) + 1;
+    if (g.n % 7 === 0) { ch.st.push('gf-' + uid()); sfx('openc'); toast('Подарок дня: сундук! Каждый седьмой подарок — сундук'); }
+    else { const v = 5 + Math.floor(mulberry32(seed32((curProf().sid || S.pid) + g.d))() * 11); g.s = (+g.s || 0) + v; sfx('gift'); toast(`Подарок дня: +${v} искр · до сундука ${7 - g.n % 7}`); }
+    buzz([10, 30, 10]); saveProfile(); render();
+  },
+});
+
 /* ================= events ================= */
 document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const fn = A[el.dataset.act]; if (fn) { e.preventDefault(); SFXN.n = 0; fn(el, e); if (!SFXN.n) sfx(el.dataset.act === 'nav' ? 'tab' : el.dataset.act === 'closeSheet' ? 'close' : el.getAttribute('role') === 'switch' ? 'toggle' : 'tap'); } });
 document.addEventListener('input', e => { const el = e.target; if (el.dataset && el.dataset.in && IN[el.dataset.in]) IN[el.dataset.in](el, e); });
