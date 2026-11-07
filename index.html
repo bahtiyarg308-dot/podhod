@@ -528,6 +528,36 @@ textarea.field{height:auto;min-height:76px;padding:10px 14px;resize:vertical;lin
 .help ol{list-style:decimal;padding-left:20px;display:grid;gap:6px}
 .help b{color:var(--ink)}
 
+/* ---------- partner sync ---------- */
+.feed{display:grid;gap:2px;margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+.feed-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 0}
+.feed-main{display:flex;align-items:center;gap:10px;min-width:0;text-align:left;width:100%}
+.feed-main>span:not(.ava){min-width:0;display:block}
+.feed-t{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed-t b{font-weight:700}
+.feed-main small{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kudos{display:flex;gap:4px}
+.kd{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);color:var(--muted);transition:background-color .2s,color .2s,transform .3s var(--spring)}
+.kd .ic{width:17px;height:17px}
+.kd:active{transform:scale(.85)}
+.kd.on{background:var(--accent);color:var(--accent-ink);animation:pop .45s var(--spring)}
+.kd-got{display:inline-flex;gap:1px;color:var(--accent)}
+.kd-got .ic{width:14px;height:14px}
+.live-txt{color:var(--good);font-weight:600}
+.sync-note{font:500 10px var(--f-mono);color:var(--muted);text-align:right;margin-top:6px}
+.choice{display:grid;gap:10px}
+.choice button{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;text-align:left;padding:16px;border-radius:18px;background:var(--bg);border:2px solid var(--line);width:100%;transition:border-color .2s,transform .25s var(--spring)}
+.choice button:active{transform:scale(.98)}
+.choice button:hover{border-color:var(--accent)}
+.choice b{display:block;font-weight:700;font-size:15px}
+.choice small{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.choice .ic{width:28px;height:28px;color:var(--accent)}
+a.btn{text-decoration:none}
+.err{color:var(--bad);font-size:13px;margin-top:10px}
+.fr-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.fr-head b{display:block;font:400 20px/1.2 var(--f-display)}
+.fr-head small{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+
 /* ---------- medals ---------- */
 .medals{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:14px 8px}
 .medal{display:grid;justify-items:center;gap:6px;text-align:center;font-size:11px;font-weight:600;color:var(--ink-2);line-height:1.2}
@@ -669,7 +699,7 @@ textarea.field{height:auto;min-height:76px;padding:10px 14px;resize:vertical;lin
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.1.0';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -776,6 +806,9 @@ const ICONS = {
   target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" />',
   heart:'<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>',
   trophy:'<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M10 17h4"/>',
+  cloud:'<path d="M7 18.5h10.5a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.4 9.6 4.5 4.5 0 0 0 7 18.5z"/>',
+  link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l2 2M14 9l2 2"/>',
 };
 const icon = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`;
 const LOGO = '<svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><circle class="lp" cx="16" cy="16" r="15"/><circle cx="16" cy="16" r="10.5" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1.4"/><circle cx="16" cy="16" r="5" fill="#C5C9D0"/><circle cx="16" cy="16" r="2.3" fill="#2A2C31"/></svg>';
@@ -887,7 +920,8 @@ const BUILTIN = [
   ['jump-rope','Скакалка','cardio','other','time'],
 ].map(([id, name, muscle, equip, kind]) => ({ id, name, muscle, equip, kind }));
 const EXMAP = Object.fromEntries(BUILTIN.map(e => [e.id, e]));
-const exById = id => EXMAP[id] || (S.profile.custom || []).find(e => e.id === id) || { id, name:'Удалённое упражнение', muscle:'core', equip:'other', kind:'wr' };
+let RCUSTOM = {};
+const exById = id => EXMAP[id] || (S.profile.custom || []).find(e => e.id === id) || RCUSTOM[id] || { id, name:'Упражнение', muscle:'core', equip:'other', kind:'wr' };
 const allExercises = () => [...BUILTIN, ...(S.profile.custom || [])];
 const FEELS = [[1,'Легко'],[2,'Нормально'],[3,'Тяжело'],[4,'На пределе']];
 const PERIODS = { '28':{ l:'4 недели', d:28 }, '90':{ l:'3 месяца', d:90 }, '365':{ l:'Год', d:365 }, 'all':{ l:'Всё время', d:0 } };
@@ -895,7 +929,7 @@ const VIEWS = ['today','log','progress','body'];
 const TABS = [['today','Сегодня','today'],['log','Журнал','log'],['progress','Прогресс','progress'],['body','Тело','body']];
 
 /* ================= state ================= */
-const DEFAULT_PROFILE = { rest:90, sound:true, bar:20, goal:3, templates:[], custom:[], body:[] };
+const DEFAULT_PROFILE = { rest:90, sound:true, bar:20, goal:3, templates:[], custom:[], body:[], deleted:[], kudos:{} };
 const S = {
   mode:'loading', loaded:{ profile:false, workouts:false, active:false }, metaLoaded:false,
   meta:null, pid:'main', store:{},
@@ -905,6 +939,7 @@ const S = {
   rest:{ end:0, total:0, alerted:false },
   justKey:null, bumpPr:false, countUp:false, welcomed:false, poke:0, bubble:null,
   installEvt:null, updateReady:null, persisted:null,
+  remote:{}, rd:{}, sync:{ status:'off', last:0, etag:null, msg:'' }, syncOffConfirm:false,
 };
 let D = { hist:{}, best:{}, prSets:{}, prCount:{}, prEvents:[], usage:{} };
 const ready = () => S.mode !== 'loading' && S.loaded.profile && S.loaded.workouts && S.loaded.active;
@@ -916,7 +951,8 @@ const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.
 
 function normP(d) {
   const p = Object.assign(clone(DEFAULT_PROFILE), d ? clone(d) : {});
-  ['templates','custom','body'].forEach(k => { if (!Array.isArray(p[k])) p[k] = []; });
+  ['templates','custom','body','deleted'].forEach(k => { if (!Array.isArray(p[k])) p[k] = []; });
+  if (!p.kudos || typeof p.kudos !== 'object' || Array.isArray(p.kudos)) p.kudos = {};
   if (!(p.goal >= 1 && p.goal <= 7)) p.goal = 3;
   return p;
 }
@@ -976,8 +1012,9 @@ function agg(list) { const a = { n:list.length, vol:0, sets:0, dur:0 }; list.for
 function weekSummary(list) { const ws = weekStart(Date.now()), days = new Set(); let n = 0, vol = 0; (list || []).forEach(w => { if (w.start >= ws) { n++; days.add(dayKey(w.start)); vol += wStats(w).vol; } }); return { n, days, vol }; }
 
 /* ================= derived history ================= */
-function derive() {
-  const asc = [...S.workouts].sort((a, b) => a.start - b.start);
+function derive() { D = deriveFrom(S.workouts); }
+function deriveFrom(list) {
+  const asc = [...(list || [])].sort((a, b) => a.start - b.start);
   const hist = {}, best = {}, prSets = {}, prCount = {}, prEvents = [], usage = {};
   for (const w of asc) {
     const marks = new Set(); let n = 0;
@@ -1014,7 +1051,7 @@ function derive() {
     });
     prSets[w.id] = marks; prCount[w.id] = n;
   }
-  D = { hist, best, prSets, prCount, prEvents: prEvents.reverse(), usage };
+  return { hist, best, prSets, prCount, prEvents: prEvents.reverse(), usage };
 }
 function lastEntry(exId, wid, before) {
   const h = D.hist[exId]; if (!h) return null;
@@ -1052,16 +1089,19 @@ function weekStreak(list = S.workouts) {
 const TITLES = ['Пушинка','Росток','Бодрый блинчик','Гантелька','Крепыш','Стальной орешек','Железный характер','Штангист','Титан','Гроза грифа','Чемпион двора','Легенда зала'];
 const lvlNeed = k => 60 * k * (k - 1);           // total XP needed to reach level k
 function levelOf(xp) { let k = 1; while (xp >= lvlNeed(k + 1)) k++; const a = lvlNeed(k), b = lvlNeed(k + 1); return { k, title: TITLES[Math.min(k, TITLES.length) - 1] + (k > TITLES.length ? ' ' + (k - TITLES.length + 1) : ''), cur: xp - a, need: b - a, pct: Math.min(100, (xp - a) / (b - a) * 100), xp }; }
-const workoutXP = w => 40 + Math.min(40, wStats(w).sets * 2) + (D.prCount[w.id] || 0) * 15;
-function weekCounts() { const m = new Map(); S.workouts.forEach(w => { const k = weekStart(w.start); m.set(k, (m.get(k) || 0) + 1); }); return m; }
-function gameStats() {
-  const goal = S.profile.goal || 3, wc = weekCounts();
+const workoutXP = (w, Dx = D) => 40 + Math.min(40, wStats(w).sets * 2) + (Dx.prCount[w.id] || 0) * 15;
+function weekCounts(list) { const m = new Map(); list.forEach(w => { const k = weekStart(w.start); m.set(k, (m.get(k) || 0) + 1); }); return m; }
+const ctxLocal = () => ({ workouts:S.workouts, profile:S.profile, D });
+const rdFor = sid => S.rd[sid] || (S.rd[sid] = deriveFrom(S.remote[sid] ? S.remote[sid].workouts : []));
+const ctxRemote = sid => { const m = S.remote[sid] || {}; return { workouts:m.workouts || [], profile:normP(m.profile), D:rdFor(sid) }; };
+function gameStats(c = ctxLocal()) {
+  const goal = c.profile.goal || 3, wc = weekCounts(c.workouts);
   let tonTotal = 0, early = 0, owl = 0, heavy = 0, sets = 0;
-  S.workouts.forEach(w => { const st = wStats(w); tonTotal += st.vol; sets += st.sets; const h = new Date(w.start).getHours(); if (h < 9) early++; if (h >= 21) owl++; w.exercises.forEach(x => { const k = exById(x.ex).kind; x.sets.forEach(s => { if (!s.warm && valid(s, k) && (num(s.w) || 0) >= 100 && k === 'wr') heavy++; }); }); });
+  c.workouts.forEach(w => { const st = wStats(w); tonTotal += st.vol; sets += st.sets; const h = new Date(w.start).getHours(); if (h < 9) early++; if (h >= 21) owl++; w.exercises.forEach(x => { const k = exById(x.ex).kind; x.sets.forEach(s => { if (!s.warm && valid(s, k) && (num(s.w) || 0) >= 100 && k === 'wr') heavy++; }); }); });
   const weeks = [...wc.keys()].sort((a, b) => a - b); let bestStreak = 0, run = 0, prev = null;
   weeks.forEach(k => { run = prev != null && addDays(prev, 7) === k ? run + 1 : 1; bestStreak = Math.max(bestStreak, run); prev = k; });
   const goalWeeks = [...wc.values()].filter(n => n >= goal).length;
-  return { n:S.workouts.length, prs:D.prEvents.length, tonTotal, early, owl, heavy, sets, bestStreak, goalWeeks, tpls:S.profile.templates.length, bodyN:S.profile.body.length, profiles:profiles().length };
+  return { n:c.workouts.length, prs:c.D.prEvents.length, tonTotal, early, owl, heavy, sets, bestStreak, goalWeeks, tpls:c.profile.templates.length, bodyN:c.profile.body.length, profiles:profiles().length + Object.keys(S.remote).length };
 }
 const BADGES = [
   ['first','Первый шаг','Первая тренировка в журнале','1', s => s.n >= 1],
@@ -1084,11 +1124,11 @@ const BADGES = [
   ['owl','Ночная сова','Тренировка после 21:00','@moon', s => s.owl >= 1],
   ['tpl','Свой план','Создать программу','П', s => s.tpls >= 1],
   ['body','Под контролем','5 записей веса тела','5', s => s.bodyN >= 5],
-  ['pair','Вдвоём веселее','Второй профиль на устройстве','@heart', s => s.profiles >= 2],
+  ['pair','Вдвоём веселее','Подключить партнёра или второй профиль','@heart', s => s.profiles >= 2],
 ];
 const MEDAL_COLS = [['#D7263D','#fff'],['#2447F0','#fff'],['#F2C230','#1D1600'],['#2E9E5B','#fff'],['#ECEAE3','#151515']];
 function unlockedBadges(st = gameStats()) { return BADGES.filter(b => b[4](st)).map(b => b[0]); }
-function totalXP(st = gameStats()) { return S.workouts.reduce((a, w) => a + workoutXP(w), 0) + st.goalWeeks * 60 + unlockedBadges(st).length * 30; }
+function totalXP(st = gameStats(), c = ctxLocal()) { return c.workouts.reduce((a, w) => a + workoutXP(w, c.D), 0) + st.goalWeeks * 60 + unlockedBadges(st).length * 30; }
 function medalHTML(b, i, unlocked, isNew, row) {
   const [c, ink] = MEDAL_COLS[i % MEDAL_COLS.length];
   const g = b[3].startsWith('@') ? icon(b[3].slice(1)) : esc(b[3]);
@@ -1109,6 +1149,8 @@ function bubbleText(m) {
   const trainedToday = S.workouts.some(w => dayKey(w.start) === dayKey(Date.now()));
   if (!S.workouts.length) return `Привет${name ? ', ' + name : ''}! Я Блинчик. Начнём первую тренировку?`;
   if (trainedToday) return pick(['Сегодня уже поработали. Теперь восстанавливаемся!', 'Отличная работа сегодня! Поешь и выспись.', 'Мышцы растут во время отдыха. Ты молодец!']);
+  const buddy = Object.values(S.remote).find(r => (r.workouts || []).some(w => dayKey(w.start) === dayKey(Date.now())) || (r.live && Date.now() - r.live.start < 4 * 3600e3));
+  if (buddy) return `${buddy.name || 'Партнёр'} сегодня уже в деле. Догоняем?`;
   if (m.mood === 'sleepy') return pick(['Я соскучился… Может, сегодня в зал?', 'Звенит тишина. Давай хоть лёгкую тренировку?', 'Хр-р… Разбуди меня подходом!']);
   if (m.n >= m.goal) return pick(['Цель недели выполнена! Я горжусь тобой.', 'Неделя закрыта на ура!', 'Ты огонь! Можно и отдохнуть.']);
   const left = m.goal - m.n;
@@ -1122,15 +1164,19 @@ function markDirty() { dirty = true; clearTimeout(dirtyT); dirtyT = setTimeout(f
 function flush() { clearTimeout(dirtyT); dirtyT = null; if (!dirty) return; dirty = false; syncCur(); KV.set('p:' + S.pid, { profile:S.profile, workouts:S.workouts, active:S.active }); }
 function saveMeta() { if (S.meta) KV.set('meta', clean(S.meta)); }
 function ensureMeta() { if (!S.meta) S.meta = { profiles:[{ id:'main', name:'', color:'red' }], cur:'main', theme:'auto' }; return S.meta; }
-function saveProfile() { derive(); markDirty(); }
+function saveProfile() { derive(); markDirty(); schedulePush(); }
 function saveActive(now) { markDirty(); if (now) flush(); }
 function saveWorkout(w) {
-  const c = clean(w); delete c.isNew;
+  const c = clean(w); delete c.isNew; c.u = Date.now();
   const i = S.workouts.findIndex(x => x.id === c.id);
   if (i >= 0) S.workouts[i] = normW(c, c.id); else S.workouts.push(normW(c, c.id));
-  S.workouts.sort((a, b) => b.start - a.start); derive(); markDirty(); flush();
+  S.workouts.sort((a, b) => b.start - a.start); derive(); markDirty(); flush(); schedulePush();
 }
-function deleteWorkout(id) { S.workouts = S.workouts.filter(w => w.id !== id); derive(); markDirty(); }
+function deleteWorkout(id) {
+  S.workouts = S.workouts.filter(w => w.id !== id);
+  if (!S.profile.deleted.includes(id)) S.profile.deleted.push(id);
+  derive(); markDirty(); schedulePush();
+}
 function changed() { const w = curW(); if (w && isLive(w)) markDirty(); }
 function loadProfileData() {
   const d = S.store[S.pid] || {};
@@ -1151,10 +1197,149 @@ function switchProfile(pid) {
 async function requestPersist() {
   try { if (navigator.storage && navigator.storage.persist) { S.persisted = (await navigator.storage.persisted()) || (await navigator.storage.persist()); } } catch (e) { S.persisted = null; }
 }
+/* ================= partner sync (secret GitHub gist, one file per person) ================= */
+const GH = 'https://api.github.com';
+const KUDOS = [['flame','Огонь'],['heart','Сердце'],['star','Звезда']];
+const syncCfg = () => (S.meta && S.meta.sync && S.meta.sync.on && S.meta.sync.gist && S.meta.sync.token) ? S.meta.sync : null;
+const ghHeaders = (token, json) => Object.assign({ 'Authorization':'Bearer ' + token, 'Accept':'application/vnd.github+json', 'X-GitHub-Api-Version':'2022-11-28' }, json ? { 'Content-Type':'application/json' } : {});
+const SY = { busy:false, again:false, pushT:null };
+function rebuildCustom() { RCUSTOM = {}; Object.values(S.remote).forEach(m => ((m.profile && m.profile.custom) || []).forEach(e => { if (e && e.id) RCUSTOM[e.id] = e; })); }
+function ensureSids() { let ch = false; ensureMeta().profiles.forEach(p => { if (!p.sid) { p.sid = uid() + uid().slice(-4); ch = true; } }); if (ch) saveMeta(); }
+function schedulePush() { if (!syncCfg()) return; clearTimeout(SY.pushT); SY.pushT = setTimeout(() => syncNow(), 2500); }
+function payload(pid) {
+  const p = profiles().find(x => x.id === pid) || {};
+  const d = pid === S.pid ? { profile:S.profile, workouts:S.workouts, active:S.active } : (S.store[pid] || {});
+  const prof = normP(d.profile), share = !!(S.meta.sync && S.meta.sync.shareBody);
+  return { v:1, id:p.sid, name:p.name || '', color:p.color || 'red',
+    profile:{ goal:prof.goal, custom:prof.custom, body: share ? prof.body : [] },
+    workouts:(d.workouts || []).map(w => clean(w)), deleted:prof.deleted.slice(-800), kudos:prof.kudos,
+    live: d.active ? { start:d.active.start, title:d.active.title || '' } : null };
+}
+function validMember(m) {
+  if (!m || typeof m !== 'object' || !m.id) return null;
+  m.workouts = Array.isArray(m.workouts) ? m.workouts.filter(w => w && w.id && Number.isFinite(w.start) && Array.isArray(w.exercises)).map(w => normW(w, String(w.id))).sort((a, b) => b.start - a.start) : [];
+  m.profile = m.profile && typeof m.profile === 'object' ? m.profile : {};
+  m.kudos = m.kudos && typeof m.kudos === 'object' ? m.kudos : {};
+  m.deleted = Array.isArray(m.deleted) ? m.deleted : [];
+  if (!COLORS[m.color]) m.color = 'blue';
+  return m;
+}
+async function readMembers(files) {
+  const out = {};
+  for (const [name, f] of Object.entries(files || {})) {
+    if (!/^m-.+\.json$/.test(name)) continue;
+    try {
+      let txt = f.content;
+      if (f.truncated || txt == null) txt = await (await fetch(f.raw_url, { cache:'no-store' })).text();
+      const m = validMember(JSON.parse(txt)); if (m) out[m.id] = m;
+    } catch (e) { /* skip broken file */ }
+  }
+  return out;
+}
+function mergeMember(pid, rem) {
+  const d = S.store[pid] || (S.store[pid] = {});
+  const prof = normP(d.profile);
+  const del = new Set([...prof.deleted, ...rem.deleted]);
+  const map = new Map((d.workouts || []).map(w => [w.id, w]));
+  let changed = false;
+  (rem.workouts || []).forEach(w => { if (del.has(w.id)) return; const l = map.get(w.id); if (!l || (w.u || 0) > (l.u || 0)) { map.set(w.id, normW(w, w.id)); changed = true; } });
+  del.forEach(id => { if (map.has(id)) { map.delete(id); changed = true; } });
+  const before = JSON.stringify(prof.kudos);
+  prof.kudos = Object.assign({}, rem.kudos || {}, prof.kudos);
+  if (JSON.stringify(prof.kudos) !== before) changed = true;
+  if (prof.deleted.length !== del.size) { prof.deleted = [...del]; changed = true; }
+  ((rem.profile && rem.profile.custom) || []).forEach(e => { if (e && e.id && !prof.custom.some(c => c.id === e.id)) { prof.custom.push(e); changed = true; } });
+  d.profile = prof; d.workouts = [...map.values()].sort((a, b) => b.start - a.start);
+  return changed;
+}
+function setSync(status, msg = '') { S.sync.status = status; S.sync.msg = msg; }
+async function syncNow(force) {
+  const c = syncCfg(); if (!c) return;
+  if (SY.busy) { SY.again = true; return; }
+  if (navigator.onLine === false) { setSync('offline'); render(); return; }
+  SY.busy = true; setSync('syncing');
+  const hashes = ensureMeta().syncHash || (S.meta.syncHash = {}), prevHashes = { ...hashes };
+  try {
+    flush(); syncCur(); ensureSids();
+    const h = ghHeaders(c.token); if (S.sync.etag && !force) h['If-None-Match'] = S.sync.etag;
+    const r = await fetch(`${GH}/gists/${c.gist}`, { headers:h, cache:'no-store' });
+    if (r.status === 401) throw { code:'auth' };
+    if (r.status === 404) throw { code:'gone' };
+    let files = null;
+    if (r.status === 200) { S.sync.etag = r.headers.get('ETag'); const j = await r.json(); files = await readMembers(j.files); }
+    else if (r.status !== 304) throw { code:'http', status:r.status };
+    if (files) {
+      const mine = new Map(profiles().filter(p => p.sid).map(p => [p.sid, p.id]));
+      const rem = {}; let localChanged = false;
+      for (const [sid, m] of Object.entries(files)) {
+        if (mine.has(sid)) { const pid = mine.get(sid); if (mergeMember(pid, m)) { localChanged = true; KV.set('p:' + pid, S.store[pid]); } }
+        else rem[sid] = m;
+      }
+      S.remote = rem; S.rd = {}; rebuildCustom(); KV.set('remote', rem);
+      S.sync.files = new Set(Object.keys(files));
+      if (localChanged) loadProfileData();
+    }
+    const out = {};
+    for (const p of profiles()) {
+      if (!p.sid) continue;
+      const pl = payload(p.id), hh = hash(JSON.stringify(pl));
+      const missing = S.sync.files && !S.sync.files.has(p.sid);
+      if (hh !== hashes[p.id] || missing) { pl.updated = Date.now(); out[`m-${p.sid}.json`] = { content:JSON.stringify(pl) }; hashes[p.id] = hh; }
+    }
+    if (Object.keys(out).length) {
+      const pr = await fetch(`${GH}/gists/${c.gist}`, { method:'PATCH', headers:ghHeaders(c.token, true), body:JSON.stringify({ files:out }) });
+      if (pr.status === 401) throw { code:'auth' };
+      if (!pr.ok) throw { code:'http', status:pr.status };
+      S.sync.etag = null; if (!S.sync.files) S.sync.files = new Set();
+      profiles().forEach(p => p.sid && S.sync.files.add(p.sid));
+    }
+    saveMeta(); setSync('ok'); S.sync.last = Date.now();
+    notifyRemote();
+  } catch (e) {
+    S.meta.syncHash = prevHashes;
+    if (e && e.code === 'auth') setSync('error', 'Ключ доступа не работает: его удалили или у него истёк срок. Создайте новый и подключитесь заново.');
+    else if (e && e.code === 'gone') setSync('error', 'Общее пространство не найдено — возможно, его удалили на GitHub.');
+    else if (e && e.code === 'http') setSync('error', `GitHub ответил ошибкой ${e.status}. Попробуем ещё раз позже.`);
+    else setSync('offline');
+  } finally {
+    SY.busy = false; render();
+    if (SY.again) { SY.again = false; setTimeout(() => syncNow(), 600); }
+  }
+}
+function notifyRemote() {
+  const meta = ensureMeta(), seen = meta.seenRemote || (meta.seenRemote = {});
+  const firstK = !meta.seenKudos; const seenK = new Set(meta.seenKudos || []); const mySid = curProf().sid; let ch = firstK;
+  Object.values(S.remote).forEach(m => {
+    const newest = m.workouts.length ? m.workouts[0].start : 0;
+    if (seen[m.id] == null) { seen[m.id] = newest; ch = true; }
+    else if (newest > seen[m.id]) { const w = m.workouts[0], pr = rdFor(m.id).prCount[w.id] || 0; toast(`${m.name || 'Партнёр'}: новая тренировка «${w.title || 'Тренировка'}»${pr ? ` · ${pr} PR` : ''}`, pr ? 'pr' : ''); seen[m.id] = newest; ch = true; }
+    if (mySid) Object.entries(m.kudos || {}).forEach(([key, type]) => {
+      if (!key.startsWith(mySid + '/')) return; const id = m.id + '|' + key + '|' + type; if (seenK.has(id)) return;
+      seenK.add(id); ch = true; const w = S.workouts.find(x => x.id === key.split('/')[1]); const kn = (KUDOS.find(k => k[0] === type) || ['', 'Реакция'])[1];
+      if (w && !firstK) setTimeout(() => toast(`${m.name || 'Партнёр'}: «${kn}» за тренировку «${w.title || 'Тренировка'}»`), 900);
+    });
+  });
+  if (ch) { meta.seenKudos = [...seenK].slice(-600); saveMeta(); }
+}
+const inviteCode = () => { const c = syncCfg(); if (!c) return ''; return 'PDH1-' + btoa(JSON.stringify({ g:c.gist, t:c.token })).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+function parseCode(s) {
+  try { const b = String(s).replace(/\s+/g, '').replace(/^PDH1-/i, '').replace(/-/g, '+').replace(/_/g, '/'); const j = JSON.parse(atob(b + '==='.slice((b.length + 3) % 4))); return j && j.g && j.t ? j : null; } catch (e) { return null; }
+}
+function kudosFor(wid) { const sid = curProf().sid; if (!sid) return []; const out = []; Object.values(S.remote).forEach(m => { const t = m.kudos && m.kudos[sid + '/' + wid]; if (t) out.push({ m, t }); }); return out; }
+const agoText = ms => { const s = (Date.now() - ms) / 1000; if (s < 60) return 'только что'; if (s < 3600) return `${Math.floor(s / 60)} мин назад`; if (s < 86400) return `в ${hm(ms)}`; return relDays(ms); };
+function syncStatusText() {
+  const st = S.sync.status;
+  if (st === 'syncing') return 'Синхронизация…';
+  if (st === 'offline') return 'Нет связи — обновится, когда появится интернет.';
+  if (st === 'error') return S.sync.msg;
+  return S.sync.last ? `Подключено · обновлено ${agoText(S.sync.last)}` : 'Подключено';
+}
+
 async function boot() {
   buildNav(); applyTheme(); render();
   await KV.open();
   S.meta = await KV.get('meta');
+  S.remote = (await KV.get('remote')) || {}; Object.values(S.remote).forEach(validMember); rebuildCustom();
   const ids = profiles().map(p => p.id);
   for (const id of ids) S.store[id] = (await KV.get('p:' + id)) || {};
   S.pid = (S.meta && S.meta.cur && ids.includes(S.meta.cur)) ? S.meta.cur : 'main';
@@ -1162,9 +1347,13 @@ async function boot() {
   loadProfileData(); applyAccent(); applyTheme();
   try { if (navigator.storage && navigator.storage.persisted) S.persisted = await navigator.storage.persisted(); } catch (e) { S.persisted = null; }
   if (isStandalone() && !S.persisted) requestPersist();
+  if (syncCfg()) setSync('ok');
   render();
   registerSW();
+  if (syncCfg()) syncNow(true);
 }
+window.addEventListener('online', () => syncNow());
+setInterval(() => { if (document.visibilityState === 'visible') syncNow(); }, 90000);
 
 /* ================= PWA: service worker, install ================= */
 function registerSW() {
@@ -1232,7 +1421,7 @@ async function keepAwake(on) {
     else if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
   } catch (e) { wakeLock = null; }
 }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); else if (S.active) keepAwake(true); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { flush(); if (SY.pushT) { clearTimeout(SY.pushT); SY.pushT = null; syncNow(); } } else { if (S.active) keepAwake(true); syncNow(); } });
 window.addEventListener('pagehide', flush);
 function confetti(x, y, n = 70) {
   if (RM) return;
@@ -1463,6 +1652,8 @@ function bannersHTML() {
   let h = '';
   if (S.updateReady) h += `<div class="banner"><div class="banner-t">${icon('download')}<span><b>Вышло обновление.</b> Нажмите, чтобы установить — данные не пропадут.</span></div><div class="banner-a"><button class="btn btn-sm btn-primary" data-act="applyUpdate">Обновить</button></div></div>`;
   const m = S.meta || {};
+  if (S.sync.status === 'error' && syncCfg()) h += `<div class="banner warn"><div class="banner-t">${icon('cloud')}<span><b>Синхронизация остановилась.</b> ${esc(S.sync.msg)}</span></div><div class="banner-a"><button class="btn btn-sm btn-primary" data-act="settings">Настройки</button></div></div>`;
+  if (!syncCfg() && !(m.pairHide > Date.now())) h += `<div class="banner"><div class="banner-t">${icon('users')}<span><b>Тренируетесь вдвоём в разных залах?</b> Подключите партнёра — будете видеть тренировки и рекорды друг друга.</span></div><div class="banner-a"><button class="btn btn-sm btn-primary" data-act="syncSetup">Подключить</button><button class="btn btn-sm btn-ghost" data-act="hidePair" aria-label="Скрыть">${icon('x')}</button></div></div>`;
   if (!isStandalone() && !(m.installHide > Date.now()) && (S.installEvt || isIOS() || /android/i.test(navigator.userAgent))) {
     h += `<div class="banner"><div class="banner-t">${icon('phone')}<span><b>Установите на главный экран</b> — так «Подход» работает без интернета и открывается как обычное приложение.</span></div><div class="banner-a">${S.installEvt ? `<button class="btn btn-sm btn-primary" data-act="install">Установить</button>` : `<button class="btn btn-sm btn-primary" data-act="help">Как</button>`}<button class="btn btn-sm btn-ghost" data-act="hideInstall" aria-label="Скрыть">${icon('x')}</button></div></div>`;
   }
@@ -1509,15 +1700,28 @@ function viewToday() {
     </section>
     ${last ? `<section class="sec"><div class="sec-head"><h2 class="h2">Последняя тренировка</h2><button class="btn btn-sm btn-ghost" data-act="nav" data-v="log">Весь журнал ${icon('chevron')}</button></div><ul>${jrow(last, 0)}</ul></section>` : firstRun()}`;
 }
+function kudosBtns(sid, wid) {
+  const key = sid + '/' + wid, cur = S.profile.kudos[key];
+  return `<span class="kudos">${KUDOS.map(([k, l]) => `<button class="kd${cur === k ? ' on' : ''}" data-act="kudo" data-sid="${esc(sid)}" data-id="${esc(wid)}" data-k="${k}" aria-pressed="${cur === k}" aria-label="${l}">${icon(k, k === 'flame' ? '' : 'ic-f')}</button>`).join('')}</span>`;
+}
+function feedRow(m, w, withAva) {
+  const st = wStats(w), pr = rdFor(m.id).prCount[w.id] || 0;
+  return `<div class="feed-row" data-key="fd-${esc(m.id)}-${esc(w.id)}"><button class="feed-main" data-act="rwd" data-sid="${esc(m.id)}" data-id="${esc(w.id)}">${withAva ? ava(m) : ''}<span><span class="feed-t">${withAva ? `<b>${esc(m.name || 'Партнёр')}</b> · ` : ''}${esc(w.title || 'Тренировка')}</span><small>${relDays(w.start)} · ${st.vol ? ton(st.vol) : st.sets + ' подх.'}${pr ? ` · ${pr} PR` : ''}</small></span></button>${kudosBtns(m.id, w.id)}</div>`;
+}
 function pairCard() {
-  const ps = profiles(); if (ps.length < 2) return '';
+  const ps = profiles(), rs = Object.values(S.remote); if (ps.length + rs.length < 2) return '';
   const ws = weekStart(Date.now());
+  const dotsOf = (s, c) => Array.from({ length:7 }, (_, i) => `<i class="${s.days.has(dayKey(addDays(ws, i))) ? 'on' : ''}" style="--pc:${c}"></i>`).join('');
   const rows = ps.map(p => {
     const s = weekSummary(p.id === S.pid ? S.workouts : (S.store[p.id] && S.store[p.id].workouts));
-    const dots = Array.from({ length:7 }, (_, i) => `<i class="${s.days.has(dayKey(addDays(ws, i))) ? 'on' : ''}" style="--pc:${col(p)[0]}"></i>`).join('');
-    return `<div class="pair-row" data-key="pair-${esc(p.id)}"><button class="pair-who" data-act="switchProf" data-id="${esc(p.id)}" aria-label="Открыть профиль ${esc(pname(p))}">${ava(p)}<span>${esc(pname(p))}${p.id === S.pid ? ' <small>· открыт</small>' : ''}</span></button><span class="pair-dots" aria-label="${s.n} тренировок на этой неделе">${dots}</span><span class="pair-n">${s.n}</span></div>`;
-  }).join('');
-  return `<section class="sec"><div class="sec-head"><h2 class="h2">Неделя вместе</h2><span class="h2">пн — вс</span></div><div class="panel pair">${rows}</div></section>`;
+    return `<div class="pair-row" data-key="pair-${esc(p.id)}"><button class="pair-who" data-act="switchProf" data-id="${esc(p.id)}" aria-label="Открыть профиль ${esc(pname(p))}">${ava(p)}<span>${esc(pname(p))}${p.id === S.pid && ps.length > 1 ? ' <small>· открыт</small>' : ''}</span></button><span class="pair-dots" aria-label="${s.n} тренировок на этой неделе">${dotsOf(s, col(p)[0])}</span><span class="pair-n">${s.n}</span></div>`;
+  }).concat(rs.map(m => {
+    const s = weekSummary(m.workouts), live = m.live && Date.now() - m.live.start < 4 * 3600e3;
+    return `<div class="pair-row" data-key="pair-r-${esc(m.id)}"><button class="pair-who" data-act="friend" data-sid="${esc(m.id)}" aria-label="Открыть ${esc(m.name || 'партнёра')}">${ava(m)}<span>${esc(m.name || 'Партнёр')}${live ? ' <small class="live-txt">· тренируется</small>' : ''}</span></button><span class="pair-dots" aria-label="${s.n} тренировок на этой неделе">${dotsOf(s, col(m)[0])}</span><span class="pair-n">${s.n}</span></div>`;
+  })).join('');
+  const recent = rs.flatMap(m => m.workouts.filter(w => Date.now() - w.start < 10 * DAY).slice(0, 3).map(w => [m, w])).sort((a, b) => b[1].start - a[1].start).slice(0, 3);
+  const note = syncCfg() ? `<p class="sync-note">${esc(syncStatusText())}</p>` : '';
+  return `<section class="sec"><div class="sec-head"><h2 class="h2">Неделя вместе</h2><span class="h2">пн — вс</span></div><div class="panel pair">${rows}${recent.length ? `<div class="feed">${recent.map(([m, w]) => feedRow(m, w, true)).join('')}</div>` : ''}</div>${note}</section>`;
 }
 function firstRun() {
   return `<section class="sec"><div class="sec-head"><h2 class="h2">Как это работает</h2><button class="btn btn-sm btn-ghost" data-act="help">${icon('help')} Подробнее</button></div><ol class="steps">
@@ -1621,8 +1825,8 @@ function exLine(w) {
   }).filter(Boolean).join(' · ');
 }
 function jrow(w, i = 0) {
-  const d = new Date(w.start), st = wStats(w), pr = D.prCount[w.id] || 0;
-  return `<li data-key="j-${esc(w.id)}"><button class="jrow" style="--i:${Math.min(i, 12)}" data-act="openWorkout" data-id="${esc(w.id)}"><span class="jdate"><b>${d.getDate()}</b><span>${WD[d.getDay()]}</span></span><span class="jmain"><span class="jtitle">${esc(w.title || 'Тренировка')}${pr ? `<span class="pr-chip">${icon('star', 'ic-f')}${pr} PR</span>` : ''}</span><span class="jex">${exLine(w)}</span></span><span class="jnums"><b>${st.vol ? ton(st.vol) : st.sets + ' подх.'}</b><span>${fmtDur(st.dur)}</span></span></button></li>`;
+  const d = new Date(w.start), st = wStats(w), pr = D.prCount[w.id] || 0, kg = kudosFor(w.id);
+  return `<li data-key="j-${esc(w.id)}"><button class="jrow" style="--i:${Math.min(i, 12)}" data-act="openWorkout" data-id="${esc(w.id)}"><span class="jdate"><b>${d.getDate()}</b><span>${WD[d.getDay()]}</span></span><span class="jmain"><span class="jtitle">${esc(w.title || 'Тренировка')}${pr ? `<span class="pr-chip">${icon('star', 'ic-f')}${pr} PR</span>` : ''}${kg.length ? `<span class="kd-got" aria-label="Реакции: ${kg.length}">${kg.map(k => icon(k.t, k.t === 'flame' ? '' : 'ic-f')).join('')}</span>` : ''}</span><span class="jex">${exLine(w)}</span></span><span class="jnums"><b>${st.vol ? ton(st.vol) : st.sets + ' подх.'}</b><span>${fmtDur(st.dur)}</span></span></button></li>`;
 }
 function viewLog() {
   const add = `<button class="btn btn-sm" data-act="addPast">${icon('plus')} Прошедшая</button>`;
@@ -1874,28 +2078,30 @@ SHEETS.awards = () => {
 SHEETS.disc = () => `${sheetHead('Отменить тренировку?')}<div class="sheet-body"><p style="color:var(--ink-2)">Все подходы этой тренировки удалятся, в журнал она не попадёт. Вернуть будет нельзя.</p></div><footer class="sheet-foot"><button class="btn" data-act="closeSheet">Назад</button><button class="btn btn-danger" data-act="discardConfirm">Удалить тренировку</button></footer>`;
 
 SHEETS.wd = sh => {
-  const w = S.workouts.find(x => x.id === sh.id);
+  const rm = sh.sid ? S.remote[sh.sid] : null, Dx = rm ? rdFor(sh.sid) : D;
+  const w = (rm ? rm.workouts : S.workouts).find(x => x.id === sh.id);
   if (!w) return `${sheetHead('Тренировка')}<div class="sheet-body"><p class="muted">Эта тренировка удалена.</p></div>`;
-  const st = wStats(w), marks = D.prSets[w.id] || new Set(), d = new Date(w.start), pr = D.prCount[w.id] || 0;
+  const st = wStats(w), marks = Dx.prSets[w.id] || new Set(), d = new Date(w.start), pr = Dx.prCount[w.id] || 0;
+  const kg = rm ? [] : kudosFor(w.id);
   const feel = FEELS.find(f => f[0] === w.feel);
   const exs = w.exercises.map((x, xi) => {
     const ex = exById(x.ex); let n = 0;
     const rows = x.sets.map((s, si) => { if (!valid(s, ex.kind)) return ''; if (!s.warm) n++; const isPr = marks.has(xi + ':' + si); const e = ex.kind === 'wr' && !s.warm ? e1rm(num(s.w) || 0, num(s.r) || 0) : 0; return `<div class="wd-set${isPr ? ' pr' : ''}"><span class="set-n${s.warm ? ' warm' : ''}">${s.warm ? 'Р' : n}</span><span>${esc(setLong(s, ex.kind))}</span><span class="e1">${isPr ? `<span class="pr-chip">${icon('star', 'ic-f')}PR</span> ` : ''}${e ? 'e1RM ' + nf(e, 1) : ''}</span></div>`; }).join('');
     return `<div class="wd-ex"><h3><span>${esc(ex.name)}</span><small>${esc(xSummary(x, ex.kind))}</small></h3>${x.note ? `<p class="wd-note" style="margin:0 0 8px">${esc(x.note)}</p>` : ''}<div class="wd-sets">${rows}</div></div>`;
   }).join('');
-  return `${sheetHead(esc(w.title || 'Тренировка'), `${WD_FULL[d.getDay()]}, ${dayMonth(w.start)} · ${hm(w.start)}–${hm(w.end)}`)}
+  return `${sheetHead(esc(w.title || 'Тренировка'), `${rm ? esc(rm.name || 'Партнёр') + ' · ' : ''}${WD_FULL[d.getDay()]}, ${dayMonth(w.start)} · ${hm(w.start)}–${hm(w.end)}`)}
     <div class="sheet-body">
       <div class="kv k4"><div><b>${fmtDur(st.dur)}</b><span>время</span></div><div><b>${ton(st.vol)}</b><span>объём</span></div><div><b>${st.sets}</b><span>подходов</span></div><div class="${pr ? 'is-pr' : ''}"><b>${pr}</b><span>${plural(pr, ['рекорд','рекорда','рекордов'])}</span></div></div>
-      ${feel ? `<div class="wd-meta" style="margin-top:12px"><span>Ощущения: <b>${feel[1]}</b></span><span>+${workoutXP(w)} XP</span></div>` : `<div class="wd-meta" style="margin-top:12px"><span>+${workoutXP(w)} XP</span></div>`}
+      <div class="wd-meta" style="margin-top:12px">${feel ? `<span>Ощущения: <b>${feel[1]}</b></span>` : ''}<span>+${workoutXP(w, Dx)} XP</span>${kg.map(k => `<span class="kd-got">${icon(k.t, k.t === 'flame' ? '' : 'ic-f')}</span><span>${esc(k.m.name || 'Партнёр')}</span>`).join('')}</div>
       ${w.note ? `<p class="wd-note">${esc(w.note)}</p>` : ''}
       ${exs}
     </div>
-    <div class="wd-actions">
+    ${rm ? `<div class="wd-actions" style="grid-template-columns:1fr auto;align-items:center"><span class="fine" style="margin:0">Поддержите реакцией</span>${kudosBtns(rm.id, w.id)}</div>` : `<div class="wd-actions">
       <button class="btn" data-act="wRepeat">${icon('repeat')} Повторить</button>
       <button class="btn" data-act="wAsTpl">${icon('save')} В программы</button>
       <button class="btn" data-act="wEdit">${icon('edit')} Изменить</button>
       <button class="btn ${sh.confirm ? 'btn-danger' : 'btn-danger-soft'}" data-act="wDel">${icon('trash')} ${sh.confirm ? 'Точно удалить' : 'Удалить'}</button>
-    </div>`;
+    </div>`}`;
 };
 
 SHEETS.tpl = sh => {
@@ -1937,7 +2143,7 @@ SHEETS.welcome = sh => `${closeOnly()}<div class="sheet-body">
   <div class="welcome-hero">${mascot('happy')}<h2 id="sheet-title" class="big-title">Привет! Я Блинчик</h2><p>Буду следить за вашими тренировками, считать рекорды и радоваться каждому подходу. Всё хранится прямо на этом устройстве и работает без интернета.</p></div>
   <label class="lbl">Как вас зовут?<input class="field" id="wl-name" data-in="wlName" value="${esc(sh.name)}" placeholder="Имя" autocomplete="off" maxlength="24" enterkeyhint="done"></label>
   <div class="lbl" style="margin-top:14px">Любимый цвет${colorDots(sh.color, 'wlColor')}</div>
-  <div class="hint">${icon('phone')}<span><b>Совет:</b> установите приложение на главный экран — тогда оно будет открываться как обычное и работать офлайн. Как это сделать, есть в настройках → «Как пользоваться».</span></div>
+  <div class="hint">${icon('users')}<span><b>Тренируетесь вдвоём?</b> После знакомства нажмите «Подключить» на главном экране — телефоны будут видеть тренировки друг друга, даже в разных залах.</span></div>
 </div><footer class="sheet-foot"><button class="btn btn-primary btn-lg btn-block" data-act="welcomeSave">Поехали!</button></footer>`;
 
 SHEETS.help = () => `${sheetHead('Как пользоваться')}<div class="sheet-body help">
@@ -1951,9 +2157,61 @@ SHEETS.help = () => `${sheetHead('Как пользоваться')}<div class="
   <p>Удачную тренировку сохраните кнопкой «В программы» в журнале — в следующий раз начнёте её в одно касание.</p>
   <h3>4. Резервная копия — важно</h3>
   <p>Данные хранятся только на этом устройстве. Раз в пару недель нажимайте <b>Настройки → Резервная копия → Сохранить</b> и отправляйте файл себе в «Избранное» в Telegram, в Google Диск или «Файлы». При смене телефона установите приложение заново и нажмите «Восстановить из файла».</p>
-  <h3>5. Вдвоём</h3>
-  <p>У каждого свой телефон — у каждого свой дневник. Если тренируетесь с одного устройства, добавьте второй профиль: нажмите на кружок с буквой вверху.</p>
+  <h3>5. Вдвоём, в разных залах</h3>
+  <ol><li>Один человек открывает <b>Настройки → Синхронизация → Настроить → «Я настраиваю первым»</b> и создаёт бесплатный ключ на GitHub (приложение подскажет, куда нажать).</li><li>Затем нажимает «Код для партнёра» и отправляет код второму.</li><li>Второй открывает <b>Настройки → Синхронизация → Настроить → «У меня есть код»</b> и вставляет его.</li></ol>
+  <p>После этого на главной появится «Неделя вместе»: тренировки, рекорды и уровень партнёра, а ещё реакции — огонь, сердце и звезда. Обмен идёт, когда есть интернет, а в зале всё работает и без него. Синхронизация заодно служит облачной копией: на новом телефоне подключитесь тем же кодом и выберите «Я — …».</p>
+  <h3>6. Один телефон на двоих</h3>
+  <p>Добавьте второй профиль: нажмите на кружок с буквой вверху.</p>
 </div>`;
+
+SHEETS.sync = sh => {
+  if (sh.step === 'create') return `${sheetHead('Общее пространство')}<div class="sheet-body">
+    <p style="color:var(--ink-2);font-size:14px;margin-bottom:14px">Тренировки будут храниться в секретном хранилище на вашем GitHub. Это бесплатно и навсегда. Нужен ключ доступа — его создаёт GitHub.</p>
+    <ol class="steps">
+      <li><span><b>Откройте GitHub</b> — название ключа и галочка «gist» уже будут заполнены.<br><a class="btn btn-sm btn-soft" style="margin-top:8px" href="https://github.com/settings/tokens/new?scopes=gist&amp;description=Podhod%20sync" target="_blank" rel="noopener">${icon('key')} Создать ключ на GitHub</a></span></li>
+      <li><span>В поле <b>Expiration</b> выберите <b>No expiration</b>, внизу нажмите <b>Generate token</b> и скопируйте ключ — он начинается с <b>ghp_</b>.</span></li>
+      <li><span>Вставьте ключ сюда и нажмите «Подключить».</span></li>
+    </ol>
+    <input class="field mono" style="margin-top:14px" id="sync-token" data-in="syncToken" value="${esc(sh.token || '')}" placeholder="ghp_…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Ключ доступа GitHub">
+    ${sh.err ? `<p class="err">${esc(sh.err)}</p>` : ''}
+  </div><footer class="sheet-foot"><button class="btn" data-act="syncStep" data-step="">Назад</button><button class="btn btn-primary" data-act="syncCreate"${sh.busy ? ' disabled' : ''}>${sh.busy ? 'Подключаю…' : 'Подключить'}</button></footer>`;
+  if (sh.step === 'join') return `${sheetHead('Подключиться по коду')}<div class="sheet-body">
+    <p style="color:var(--ink-2);font-size:14px;margin-bottom:12px">Попросите партнёра открыть у себя <b>Настройки → Синхронизация → Код для партнёра</b> и прислать вам код. Вставьте его сюда.</p>
+    <textarea class="field mono" id="sync-code" data-in="syncCode" rows="4" placeholder="PDH1-…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Код партнёра">${esc(sh.code || '')}</textarea>
+    ${sh.err ? `<p class="err">${esc(sh.err)}</p>` : ''}
+  </div><footer class="sheet-foot"><button class="btn" data-act="syncStep" data-step="">Назад</button><button class="btn btn-primary" data-act="syncJoin"${sh.busy ? ' disabled' : ''}>${sh.busy ? 'Подключаю…' : 'Подключиться'}</button></footer>`;
+  if (sh.step === 'pick') return `${sheetHead('Кто вы?')}<div class="sheet-body">
+    <p style="color:var(--ink-2);font-size:14px;margin-bottom:14px">Если вы уже пользовались «Подходом» на другом телефоне, выберите себя — ваши тренировки перенесутся сюда. Если нет — нажмите «Я новый участник».</p>
+    <div class="choice">${(sh.members || []).map(m => `<button data-act="syncPickMe" data-sid="${esc(m.id)}">${ava(m, 'lg')}<span><b>Я — ${esc(m.name || 'без имени')}</b><small>${m.workouts.length} ${plural(m.workouts.length, ['тренировка','тренировки','тренировок'])} · перенести на этот телефон</small></span></button>`).join('')}
+    <button data-act="syncPickNew">${icon('plus')}<span><b>Я новый участник</b><small>Мои тренировки с этого телефона добавятся к общим</small></span></button></div>
+  </div>`;
+  return `${sheetHead('Синхронизация с партнёром')}<div class="sheet-body">
+    <p style="color:var(--ink-2);font-size:14px;margin-bottom:14px">Телефоны будут видеть тренировки, рекорды и уровни друг друга, даже если вы ходите в разные залы. Без интернета всё работает как обычно — обмен произойдёт, когда появится связь.</p>
+    <div class="choice">
+      <button data-act="syncStep" data-step="create">${icon('cloud')}<span><b>Я настраиваю первым</b><small>Создать общее пространство на своём GitHub (бесплатно)</small></span></button>
+      <button data-act="syncStep" data-step="join">${icon('link')}<span><b>У меня есть код от партнёра</b><small>Подключиться к уже созданному пространству</small></span></button>
+    </div>
+  </div>`;
+};
+
+SHEETS.invite = () => `${sheetHead('Код для партнёра')}<div class="sheet-body">
+  <p style="color:var(--ink-2);font-size:14px">Отправьте этот код второму человеку. На его телефоне: <b>Настройки → Синхронизация → Настроить → «У меня есть код»</b>.</p>
+  <textarea class="field mono" id="inv-code" readonly rows="4" style="margin-top:12px;font-size:12px">${esc(inviteCode())}</textarea>
+  <p class="fine">В коде — ключ к вашим общим тренировкам. Отправляйте его только партнёру. Отозвать доступ можно на GitHub: Settings → Developer settings → Personal access tokens.</p>
+</div><footer class="sheet-foot"><button class="btn" data-act="copyCode">Скопировать</button>${navigator.share ? `<button class="btn btn-primary" data-act="shareCode">${icon('share')} Отправить</button>` : ''}</footer>`;
+
+SHEETS.friend = sh => {
+  const m = S.remote[sh.sid]; if (!m) return `${sheetHead('Партнёр')}<div class="sheet-body"><p class="muted">Нет данных.</p></div>`;
+  const c = ctxRemote(sh.sid), st = gameStats(c), L = levelOf(totalXP(st, c)), wk = weekSummary(m.workouts), streak = weekStreak(m.workouts);
+  const live = m.live && Date.now() - m.live.start < 4 * 3600e3;
+  const body = (m.profile.body || []).slice().sort((a, b) => b.d - a.d)[0];
+  return `${sheetHead(esc(m.name || 'Партнёр'), live ? 'Сейчас тренируется' : (m.workouts[0] ? 'Последняя тренировка ' + relDays(m.workouts[0].start) : 'Пока без тренировок'))}<div class="sheet-body">
+    <div class="lvl" style="margin-top:0;--accent:${col(m)[1]}"><span class="lvl-n" style="background:${col(m)[0]};color:${col(m)[2]}">${L.k}</span><span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%;background:${col(m)[0]}"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></div>
+    <div class="kv k4" style="margin-top:12px"><div><b>${wk.n}</b><span>на этой неделе</span></div><div><b>${streak}</b><span>${plural(streak, ['неделя','недели','недель'])} подряд</span></div><div><b>${m.workouts.length}</b><span>всего</span></div><div class="is-pr"><b>${c.D.prEvents.length}</b><span>рекордов</span></div></div>
+    ${body ? `<p class="fine">Вес тела: <b style="color:var(--ink)">${nf(body.w, 1)} кг</b> · ${dShort(body.d)}</p>` : ''}
+    <div class="sblock" style="border:0"><b>Последние тренировки</b>${m.workouts.length ? m.workouts.slice(0, 12).map(w => feedRow(m, w, false)).join('') : '<p class="fine">Здесь появятся тренировки.</p>'}</div>
+  </div>`;
+};
 
 SHEETS.set = () => {
   const p = S.profile, m = S.meta || {}, th = m.theme || 'auto';
@@ -1961,7 +2219,12 @@ SHEETS.set = () => {
   const canShare = !!(navigator.canShare && window.File);
   return `${sheetHead('Настройки', esc(pname(curProf())))}<div class="sheet-body">
     <div class="srow"><div class="srow-t"><b>Как пользоваться</b><span>Установка, работа в зале, резервные копии</span></div><button class="btn btn-sm" data-act="help">${icon('help')} Открыть</button></div>
-    <div class="srow"><div class="srow-t"><b>Профили</b><span>${profiles().length > 1 ? profiles().map(pname).join(', ') : 'Если тренируетесь вдвоём с одного телефона'}</span></div><button class="btn btn-sm" data-act="profiles">${icon('users')} Открыть</button></div>
+    <div class="sblock"><b>Синхронизация с партнёром</b>${syncCfg() ? `
+      <p class="fine" style="margin:0 0 10px;${S.sync.status === 'error' ? 'color:var(--bad)' : ''}">${esc(syncStatusText())}${Object.keys(S.remote).length ? ` · с вами: ${Object.values(S.remote).map(r => esc(r.name || 'партнёр')).join(', ')}` : ' · партнёр ещё не подключился'}</p>
+      <div class="row"><button class="btn btn-sm btn-primary" data-act="syncInvite">${icon('link')} Код для партнёра</button><button class="btn btn-sm" data-act="syncRefresh">${icon('repeat')} Обновить</button><button class="btn btn-sm btn-danger-soft" data-act="syncOff">${S.syncOffConfirm ? 'Точно отключить?' : 'Отключить'}</button></div>
+      <div class="srow" style="border:0;padding-bottom:0"><div class="srow-t"><b>Показывать вес тела</b><span>Партнёр увидит ваши записи веса</span></div><button class="switch" role="switch" aria-checked="${!!S.meta.sync.shareBody}" aria-label="Показывать вес тела партнёру" data-act="toggleShareBody"></button></div>`
+      : `<p class="fine" style="margin:0 0 10px">Ваши телефоны будут видеть тренировки и рекорды друг друга, даже если вы в разных залах. Бесплатно, через ваш GitHub.</p><button class="btn btn-sm btn-primary" data-act="syncSetup">${icon('users')} Настроить</button>`}</div>
+    <div class="srow"><div class="srow-t"><b>Профили на этом телефоне</b><span>${profiles().length > 1 ? profiles().map(pname).join(', ') : 'Если тренируетесь вдвоём с одного телефона'}</span></div><button class="btn btn-sm" data-act="profiles">${icon('users')} Открыть</button></div>
     <div class="sblock"><b>Цель на неделю</b><div class="seg" role="group" aria-label="Цель на неделю">${[1, 2, 3, 4, 5, 6].map(v => `<button data-act="setGoal" data-v="${v}" aria-pressed="${p.goal === v}">${v}</button>`).join('')}</div><p class="fine" style="margin-top:8px">Сколько тренировок в неделю вы планируете. Блинчик будет подбадривать, а за выполненную неделю — +60 XP.</p></div>
     <div class="sblock"><b>Отдых между подходами</b><div class="seg" role="group" aria-label="Отдых">${[60, 90, 120, 150, 180, 240].map(v => `<button data-act="setRest" data-v="${v}" aria-pressed="${p.rest === v}">${fmtClock(v)}</button>`).join('')}</div></div>
     <div class="srow"><div class="srow-t"><b>Сигнал после отдыха</b><span>Звук и вибрация, когда таймер закончился</span></div><button class="switch" role="switch" aria-checked="${!!p.sound}" aria-label="Сигнал после отдыха" data-act="toggleSound"></button></div>
@@ -2007,7 +2270,7 @@ function startWorkout(tpl, fromW) {
   if (tpl) tpl.items.forEach(it => w.exercises.push(newEx(it.ex, w, it)));
   if (fromW) fromW.exercises.forEach(x => w.exercises.push({ k:uid(), ex:x.ex, sets:x.sets.filter(s => valid(s, exById(x.ex).kind)).map(s => (s.warm ? { warm:true } : {})), target:null }));
   S.active = w; S.sheets = []; saveActive(true); keepAwake(true); unlockAudio(); buzz(15);
-  go('today');
+  go('today'); schedulePush();
 }
 function finalize(w) {
   w.exercises = (w.exercises || []).map(x => { const kind = exById(x.ex).kind; return { ...x, sets: x.sets.filter(s => valid(s, kind)).map(s => ({ ...s, done:true })) }; }).filter(x => x.sets.length);
@@ -2064,6 +2327,74 @@ const A = {
   help: () => { S.sheets = []; openSheet({ type:'help' }); },
   awards: () => openSheet({ type:'awards' }),
   closeSheet: () => closeSheet(),
+  syncSetup: () => { S.sheets = []; openSheet({ type:'sync', step:'' }); },
+  syncStep: el => { const sh = top(); sh.step = el.dataset.step; sh.err = ''; sh.busy = false; render(); },
+  syncCreate: async () => {
+    const sh = top(), token = (sh.token || '').trim();
+    if (!/^(ghp_|github_pat_|gho_)/.test(token) || token.length < 20) { sh.err = 'Это не похоже на ключ GitHub. Он начинается с ghp_ — скопируйте его целиком.'; render(); return; }
+    sh.busy = true; sh.err = ''; render();
+    try {
+      ensureSids(); flush(); syncCur();
+      const files = { 'README.md': { content:'Данные синхронизации приложения «Подход». Не удаляйте этот gist — в нём общие тренировки.' } }, hs = {};
+      profiles().forEach(p => { const pl = payload(p.id); hs[p.id] = hash(JSON.stringify(pl)); pl.updated = Date.now(); files[`m-${p.sid}.json`] = { content:JSON.stringify(pl) }; });
+      const r = await fetch(`${GH}/gists`, { method:'POST', headers:ghHeaders(token, true), body:JSON.stringify({ description:'Подход — общие тренировки', public:false, files }) });
+      if (r.status === 401) throw 'Ключ не подошёл. Проверьте, что скопировали его полностью.';
+      if (r.status === 403 || r.status === 404) throw 'У ключа нет доступа к gist. Создайте ключ заново и оставьте галочку «gist».';
+      if (!r.ok) throw `GitHub ответил ошибкой ${r.status}. Попробуйте ещё раз.`;
+      const j = await r.json();
+      const meta = ensureMeta(); meta.sync = { gist:j.id, token, on:true, shareBody:false }; meta.syncHash = hs; saveMeta();
+      S.sync.etag = null; S.sync.files = new Set(profiles().map(p => p.sid)); setSync('ok'); S.sync.last = Date.now();
+      S.sheets = []; openSheet({ type:'invite' }); toast('Синхронизация включена'); buzz([10, 40, 10]);
+    } catch (e) { sh.busy = false; sh.err = typeof e === 'string' ? e : 'Нет связи с GitHub. Проверьте интернет и попробуйте ещё раз.'; render(); }
+  },
+  syncJoin: async () => {
+    const sh = top(), j = parseCode(sh.code || '');
+    if (!j) { sh.err = 'Код не распознан. Скопируйте его целиком — он начинается с PDH1-.'; render(); return; }
+    sh.busy = true; sh.err = ''; render();
+    try {
+      const r = await fetch(`${GH}/gists/${j.g}`, { headers:ghHeaders(j.t), cache:'no-store' });
+      if (r.status === 401) throw 'Ключ в коде больше не работает. Попросите партнёра прислать новый код.';
+      if (r.status === 404) throw 'Общее пространство не найдено. Попросите партнёра прислать код заново.';
+      if (!r.ok) throw `GitHub ответил ошибкой ${r.status}.`;
+      const files = await readMembers((await r.json()).files);
+      const meta = ensureMeta(); meta.sync = { gist:j.g, token:j.t, on:true, shareBody:false }; meta.syncHash = {}; saveMeta();
+      S.sync.etag = null; S.sync.files = null;
+      const mine = new Set(profiles().map(p => p.sid).filter(Boolean));
+      const members = Object.values(files).filter(m => !mine.has(m.id));
+      S.sheets = [];
+      if (members.length) openSheet({ type:'sync', step:'pick', members });
+      else { ensureSids(); toast('Подключено!'); syncNow(true); }
+    } catch (e) { sh.busy = false; sh.err = typeof e === 'string' ? e : 'Нет связи с GitHub. Проверьте интернет и попробуйте ещё раз.'; render(); }
+  },
+  syncPickMe: el => {
+    const sh = top(), m = (sh.members || []).find(x => x.id === el.dataset.sid); if (!m) return;
+    const p = ensureMeta().profiles.find(x => x.id === S.pid); if (!p) return;
+    p.sid = m.id; if (!p.name) p.name = m.name; if (COLORS[m.color]) p.color = m.color; saveMeta();
+    flush(); syncCur(); mergeMember(S.pid, m); KV.set('p:' + S.pid, S.store[S.pid]); loadProfileData(); applyAccent();
+    S.sheets = []; S.bubble = null; toast('Готово! Ваши тренировки перенесены на этот телефон'); render(); syncNow(true);
+  },
+  syncPickNew: () => { S.sheets = []; ensureSids(); toast('Подключено! Теперь вы видите тренировки друг друга'); buzz([10, 40, 10]); render(); syncNow(true); },
+  syncInvite: () => { S.sheets = []; openSheet({ type:'invite' }); },
+  copyCode: () => {
+    const code = inviteCode(), sel = () => { const t = $('#inv-code'); if (t) { t.focus(); t.select(); } };
+    try { navigator.clipboard.writeText(code).then(() => toast('Код скопирован'), () => { sel(); toast('Выделите код и скопируйте вручную'); }); } catch (e) { sel(); toast('Выделите код и скопируйте вручную'); }
+  },
+  shareCode: async () => { try { await navigator.share({ title:'Подход', text:`Код для общих тренировок в «Подходе»:\n${inviteCode()}\n\nОткрой «Подход» → Настройки → Синхронизация → Настроить → «У меня есть код».` }); } catch (e) { /* cancelled */ } },
+  syncRefresh: () => { S.sync.etag = null; syncNow(true); },
+  syncOff: () => {
+    if (!S.syncOffConfirm) { S.syncOffConfirm = true; render(); setTimeout(() => { if (S.syncOffConfirm) { S.syncOffConfirm = false; render(); } }, 4000); return; }
+    S.syncOffConfirm = false; S.meta.sync = null; S.remote = {}; S.rd = {}; rebuildCustom(); KV.del('remote'); saveMeta(); setSync('off'); toast('Синхронизация отключена'); render();
+  },
+  toggleShareBody: () => { const c = syncCfg(); if (!c) return; c.shareBody = !c.shareBody; saveMeta(); buzz(8); render(); schedulePush(); },
+  friend: el => openSheet({ type:'friend', sid:el.dataset.sid }),
+  rwd: el => openSheet({ type:'wd', id:el.dataset.id, sid:el.dataset.sid }),
+  kudo: el => {
+    const key = el.dataset.sid + '/' + el.dataset.id, k = el.dataset.k;
+    if (S.profile.kudos[key] === k) delete S.profile.kudos[key];
+    else { S.profile.kudos[key] = k; buzz([8, 30, 8]); const r = el.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, 22); }
+    saveProfile(); render();
+  },
+  hidePair: () => { ensureMeta().pairHide = Date.now() + 30 * DAY; saveMeta(); render(); },
   poke: el => {
     S.poke = (S.poke + 1) % 2 || 2; buzz([10, 30, 10]);
     const m = moodNow(), lines = ['Хи-хи, щекотно!', 'Я блинчик на 25 кило!', 'Ещё подход — и я покраснею от гордости.', 'Вода, сон, белок — и всё получится!', 'Не забудь размяться!', 'Сегодня отличный день для рекорда.'];
@@ -2084,11 +2415,12 @@ const A = {
     const id = uid(); ensureMeta().profiles.push({ id, name, color:sh.newColor || nextColor() }); S.store[id] = {}; saveMeta();
     S.sheets = []; switchProfile(id); toast(`Профиль «${name}» создан`);
   },
-  cpColor: el => { const p = ensureMeta().profiles.find(x => x.id === S.pid); if (!p) return; p.color = el.dataset.c; saveMeta(); applyAccent(); buzz(8); render(); },
+  cpColor: el => { const p = ensureMeta().profiles.find(x => x.id === S.pid); if (!p) return; p.color = el.dataset.c; saveMeta(); applyAccent(); buzz(8); render(); schedulePush(); },
   profDel: () => {
     const sh = top(); if (!sh.confirm) { sh.confirm = true; render(); return; }
     const pid = S.pid; if (pid === 'main') return;
     const p = curProf(); dirty = false; KV.del('p:' + pid); delete S.store[pid];
+    const c = syncCfg(); if (c && p.sid) fetch(`${GH}/gists/${c.gist}`, { method:'PATCH', headers:ghHeaders(c.token, true), body:JSON.stringify({ files:{ [`m-${p.sid}.json`]: null } }) }).catch(() => {});
     S.meta.profiles = S.meta.profiles.filter(x => x.id !== pid); saveMeta();
     S.sheets = []; S.pid = 'main'; S.meta.cur = 'main'; saveMeta(); loadProfileData(); applyAccent(); render(); toast(`Профиль «${pname(p)}» удалён`);
   },
@@ -2176,7 +2508,7 @@ const A = {
   },
   doneDetail: () => { const id = top().id; S.sheets = []; openSheet({ type:'wd', id }); },
   discardOpen: () => openSheet({ type:'disc' }),
-  discardConfirm: () => { S.active = null; S.rest = { end:0, total:0, alerted:false }; saveActive(true); keepAwake(false); S.sheets = []; toast('Тренировка отменена'); render(); },
+  discardConfirm: () => { S.active = null; S.rest = { end:0, total:0, alerted:false }; saveActive(true); keepAwake(false); S.sheets = []; toast('Тренировка отменена'); render(); schedulePush(); },
   restAdj: el => { const d = +el.dataset.d * 1000; S.rest.end = Math.max(Date.now() + 1000, S.rest.end + d); S.rest.total = Math.max(S.rest.total + d, S.rest.end - Date.now()); buzz(6); renderRest(); },
   restSkip: () => { S.rest = { end:0, total:0, alerted:false }; renderRest(); },
   openWorkout: el => openSheet({ type:'wd', id:el.dataset.id }),
@@ -2258,13 +2590,15 @@ const IN = {
   tplName: el => { top().draft.name = el.value; },
   tplReps: el => { const v = parseNum(el.value); top().draft.items[+el.dataset.i].reps = v == null ? null : Math.round(v); },
   npName: el => { top().newName = el.value; },
+  syncToken: el => { top().token = el.value; },
+  syncCode: el => { top().code = el.value; },
   wlName: el => { top().name = el.value; },
   edStart: el => { const w = S.editing; if (!w) return; const ms = new Date(el.value).getTime(); if (Number.isFinite(ms)) { const dur = w.end - w.start; w.start = ms; w.end = ms + dur; } },
   edDur: el => { const w = S.editing; if (!w) return; const m = parseNum(el.value); if (m > 0) w.end = w.start + Math.round(m) * 60000; },
 };
 const CHG = {
   progEx: el => { S.prog.ex = el.value; S.prog.metric = null; render(); },
-  cpName: el => { const p = ensureMeta().profiles.find(x => x.id === S.pid); if (!p) return; p.name = el.value.trim().slice(0, 24); saveMeta(); S.bubble = null; render(); },
+  cpName: el => { const p = ensureMeta().profiles.find(x => x.id === S.pid); if (!p) return; p.name = el.value.trim().slice(0, 24); saveMeta(); S.bubble = null; render(); schedulePush(); },
   imp: el => {
     const file = el.files && el.files[0]; el.value = ''; if (!file) return;
     const rd = new FileReader();
