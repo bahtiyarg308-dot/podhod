@@ -1,7 +1,7 @@
-Шрифты Dela Gothic One, Rubik и Martian Mono распространяются по лицензии SIL Open Font License 1.1.
+Шрифты Oswald, Rubik и Martian Mono распространяются по лицензии SIL Open Font License 1.1.
 
-=== Dela Gothic One ===
-Copyright 2020 The Dela Gothic Project Authors (https://github.com/syakuzen/DelaGothic)
+=== Oswald ===
+Copyright 2016 The Oswald Project Authors (https://github.com/googlefonts/OswaldFont)
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

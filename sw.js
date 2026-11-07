@@ -1,5 +1,5 @@
 /* «Подход» — офлайн-кеш. При каждом обновлении приложения меняйте VERSION. */
-const VERSION = 'podhod-1.2.0';
+const VERSION = 'podhod-2.0.0';
 const ASSETS = [
   './',
   './index.html',
@@ -9,8 +9,8 @@ const ASSETS = [
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
   './icons/apple-touch-icon.png',
-  './fonts/dela-gothic-one-cyrillic-400-normal.woff2',
-  './fonts/dela-gothic-one-latin-400-normal.woff2',
+  './fonts/oswald-cyrillic-wght-normal.woff2',
+  './fonts/oswald-latin-wght-normal.woff2',
   './fonts/rubik-cyrillic-wght-normal.woff2',
   './fonts/rubik-latin-wght-normal.woff2',
   './fonts/martian-mono-cyrillic-wght-normal.woff2',
