@@ -1033,7 +1033,7 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.2.0';
+const APP_VERSION = '2.3.0';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -1152,6 +1152,8 @@ const ICONS = {
   snow:'<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.6 4.6L12 7l2.4-2.4M9.6 19.4L12 17l2.4 2.4"/>',
   box:'<path d="M4 7.8l8-4 8 4v8.4l-8 4-8-4z"/><path d="M4 7.8l8 4 8-4M12 11.8v8.4"/>',
   back:'<path d="M14.5 6l-6 6 6 6"/>',
+  user:'<circle cx="12" cy="8.5" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/>',
+  sound:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.2 6.4a7.6 7.6 0 0 1 0 11.2"/>',
 };
 const icon = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`;
 const LOGO = '<svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><circle class="lp-r" cx="16" cy="16" r="12.5" fill="none" stroke-width="3.4"/><path class="lp-s" d="M16 3.5a12.5 12.5 0 0 1 12.5 12.5" fill="none" stroke-width="3.4" stroke-linecap="round"/><path class="lp-s" d="M10.6 16.4l3.6 3.6 7-7.4" fill="none" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -2207,7 +2209,7 @@ function morphChildren(a, b) {
 
 /* ================= rest timer, sound, wake lock, confetti ================= */
 let actx = null, wakeLock = null;
-function unlockAudio() { try { if (!actx) { const C = window.AudioContext || window.webkitAudioContext; if (C) actx = new C(); } if (actx && actx.state === 'suspended') actx.resume(); } catch (e) { actx = null; } }
+function unlockAudio() { try { if (navigator.audioSession && navigator.audioSession.type !== 'ambient') navigator.audioSession.type = 'ambient'; } catch (e) { /* no audio session API */ } try { if (!actx) { const C = window.AudioContext || window.webkitAudioContext; if (C) actx = new C(); } if (actx && actx.state === 'suspended') actx.resume(); } catch (e) { actx = null; } }
 function beep() {
   buzz([140, 90, 140]);
   if (!S.profile.sound || !actx) return;
@@ -2251,10 +2253,95 @@ setInterval(() => {
   if (S.rest.end) {
     const left = Math.max(0, Math.ceil((S.rest.end - now) / 1000));
     const t = document.getElementById('rest-time'); if (t) t.textContent = fmtClock(left);
+    if (left > 0 && left <= 3 && S.rest.cd !== left) { S.rest.cd = left; sfx('count'); }
     if (left === 0 && !S.rest.alerted) { S.rest.alerted = true; beep(); renderRest(); }
     if (S.rest.alerted && now - S.rest.end > 7000) { S.rest = { end:0, total:0, alerted:false }; renderRest(); }
   }
 }, 250);
+
+/* ================= sounds: synthesised on the phone, no files, no internet ================= */
+const SND_DEF = { on:true, vol:2, train:true, game:true, ui:true };
+const sndCfg = () => Object.assign({}, SND_DEF, (S.meta && S.meta.snd) || {});
+const SFX_CAT = { tap:'ui', tab:'ui', toggle:'ui', close:'ui', send:'ui', set:'train', unset:'train', tick:'train', count:'train', pr:'train', start:'train', finish:'train', level:'train',
+  shake:'game', openc:'game', openr:'game', openl:'game', equip:'game', locked:'game', buy:'game', grow:'game', mate:'game', nom:'game', like:'game', sup:'game', supFull:'game' };
+const SFXN = { n:0 };
+let sfxOut = null, noiseBuf = null;
+function sfxBus() {
+  if (!actx) return null;
+  if (!sfxOut) {
+    const comp = actx.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 6; comp.connect(actx.destination);
+    sfxOut = actx.createGain(); sfxOut.connect(comp);
+  }
+  sfxOut.gain.value = [0, .3, .55, .9][sndCfg().vol] || .55;
+  return sfxOut;
+}
+function tone(o, f, t, d, v, type = 'sine', f2 = null, a = .006) {
+  const c = actx, T = c.currentTime + t, os = c.createOscillator(), g = c.createGain();
+  os.type = type; os.frequency.setValueAtTime(f, T); if (f2) os.frequency.exponentialRampToValueAtTime(f2, T + a + d);
+  g.gain.setValueAtTime(.0001, T); g.gain.exponentialRampToValueAtTime(v, T + a); g.gain.exponentialRampToValueAtTime(.0001, T + a + d);
+  os.connect(g); g.connect(o); os.start(T); os.stop(T + a + d + .05);
+  return os;
+}
+function hiss(o, t, d, v, f, f2 = null, q = 1, type = 'bandpass') {
+  const c = actx, T = c.currentTime + t;
+  if (!noiseBuf) { noiseBuf = c.createBuffer(1, c.sampleRate * .5, c.sampleRate); const ch = noiseBuf.getChannelData(0); for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1; }
+  const s = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain();
+  s.buffer = noiseBuf; fl.type = type; fl.Q.value = q; fl.frequency.setValueAtTime(f, T); if (f2) fl.frequency.exponentialRampToValueAtTime(f2, T + d);
+  g.gain.setValueAtTime(.0001, T); g.gain.exponentialRampToValueAtTime(v, T + .004); g.gain.exponentialRampToValueAtTime(.0001, T + d);
+  s.connect(fl); fl.connect(g); g.connect(o); s.start(T); s.stop(T + d + .05);
+}
+const arp = (o, fs, step, d, v, type = 'triangle', t0 = 0) => fs.forEach((f, i) => tone(o, f, t0 + i * step, d, v, type));
+/* companion voices: each character sounds different; babies are higher, legends lower */
+const VOICE = {
+  cat:(o, k) => { const os = tone(o, 620 * k, 0, .38, .22, 'sawtooth'); const T = actx.currentTime; os.frequency.setValueAtTime(620 * k, T); os.frequency.linearRampToValueAtTime(980 * k, T + .1); os.frequency.exponentialRampToValueAtTime(540 * k, T + .38); },
+  fox:(o, k) => { tone(o, 1050 * k, 0, .07, .2, 'triangle', 1500 * k); tone(o, 1150 * k, .11, .08, .2, 'triangle', 1650 * k); },
+  panda:(o, k) => { tone(o, 330 * k, 0, .12, .3, 'sine', 250 * k); tone(o, 300 * k, .16, .14, .3, 'sine', 230 * k); },
+  owl:(o, k) => { tone(o, 440 * k, 0, .18, .28, 'sine', 410 * k, .03); tone(o, 400 * k, .26, .24, .28, 'sine', 360 * k, .03); },
+  dog:(o, k) => { tone(o, 260 * k, 0, .12, .3, 'square', 120 * k); hiss(o, 0, .09, .12, 900, null, 1, 'lowpass'); tone(o, 280 * k, .2, .1, .25, 'square', 130 * k); },
+  dragon:(o, k) => { const os = tone(o, 170 * k, 0, .45, .26, 'sawtooth', 90 * k, .04), lfo = actx.createOscillator(), lg = actx.createGain(); lfo.frequency.value = 22; lg.gain.value = 40; lfo.connect(lg); lg.connect(os.frequency); lfo.start(); lfo.stop(actx.currentTime + .55); hiss(o, 0, .4, .06, 500, 250, 1, 'lowpass'); },
+  plate:(o, k) => { [523, 1393, 2257, 3011].forEach((f, i) => tone(o, f * k, 0, .7 - i * .12, .14 / (i + 1), 'sine')); hiss(o, 0, .04, .1, 5000, null, 2); },
+};
+const SFX = {
+  tap:o => { hiss(o, 0, .014, .1, 3800, null, 1.5, 'highpass'); tone(o, 1650, 0, .02, .045); },
+  tab:o => { tone(o, 1046, 0, .035, .07); hiss(o, 0, .012, .06, 4200, null, 1.5, 'highpass'); },
+  toggle:o => { tone(o, 1200, 0, .025, .07); tone(o, 1600, .045, .03, .07); },
+  close:o => tone(o, 900, 0, .05, .05, 'sine', 650),
+  send:o => hiss(o, 0, .16, .12, 700, 2600, 2),
+  set:o => { tone(o, 784, 0, .05, .22, 'triangle'); tone(o, 1175, .055, .08, .22, 'triangle'); },
+  unset:o => { tone(o, 1175, 0, .04, .14, 'triangle'); tone(o, 740, .05, .07, .14, 'triangle'); },
+  tick:o => tone(o, 620, 0, .03, .14, 'triangle'),
+  count:o => tone(o, 880, 0, .09, .3, 'sine'),
+  start:o => { hiss(o, 0, .08, .18, 180, null, 1, 'lowpass'); tone(o, 120, 0, .14, .4, 'sine', 60); tone(o, 660, .09, .08, .18, 'square'); tone(o, 990, .17, .14, .18, 'square'); },
+  pr:o => { arp(o, [523, 659, 784, 1047], .07, .2, .24); tone(o, 2093, .3, .35, .1); tone(o, 2637, .36, .3, .07); },
+  finish:o => { [392, 494, 587].forEach(f => tone(o, f, 0, .7, .14, 'triangle', null, .05)); tone(o, 784, .16, .6, .16, 'triangle', null, .03); tone(o, 1568, .34, .5, .1); },
+  level:o => { SFX.finish(o); arp(o, [1047, 1319, 1568, 2093], .08, .3, .16, 'triangle', .5); hiss(o, .5, .6, .05, 6000, null, 1, 'highpass'); },
+  shake:o => [0, .22, .45, .67, .9, 1.12].forEach(t => { hiss(o, t, .06, .25, 900, null, 4); tone(o, 170, t, .07, .25, 'sine', 120); }),
+  openc:o => { hiss(o, 0, .35, .16, 400, 3000, 1.5); tone(o, 1047, .12, .5, .2); tone(o, 2093, .12, .35, .06); },
+  openr:o => { hiss(o, 0, .35, .16, 400, 3500, 1.5); tone(o, 1047, .12, .4, .2); tone(o, 1568, .26, .55, .2); [2637, 3136, 3520].forEach((f, i) => tone(o, f, .4 + i * .06, .18, .06)); },
+  openl:o => { hiss(o, 0, .4, .18, 300, 4000, 1.5); arp(o, [784, 988, 1175, 1568], .09, .35, .2, 'triangle', .1); [1568, 1976, 2349].forEach(f => tone(o, f, .5, 1.1, .08, 'sine', null, .08)); [2637, 3136, 3520, 4186].forEach((f, i) => tone(o, f, .55 + i * .08, .2, .05)); },
+  equip:o => { hiss(o, 0, .12, .1, 2500, 6000, 1, 'highpass'); tone(o, 880, .06, .07, .18, 'sine', 1320); },
+  locked:o => tone(o, 196, 0, .12, .2, 'triangle', 150),
+  buy:o => { tone(o, 1175, 0, .07, .16, 'square'); tone(o, 1760, .08, .28, .16, 'square'); },
+  grow:o => { tone(o, 400, 0, .6, .14, 'sine', 1600, .05); arp(o, [523, 659, 784, 1047, 1319], .08, .45, .16, 'triangle', .35); [2093, 2637, 3136].forEach((f, i) => tone(o, f, .8 + i * .07, .25, .06)); },
+  nom:o => { tone(o, 520, 0, .07, .25, 'sine', 380); tone(o, 560, .16, .07, .25, 'sine', 400); },
+  like:o => { tone(o, 1568, 0, .1, .12); tone(o, 2093, .06, .14, .1); },
+  sup:o => { hiss(o, 0, .03, .1, 5000, null, 2, 'highpass'); hiss(o, .05, .03, .08, 5500, null, 2, 'highpass'); tone(o, 1480, .02, .05, .1); },
+  supFull:o => { SFX.sup(o); tone(o, 1319, .12, .35, .15); tone(o, 1760, .22, .45, .15); },
+  mate:o => { const p = curProf(), k = charOf(p), st = stageOf(S.workouts.length).k; (VOICE[k] || VOICE.cat)(o, [1.35, 1.15, 1, .95, .9][st] || 1); },
+};
+function sfx(name) {
+  SFXN.n++;
+  const c = sndCfg(), cat = SFX_CAT[name];
+  if (!c.on || !c.vol || (cat && !c[cat]) || document.visibilityState === 'hidden') return;
+  unlockAudio(); const o = sfxBus(); if (!o || !SFX[name]) return;
+  try { SFX[name](o); } catch (e) { /* audio unavailable */ }
+}
+
+/* ================= training alone or with a partner ================= */
+const pairOn = () => !!syncCfg() || (S.meta && S.meta.mode ? S.meta.mode === 'pair' : profiles().length > 1);
+const tabsNow = () => TABS.filter(t => t[0] !== 'chat' || pairOn());
+const modeSeg = act => `<div class="seg" role="group" aria-label="Как тренируетесь">${[['solo', 'Один', 'user'], ['pair', 'С партнёром', 'users']].map(([k, l, ic]) => `<button data-act="${act}" data-v="${k}" aria-pressed="${(act === 'wlMode' ? (top() && top().mode) || 'solo' : pairOn() ? 'pair' : 'solo') === k}"${act !== 'wlMode' && k === 'solo' && syncCfg() ? ' disabled' : ''}>${icon(ic)} ${l}</button>`).join('')}</div>`;
+
 
 /* ================= toast ================= */
 function toast(text, kind = '', action = null) {
@@ -2398,7 +2485,9 @@ function render() {
   try { if (fid && typeof ae.selectionStart === 'number') sel = [ae.selectionStart, ae.selectionEnd]; } catch (e) { sel = null; }
   CH = {};
   if (!S.welcomed && S.metaLoaded && !S.meta && ready() && !S.sheets.length) { S.welcomed = true; S.sheets.push({ type:'welcome', name:'', color:'lime', char:'cat', key:uid() }); applyAccent('lime'); }
-  if (S.metaLoaded && S.meta && !S.meta.v22seen && ready() && !S.sheets.length && !S.active) { S.meta.v22seen = true; S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
+  if (S.metaLoaded && S.meta && !S.meta.v22seen && ready() && !S.sheets.length && !S.active) { S.meta.v22seen = true; S.meta.v23seen = true; S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v23seen && ready() && !S.sheets.length && !S.active) { S.meta.v23seen = true; saveMeta(); S.sheets.push({ type:'news23', key:uid() }); }
+  if (S.view === 'chat' && S.metaLoaded && !pairOn()) S.view = 'today';
   const main = $('#main');
   const vk = [S.view, S.pid, S.view === 'today' && S.active ? 'live:' + S.active.id : '', S.view === 'editor' && S.editing ? S.editing.id : '', ready() ? 'r' : 'l'].join('|');
   const html = `<div class="view">${viewHTML()}</div>`;
@@ -2418,11 +2507,13 @@ function render() {
   if (fid) { const el = document.getElementById(fid); if (el && el !== document.activeElement) { el.focus({ preventScroll:true }); if (sel) try { el.setSelectionRange(sel[0], sel[1]); } catch (e) { /* not a text field */ } } }
 }
 function buildNav() {
+  const tabs = tabsNow(), tb = $('#tabbar'); tb.dataset.sig = tabs.map(t => t[0]).join(); tb.style.gridTemplateColumns = `repeat(${tabs.length},minmax(0,1fr))`;
   const b = (cls, [v, l, ic]) => `<button class="${cls}" data-act="nav" data-v="${v}">${icon(ic)}<span>${l}</span><i class="badge" hidden aria-label="идёт тренировка"></i>${v === 'chat' ? '<i class="cnt" hidden></i>' : ''}</button>`;
-  $('#tabbar').innerHTML = '<span class="tab-ind" aria-hidden="true"></span>' + TABS.map(t => b('tab', t)).join('');
-  $('#rail-links').innerHTML = '<span class="rail-ind" aria-hidden="true"></span>' + TABS.map(t => b('rlink', t)).join('');
+  tb.innerHTML = '<span class="tab-ind" aria-hidden="true"></span>' + tabs.map(t => b('tab', t)).join('');
+  $('#rail-links').innerHTML = '<span class="rail-ind" aria-hidden="true"></span>' + tabs.map(t => b('rlink', t)).join('');
 }
 function renderNav() {
+  if ($('#tabbar').dataset.sig !== tabsNow().map(t => t[0]).join()) buildNav();
   const cur = S.view === 'editor' ? 'log' : S.view;
   $$('.tab,.rlink').forEach(b => {
     if (b.dataset.v === cur) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
@@ -2460,7 +2551,7 @@ function bannersHTML() {
   const m = S.meta || {};
   h += clashHTML();
   if (S.sync.status === 'error' && syncCfg()) h += `<div class="banner warn"><div class="banner-t">${icon('cloud')}<span><b>Синхронизация остановилась.</b> ${esc(S.sync.msg)}</span></div><div class="banner-a"><button class="btn btn-sm btn-primary" data-act="settings">Настройки</button></div></div>`;
-  if (!syncCfg() && !(m.pairHide > Date.now())) h += `<div class="banner"><div class="banner-t">${icon('users')}<span><b>Тренируетесь вдвоём в разных залах?</b> Подключите партнёра — будете видеть тренировки и рекорды друг друга.</span></div><div class="banner-a"><button class="btn btn-sm btn-primary" data-act="syncSetup">Подключить</button><button class="btn btn-sm btn-ghost" data-act="hidePair" aria-label="Скрыть">${icon('x')}</button></div></div>`;
+  if (pairOn() && !syncCfg() && !(m.pairHide > Date.now())) h += `<div class="banner"><div class="banner-t">${icon('users')}<span><b>Тренируетесь вдвоём в разных залах?</b> Подключите партнёра — будете видеть тренировки и рекорды друг друга.</span></div><div class="banner-a"><button class="btn btn-sm btn-primary" data-act="syncSetup">Подключить</button><button class="btn btn-sm btn-ghost" data-act="hidePair" aria-label="Скрыть">${icon('x')}</button></div></div>`;
   if (!isStandalone() && !(m.installHide > Date.now()) && (S.installEvt || isIOS() || /android/i.test(navigator.userAgent))) {
     h += `<div class="banner"><div class="banner-t">${icon('phone')}<span><b>Установите на главный экран</b> — так «Подход» работает без интернета и открывается как обычное приложение.</span></div><div class="banner-a">${S.installEvt ? `<button class="btn btn-sm btn-primary" data-act="install">Установить</button>` : `<button class="btn btn-sm btn-primary" data-act="help">Как</button>`}<button class="btn btn-sm btn-ghost" data-act="hideInstall" aria-label="Скрыть">${icon('x')}</button></div></div>`;
   }
@@ -2478,7 +2569,7 @@ function heroHTML() {
   const fr = S.profile.freeze, fz = frozenNow(fr), sat = satietyOf(S.workouts, fr), mt = mateOf(S.profile, S.workouts), nx = STAGES[mt.stage.k + 1], cs = chestState();
   const bk = bubbleKey(m);
   if (!S.bubble || S.bubble.mood !== bk || S.bubble.pid !== S.pid || S.bubble.n !== m.n) S.bubble = { mood:bk, pid:S.pid, n:m.n, text:bubbleText(m) };
-  if (S.ateAt && !S.sheets.length) { S.eatUntil = Date.now() + 2600; S.ateAt = 0; }
+  if (S.ateAt && !S.sheets.length) { S.eatUntil = Date.now() + 2600; S.ateAt = 0; setTimeout(() => sfx('nom'), 300); }
   const eat = !RM && S.eatUntil > Date.now();
   const streakSub = gs.curMet ? 'серия недель' : gs.frozen ? 'серия · заморожена' : gs.n ? `серия · ещё ${gs.left} за ${gs.daysLeft} ${plural(gs.daysLeft, ['день','дня','дней'])}` : 'серия недель';
   const gold = cs.closed.some(c => c.gold);
@@ -3027,11 +3118,11 @@ function doneChestBtn(w) {
 }
 SHEETS.awards = () => {
   const st = gameStats(), xp = totalXP(st), L = levelOf(xp), un = new Set(unlockedBadges(st));
-  const order = BADGES.map((b, i) => [b, i]).sort((a, b) => (un.has(b[0][0]) ? 1 : 0) - (un.has(a[0][0]) ? 1 : 0));
+  const order = BADGES.map((b, i) => [b, i]).filter(([b]) => b[0] !== 'pair' || pairOn() || un.has('pair')).sort((a, b) => (un.has(b[0][0]) ? 1 : 0) - (un.has(a[0][0]) ? 1 : 0));
   return `${sheetHead('Уровень и достижения', `${xp} XP всего`)}<div class="sheet-body">
     <div class="lvl" style="margin-top:0"><span class="lvl-n">${L.k}</span><span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">ещё ${L.need - L.cur} XP</span></div>
     <p class="fine">Опыт: 40 за тренировку, по 2 за рабочий подход (до 40), 15 за рекорд, 60 за неделю с выполненной целью, ${QXP} за задание недели (+${QBONUS} за все три), 30 за каждое достижение и 10 за день, когда все добавки приняты по плану.</p>
-    <div class="sblock"><b>Достижения · ${un.size} из ${BADGES.length}</b><div class="medal-list">${order.map(([b, i]) => medalHTML(b, i, un.has(b[0]), false, true)).join('')}</div></div>
+    <div class="sblock"><b>Достижения · ${un.size} из ${order.length}</b><div class="medal-list">${order.map(([b, i]) => medalHTML(b, i, un.has(b[0]), false, true)).join('')}</div></div>
   </div>`;
 };
 
@@ -3113,7 +3204,8 @@ SHEETS.welcome = sh => `${closeOnly()}<div class="sheet-body">
   <label class="lbl">Как вас зовут?<input class="field" id="wl-name" data-in="wlName" value="${esc(sh.name)}" placeholder="Имя" autocomplete="off" maxlength="24" enterkeyhint="done"></label>
   <div class="lbl" style="margin-top:14px">Напарник${charPicker(sh.char || 'cat', 'wlChar')}</div>
   <div class="lbl" style="margin-top:14px">Цвет${colorDots(sh.color, 'wlColor')}</div>
-  <div class="hint">${icon('users')}<span><b>Тренируетесь вдвоём?</b> Потом нажмите «Подключить» на главном экране — будете видеть тренировки друг друга и переписываться, даже в разных залах.</span></div>
+  <div class="lbl" style="margin-top:14px">Как тренируетесь${modeSeg('wlMode')}</div>
+  ${sh.mode === 'pair' ? `<div class="hint">${icon('users')}<span><b>С партнёром — даже в разных залах.</b> После старта нажмите «Подключить» на главном экране: будете видеть тренировки друг друга и переписываться.</span></div>` : `<p class="fine">Партнёра можно подключить позже в настройках.</p>`}
 </div><footer class="sheet-foot"><button class="btn btn-primary btn-lg btn-block" data-act="welcomeSave">Начать</button></footer>`;
 
 SHEETS.news = () => { const k = charOf(curProf()), mt = mateOf(S.profile, S.workouts), n = chestState().closed.length;
@@ -3125,6 +3217,8 @@ SHEETS.news = () => { const k = charOf(curProf()), mt = mateOf(S.profile, S.work
     <li>${icon('chest')}<span><b>Сундуки</b> — после тренировки от ${CH_MIN_SETS} подходов. Рекорды повышают шанс редкой вещи, идеальная неделя даёт золотой сундук</span></li>
     <li>${icon('shirt')}<span><b>Гардероб</b> — 60 вещей и фонов. Нажмите на напарника, чтобы переодеть. Партнёр видит обновки</span></li>
     <li>${icon('pill')}<span><b>Добавки</b> — новая вкладка: свой план приёма, галочки, курсы и запас. Видите только вы</span></li>
+    <li>${icon('sound')}<span><b>Звуки</b> — подходы, отсчёт отдыха, рекорды, сундуки и голос напарника. Настраиваются в настройках</span></li>
+    <li>${icon('user')}<span><b>Один или с партнёром</b> — сейчас: «${pairOn() ? 'С партнёром' : 'Один'}». Меняется в настройках</span></li>
   </ul>
   ${n ? `<p class="fine">Прошлые тренировки уже превратились в открытые сундуки. А ещё вас ждут ${n} ${plural(n, ['сундук','сундука','сундуков'])} в подарок.</p>` : ''}
 </div><footer class="sheet-foot">${n ? `<button class="btn" data-act="closeSheet">Позже</button><button class="btn btn-primary" data-act="chestOpenNext">${icon('chest')} Открыть сундуки</button>` : `<button class="btn btn-primary btn-block" data-act="closeSheet">Готово</button>`}</footer>`; };
@@ -3140,7 +3234,8 @@ SHEETS.help = () => `${sheetHead('Как пользоваться')}<div class="
   <p>Удачную тренировку сохраните кнопкой «В программы» в журнале — в следующий раз начнёте её в одно касание.</p>
   <h3>4. Резервная копия — важно</h3>
   <p>Данные хранятся только на этом устройстве. Раз в пару недель нажимайте <b>Настройки → Резервная копия → Сохранить</b> и отправляйте файл себе в «Избранное» в Telegram, в Google Диск или «Файлы». При смене телефона установите приложение заново и нажмите «Восстановить из файла».</p>
-  <h3>5. Вдвоём, в разных залах</h3>
+  <h3>5. С партнёром, даже в разных залах (по желанию)</h3>
+  <p>Сначала выберите <b>Настройки → Как тренируетесь → С партнёром</b>.</p>
   <ol><li>Один человек открывает <b>Настройки → Синхронизация → Настроить → «Я настраиваю первым»</b> и создаёт бесплатный ключ на GitHub (приложение подскажет, куда нажать).</li><li>Затем нажимает «Код для партнёра» и отправляет код второму.</li><li>Второй открывает <b>Настройки → Синхронизация → Настроить → «У меня есть код»</b> и вставляет его.</li></ol>
   <p>После этого на главной появится «Неделя вместе»: тренировки, рекорды и уровень партнёра, а ещё реакции — огонь, сердце и звезда. Обмен идёт, когда есть интернет, а в зале всё работает и без него. Синхронизация заодно служит облачной копией: на новом телефоне подключитесь тем же кодом и выберите «Это мой профиль — …». Если код вам прислал партнёр, всегда выбирайте «Я новый участник».</p>
   <h3>6. Один телефон на двоих</h3>
@@ -3218,7 +3313,8 @@ SHEETS.set = () => {
   const canShare = !!(navigator.canShare && window.File);
   return `${sheetHead('Настройки', esc(pname(curProf())))}<div class="sheet-body">
     <div class="srow"><div class="srow-t"><b>Как пользоваться</b><span>Установка, работа в зале, резервные копии</span></div><button class="btn btn-sm" data-act="help">${icon('help')} Открыть</button></div>
-    <div class="sblock"><b>Синхронизация с партнёром</b>${syncCfg() ? `
+    <div class="sblock"><b>Как тренируетесь</b>${modeSeg('setMode')}<p class="fine" style="margin-top:8px">${syncCfg() ? 'Синхронизация включена, поэтому режим «С партнёром». Чтобы тренироваться одному, отключите её ниже.' : pairOn() ? 'Видны чат, «Неделя вместе» и подключение партнёра.' : 'Всё для одного: без чата и предложений подключить партнёра. Переключить можно в любой момент.'}</p></div>
+    <div class="sblock"${pairOn() ? '' : ' style="display:none"'}><b>Синхронизация с партнёром</b>${syncCfg() ? `
       ${clashHTML(true)}<p class="fine" style="margin:0 0 10px;${S.sync.status === 'error' ? 'color:var(--bad)' : ''}">${esc(syncStatusText())}${Object.keys(S.remote).length ? ` · с вами: ${Object.values(S.remote).map(r => esc(r.name || 'партнёр')).join(', ')}` : ' · партнёр ещё не подключился'}</p>
       <div class="row"><button class="btn btn-sm btn-primary" data-act="syncInvite">${icon('link')} Код для партнёра</button><button class="btn btn-sm" data-act="syncRefresh">${icon('repeat')} Обновить</button><button class="btn btn-sm btn-danger-soft" data-act="syncOff">${S.syncOffConfirm ? 'Точно отключить?' : 'Отключить'}</button></div>
       <div class="srow" style="border:0;padding-bottom:0"><div class="srow-t"><b>Показывать вес и замеры</b><span>Партнёр увидит ваш вес тела и замеры. Фото не передаются никогда</span></div><button class="switch" role="switch" aria-checked="${!!S.meta.sync.shareBody}" aria-label="Показывать вес тела партнёру" data-act="toggleShareBody"></button></div>`
@@ -3229,6 +3325,10 @@ SHEETS.set = () => {
       if (canFreeze(p.freeze)) return `<p class="fine" style="margin:0 0 10px">Болезнь или отпуск? Сытость напарника и серия недель встанут на паузу. Можно раз в месяц.</p><div class="seg" role="group" aria-label="Заморозка">${[3, 7, 14].map(v => `<button data-act="freezeOn" data-d="${v}">${icon('snow')} ${v} ${plural(v, ['день','дня','дней'])}</button>`).join('')}</div>`;
       const d = new Date(Date.now()); return `<p class="fine" style="margin:0">В этом месяце заморозка уже была. Следующая — с ${dayMonth(new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime())}.</p>`; })()}</div>
     <div class="sblock"><b>Отдых между подходами</b><div class="seg" role="group" aria-label="Отдых">${[60, 90, 120, 150, 180, 240].map(v => `<button data-act="setRest" data-v="${v}" aria-pressed="${p.rest === v}">${fmtClock(v)}</button>`).join('')}</div></div>
+    <div class="sblock"><b>Звуки</b>${(() => { const c = sndCfg(); return `<div class="srow" style="border:0;padding:2px 0 10px"><div class="srow-t"><b>Звуки в приложении</b><span>Без интернета. На iPhone в беззвучном режиме молчат, музыку не прерывают</span></div><button class="switch" role="switch" aria-checked="${c.on}" aria-label="Звуки в приложении" data-act="sndToggle"></button></div>
+      ${c.on ? `<div class="seg" role="group" aria-label="Громкость">${[[1, 'Тихо'], [2, 'Средне'], [3, 'Громко']].map(([v, l]) => `<button data-act="sndVol" data-v="${v}" aria-pressed="${c.vol === v}">${l}</button>`).join('')}</div>
+      <div class="chips wrap" role="group" aria-label="Какие звуки" style="margin-top:10px">${[['train', 'Тренировка'], ['game', 'Сундуки и напарник'], ['ui', 'Кнопки']].map(([k, l]) => `<button class="chip" data-act="sndCat" data-k="${k}" aria-pressed="${!!c[k]}">${l}</button>`).join('')}</div>
+      <button class="btn btn-sm" style="margin-top:10px" data-act="sndDemo">${icon('sound')} Послушать</button>` : ''}`; })()}</div>
     <div class="srow"><div class="srow-t"><b>Сигнал после отдыха</b><span>Звук и вибрация, когда таймер закончился</span></div><button class="switch" role="switch" aria-checked="${!!p.sound}" aria-label="Сигнал после отдыха" data-act="toggleSound"></button></div>
     <div class="srow"><div class="srow-t"><b>Спрашивать запас повторов</b><span>После подхода: сколько ещё могли сделать. Подсказки веса станут точнее</span></div><button class="switch" role="switch" aria-checked="${p.rirAsk !== false}" aria-label="Спрашивать запас повторов" data-act="toggleRir"></button></div>
     <div class="sblock"><b>Вес грифа</b><div class="seg" role="group" aria-label="Вес грифа">${[20, 15, 10].map(v => `<button data-act="setBar" data-v="${v}" aria-pressed="${p.bar === v}">${v} кг</button>`).join('')}</div><p class="fine" style="margin-top:8px">Нужен, чтобы считать блины на каждую сторону.</p></div>
@@ -3273,7 +3373,7 @@ function startWorkout(tpl, fromW) {
   const w = { id:uid(), title: tpl ? tpl.name : fromW ? (fromW.title || '') : '', tpl: tpl ? tpl.id : fromW ? (fromW.tpl || null) : null, start:Date.now(), exercises:[] };
   if (tpl) tpl.items.forEach(it => w.exercises.push(newEx(it.ex, w, it)));
   if (fromW) fromW.exercises.forEach(x => w.exercises.push({ k:uid(), ex:x.ex, sets:x.sets.filter(s => valid(s, exById(x.ex).kind)).map(s => (s.warm ? { warm:true } : {})), target:null }));
-  S.active = w; S.sheets = []; saveActive(true); keepAwake(true); unlockAudio(); buzz(15);
+  S.active = w; S.sheets = []; saveActive(true); keepAwake(true); unlockAudio(); buzz(15); sfx('start');
   go('today'); schedulePush();
 }
 function finalize(w) {
@@ -3337,10 +3437,10 @@ function commitWorkout(w) {
   const st0 = gameStats(), xp0 = totalXP(st0), b0 = new Set(unlockedBadges(st0)), l0 = levelOf(xp0).k, q0 = new Set(questsFor(ctxLocal(), weekStart(w.start)).filter(x => x.done).map(x => x.id)), g0 = stageOf(S.workouts.length).k;
   saveWorkout(w);
   const st1 = gameStats(), xp1 = totalXP(st1), newBadges = unlockedBadges(st1).filter(id => !b0.has(id)), l1 = levelOf(xp1).k, g1 = stageOf(S.workouts.length).k;
-  S.sheets = []; S.bubble = null; S.ateAt = Date.now(); buzz([30, 60, 30]);
+  S.sheets = []; S.bubble = null; S.ateAt = Date.now(); buzz([30, 60, 30]); sfx(l1 > l0 ? 'level' : 'finish');
   const newQuests = questsFor(ctxLocal(), weekStart(w.start)).filter(x => x.done && !q0.has(x.id)).map(x => x.t);
   go('log'); openSheet({ type:'done', id:w.id, prs:D.prCount[w.id] || 0, xpGain:xp1 - xp0, xpAfter:xp1, lvlUp:l1 > l0, newBadges, newQuests });
-  if (g1 > g0) { openSheet({ type:'grow', k:g1 }); setTimeout(() => confetti(innerWidth / 2, innerHeight * .35, 110), RM ? 0 : 350); }
+  if (g1 > g0) { openSheet({ type:'grow', k:g1 }); setTimeout(() => confetti(innerWidth / 2, innerHeight * .35, 110), RM ? 0 : 350); setTimeout(() => sfx('grow'), 900); }
   if (isStandalone() && !S.persisted) requestPersist();
 }
 
@@ -3424,7 +3524,7 @@ const A = {
     if (!syncCfg()) { toast('Сначала подключите партнёра'); return; }
     ensureSids(); myChat(p.sid).push({ id:uid(), t:Date.now(), x:t.slice(0, 1000), d:devId() }); KV.set('chat-mine', S.chatMine);
     S.chatDraft = ''; const el = $('#chat-in'); if (el) { el.value = ''; el.style.height = ''; }
-    S.chatScroll = true; buzz(8); render(); clearTimeout(SY.pushT); SY.pushT = setTimeout(() => syncNow(), 300);
+    S.chatScroll = true; buzz(8); sfx('send'); render(); clearTimeout(SY.pushT); SY.pushT = setTimeout(() => syncNow(), 300);
   },
   openChat: () => { S.sheets = []; go('chat'); },
   applyHint: el => {
@@ -3454,12 +3554,12 @@ const A = {
   kudo: el => {
     const key = el.dataset.sid + '/' + el.dataset.id, k = el.dataset.k;
     if (S.profile.kudos[key] === k) delete S.profile.kudos[key];
-    else { S.profile.kudos[key] = k; buzz([8, 30, 8]); }
+    else { S.profile.kudos[key] = k; buzz([8, 30, 8]); sfx('like'); }
     saveProfile(); render();
   },
   hidePair: () => { ensureMeta().pairHide = Date.now() + 30 * DAY; saveMeta(); render(); },
   poke: el => {
-    S.poke = (S.poke + 1) % 2 || 2; buzz([10, 30, 10]);
+    S.poke = (S.poke + 1) % 2 || 2; buzz([10, 30, 10]); sfx('mate');
     const m = moodNow(), lines = ['Готов работать.', 'Разминка 5 минут — и в бой.', 'Вода, сон, белок.', 'Техника важнее веса.', 'Сегодня хороший день для рекорда.', 'Без спешки: подход за подходом.'];
     S.bubble = { mood:bubbleKey(m), pid:S.pid, n:m.n, text:pick(lines) }; render();
     const svg = el.querySelector('.ch'); if (svg) { svg.classList.remove('poke'); void svg.getBoundingClientRect(); svg.classList.add('poke'); }
@@ -3490,7 +3590,7 @@ const A = {
   wlColor: el => { top().color = el.dataset.c; applyAccent(el.dataset.c); render(); },
   welcomeSave: () => {
     const sh = top(), name = (sh.name || '').trim();
-    S.meta = { profiles:[{ id:'main', name, color:sh.color || 'lime', char:sh.char || 'cat' }], cur:'main', theme:'auto', v2seen:true, v22seen:true, chatSeen:Date.now() }; saveMeta(); applyAccent();
+    S.meta = { profiles:[{ id:'main', name, color:sh.color || 'lime', char:sh.char || 'cat' }], cur:'main', theme:'auto', mode:sh.mode === 'pair' ? 'pair' : 'solo', v2seen:true, v22seen:true, v23seen:true, chatSeen:Date.now() }; saveMeta(); applyAccent();
     S.sheets = []; S.bubble = null; render(); buzz([10, 40, 10]); toast(name ? `Привет, ${name}! Поехали` : 'Поехали!');
   },
   startEmpty: () => startWorkout(null),
@@ -3520,7 +3620,7 @@ const A = {
   setDone: el => {
     unlockAudio();
     const c = ctx(el); if (!c) return; const { w, x, s, xi, si, ex } = c;
-    if (s.done) { s.done = false; if (S.rirAsk === x.k + ':' + si) S.rirAsk = null; changed(); render(); return; }
+    if (s.done) { s.done = false; if (S.rirAsk === x.k + ':' + si) S.rirAsk = null; sfx('unset'); changed(); render(); return; }
     const gh = ghost(w, x, si, ex.kind);
     KINDS[ex.kind].f.forEach(([f]) => { if (s[f] == null && gh[f] != null) s[f] = gh[f]; });
     if (!valid(s, ex.kind)) { toast(ex.kind === 'cardio' ? 'Введите дистанцию или время' : ex.kind === 'time' ? 'Введите время в секундах' : 'Введите количество повторов'); const f = KINDS[ex.kind].f[1][0]; const inp = document.getElementById(`s-${x.k}-${si}-${f}`); if (inp) inp.focus(); return; }
@@ -3529,13 +3629,13 @@ const A = {
     S.rirAsk = !s.warm && (ex.kind === 'wr' || ex.kind === 'bw') && S.profile.rirAsk !== false ? x.k + ':' + si : null;
     const isNewPr = after.has(key) && !before.has(key);
     if (isNewPr) {
-      toast(`Новый рекорд · ${ex.name} · ${setLong(s, ex.kind)}`, 'pr'); S.bumpPr = true; buzz([20, 50, 30]);
+      toast(`Новый рекорд · ${ex.name} · ${setLong(s, ex.kind)}`, 'pr'); S.bumpPr = true; buzz([20, 50, 30]); sfx('pr');
       const r = el.getBoundingClientRect(); setTimeout(() => confetti(r.left + r.width / 2, r.top + r.height / 2, 60), 120);
-    } else buzz(12);
+    } else { buzz(12); sfx('set'); }
     if (isLive(w)) startRest(s.warm ? Math.min(60, S.profile.rest) : S.profile.rest);
     changed(); render(); S.bumpPr = false;
   },
-  setWarm: el => { const c = ctx(el); if (!c) return; c.s.warm = !c.s.warm; buzz(6); changed(); render(); },
+  setWarm: el => { const c = ctx(el); if (!c) return; c.s.warm = !c.s.warm; buzz(6); sfx('tick'); changed(); render(); },
   setDel: el => {
     const c = ctx(el); if (!c) return; const row = el.closest('.set-row');
     if (row) { if (row.classList.contains('leaving')) return; row.classList.add('leaving'); }
@@ -4056,10 +4156,10 @@ Object.assign(A, {
   wear: el => {
     const id = el.dataset.id, it = ITEM[id]; if (!it) return;
     const coll = collOf(S.profile, S.workouts);
-    if (!coll.has(id)) { toast(`Пока не найдено · ${RAR[it.r].n.toLowerCase()} вещь`); buzz(6); return; }
+    if (!coll.has(id)) { toast(`Пока не найдено · ${RAR[it.r].n.toLowerCase()} вещь`); buzz(6); sfx('locked'); return; }
     const g = S.profile.gear = gearOf(S.profile, coll);
     if (g[it.s] === id) delete g[it.s]; else g[it.s] = id;
-    buzz(10); saveProfile(); render(); wardPoke();
+    buzz(10); sfx('equip'); saveProfile(); render(); wardPoke();
   },
   shop: () => openSheet({ type:'shop', sel:null }),
   shopSel: el => { const sh = top(); sh.sel = sh.sel === el.dataset.id ? null : el.dataset.id; buzz(6); render(); },
@@ -4069,7 +4169,7 @@ Object.assign(A, {
     if (coll.has(it.id) || coll.sparks < cost) return;
     S.profile.chest.buy.push({ id:it.id, at:Date.now(), c:cost });
     S.profile.gear = Object.assign(gearOf(S.profile, collOf(S.profile, S.workouts)), { [it.s]:it.id });
-    saveProfile(); S.sheets.pop(); buzz([10, 40, 10]); toast(`«${it.n}» в гардеробе — уже на напарнике`); render(); wardPoke();
+    saveProfile(); S.sheets.pop(); buzz([10, 40, 10]); sfx('buy'); toast(`«${it.n}» в гардеробе — уже на напарнике`); render(); wardPoke();
   },
   chestOpenNext: () => { const cs = chestState(); if (cs.closed.length) chestOpenId(cs.closed[0].id); },
   chestOpenFor: el => chestOpenId(el.dataset.id),
@@ -4083,16 +4183,16 @@ Object.assign(A, {
     const it = ITEM[S.profile.chest.op[ch.id]], reveal = () => {
       if (top() !== sh) return;
       sh.phase = 'open'; render();
-      buzz(it.r === 'l' ? [40, 60, 40, 60, 120] : it.r === 'r' ? [30, 50, 30, 50, 60] : [20, 40, 20]);
+      buzz(it.r === 'l' ? [40, 60, 40, 60, 120] : it.r === 'r' ? [30, 50, 30, 50, 60] : [20, 40, 20]); sfx('open' + it.r);
       if (it.r !== 'c') { const r = $('#sheet-root .reveal .chest'); const b = r ? r.getBoundingClientRect() : { left:innerWidth / 2, top:innerHeight / 3, width:0, height:0 }; confetti(b.left + b.width / 2, b.top + b.height / 2, it.r === 'l' ? 110 : 60); }
     };
     if (RM) { reveal(); return; }
-    sh.phase = 'shake'; buzz(12); render(); setTimeout(reveal, 1350);
+    sh.phase = 'shake'; buzz(12); sfx('shake'); render(); setTimeout(reveal, 1350);
   },
   chestWear: el => {
     const id = el.dataset.id, it = ITEM[id]; if (!it) return;
     S.profile.gear = Object.assign(gearOf(S.profile, collOf(S.profile, S.workouts)), { [it.s]:id });
-    saveProfile(); buzz(10); toast(`${mateName(charOf(curProf()))} в обновке: «${it.n}»`); render();
+    saveProfile(); buzz(10); sfx('equip'); toast(`${mateName(charOf(curProf()))} в обновке: «${it.n}»`); render();
   },
   freezeOn: el => {
     const n = +el.dataset.d; if (!(n >= 1 && n <= 14) || !canFreeze(S.profile.freeze)) return;
@@ -4103,7 +4203,7 @@ Object.assign(A, {
   /* supplements */
   supTake: el => {
     const r = supToggle(el.dataset.id, +el.dataset.day || startOfDay(Date.now())); if (!r) return;
-    if (r.on) buzz(r.full ? [10, 40, 10] : 10); if (r.full) toast('Все добавки по плану · +10 XP');
+    if (r.on) buzz(r.full ? [10, 40, 10] : 10); sfx(r.full ? 'supFull' : r.on ? 'sup' : 'unset'); if (r.full) toast('Все добавки по плану · +10 XP');
     S.bubble = null; render();
   },
   supDayShift: el => { const today = startOfDay(Date.now()), cur = Math.min(today, S.supDay || today); S.supDay = Math.max(addDays(today, -6), Math.min(today, addDays(cur, +el.dataset.d))); render(); },
@@ -4151,8 +4251,27 @@ Object.assign(IN, {
   supF: el => { const sh = top(); if (sh && sh.d) sh.d[el.dataset.f] = el.value; },
 });
 
+SHEETS.news23 = () => `${sheetHead('Что нового', 'Версия ' + APP_VERSION)}<div class="sheet-body">
+  <ul class="pr-list news">
+    <li>${icon('sound')}<span><b>Звуки</b> — щелчок подхода, отсчёт 3-2-1 в конце отдыха, фанфары за рекорд, сундуки и голос напарника. Громкость и выключатель — в настройках</span></li>
+    <li>${icon('user')}<span><b>Один или с партнёром</b> — без партнёра нет чата и лишних предложений. Поменять можно в любой момент в настройках</span></li>
+  </ul>
+  <div class="lbl" style="margin-top:16px">Как тренируетесь${modeSeg('setMode')}</div>
+</div><footer class="sheet-foot"><button class="btn" data-act="sndDemo">${icon('sound')} Послушать</button><button class="btn btn-primary" data-act="closeSheet">Готово</button></footer>`;
+Object.assign(A, {
+  setMode: el => {
+    const v = el.dataset.v; if (v === 'solo' && syncCfg()) { toast('Сначала отключите синхронизацию с партнёром'); return; }
+    ensureMeta().mode = v; saveMeta(); if (v === 'solo' && S.view === 'chat') S.view = 'today';
+    buzz(8); render(); toast(v === 'pair' ? 'Режим «С партнёром»: подключить можно в настройках' : 'Режим «Один»');
+  },
+  wlMode: el => { top().mode = el.dataset.v; buzz(6); render(); },
+  sndToggle: () => { const m = ensureMeta(), c = sndCfg(); m.snd = Object.assign(c, { on:!c.on }); saveMeta(); render(); if (m.snd.on) sfx('toggle'); },
+  sndVol: el => { const m = ensureMeta(); m.snd = Object.assign(sndCfg(), { vol:+el.dataset.v }); saveMeta(); render(); sfx('set'); },
+  sndCat: el => { const m = ensureMeta(), c = sndCfg(), k = el.dataset.k; c[k] = !c[k]; m.snd = c; saveMeta(); render(); sfx(k === 'train' ? 'set' : k === 'game' ? 'mate' : 'tap'); },
+  sndDemo: () => { const m = ensureMeta(); if (!sndCfg().on) { m.snd = Object.assign(sndCfg(), { on:true }); saveMeta(); render(); } sfx('pr'); setTimeout(() => sfx('openr'), 900); setTimeout(() => sfx('mate'), 2000); },
+});
 /* ================= events ================= */
-document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const fn = A[el.dataset.act]; if (fn) { e.preventDefault(); fn(el, e); } });
+document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const fn = A[el.dataset.act]; if (fn) { e.preventDefault(); SFXN.n = 0; fn(el, e); if (!SFXN.n) sfx(el.dataset.act === 'nav' ? 'tab' : el.dataset.act === 'closeSheet' ? 'close' : el.getAttribute('role') === 'switch' ? 'toggle' : 'tap'); } });
 document.addEventListener('input', e => { const el = e.target; if (el.dataset && el.dataset.in && IN[el.dataset.in]) IN[el.dataset.in](el, e); });
 document.addEventListener('change', e => { const el = e.target; if (el.dataset && el.dataset.ch && CHG[el.dataset.ch]) CHG[el.dataset.ch](el, e); });
 document.addEventListener('focusin', e => {
