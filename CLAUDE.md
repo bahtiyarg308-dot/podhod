@@ -28,5 +28,11 @@
 - Playwright уже установлен; сервис-воркер в тестах блокировать (`serviceWorkers:'block'`), данные класть в IndexedDB до reload.
 - Настоящий Firebase из Node: `NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt node …`; временные аккаунты после теста удалять.
 
+## Вход и почта (2.9)
+- Приложение закрыто, пока нет аккаунта с подтверждённой почтой (`gateOk`, `SHEETS.acc` с `gate:true`, закрыть нельзя). Google-вход считается подтверждённым.
+- Письмо с ссылкой шлёт Firebase (`sendOobCode` VERIFY_EMAIL / PASSWORD_RESET); приложение само опрашивает `lookup`. Правила Firestore требуют `email_verified`.
+- Смена пароля — тоже письмом. Свайпы: `swipe29` (закрытие окон, переключение вкладок).
+- Для тестов вход обходится копией index.html с `gateOk = () => true`.
+
 ## План
-- 2.9: уведомления (Cloudflare Worker + Web Push): напоминания о добавках по времени, «напарник проголодался», «пнуть партнёра». Нужен аккаунт Cloudflare пользователя.
+- Уведомления (Cloudflare Worker + Web Push) пользователь отложил.

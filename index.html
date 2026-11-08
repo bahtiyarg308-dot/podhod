@@ -112,7 +112,7 @@ ul,ol{margin:0;padding:0;list-style:none}
 .app{min-height:100%}
 .main{width:100%;max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:calc(18px + env(safe-area-inset-top,0px));padding-bottom:calc(132px + env(safe-area-inset-bottom,0px))}
 .rail{display:none}
-.tabbar{position:fixed;z-index:20;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(460px,calc(100% - 20px));display:grid;grid-template-columns:repeat(5,1fr);padding:5px;border-radius:20px;background:color-mix(in oklab, var(--surface) 90%, transparent);-webkit-backdrop-filter:saturate(1.5) blur(18px);backdrop-filter:saturate(1.5) blur(18px);border:1px solid var(--line);box-shadow:var(--shadow)}
+.tabbar{position:fixed;z-index:20;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(460px,calc(100% - 20px));display:grid;grid-template-columns:repeat(5,1fr);padding:5px;border-radius:20px;background:color-mix(in oklab, var(--surface) 97%, transparent);border:1px solid var(--line);box-shadow:var(--shadow)}
 .tab{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 7px;font-size:11px;font-weight:600;color:var(--muted);transition:color .3s}
 .tab .ic{width:22px;height:22px;transition:transform .35s var(--spring)}
 .tab[aria-current="page"]{color:var(--accent-ink)}
@@ -372,7 +372,7 @@ textarea.field{height:auto;min-height:76px;padding:10px 14px;resize:vertical;lin
 .jnums span{display:block;font-size:12px;color:var(--muted);white-space:nowrap}
 
 /* ---------- editor ---------- */
-.ed-bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:15;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-left:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(16px,env(safe-area-inset-right,0px)));padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:color-mix(in oklab, var(--bg) 88%, transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);margin-top:-8px}
+.ed-bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:15;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-left:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(16px,env(safe-area-inset-right,0px)));padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:color-mix(in oklab, var(--bg) 88%, transparent);border-bottom:1px solid var(--line);margin-top:-8px}
 .ed-clock{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600}
 .live-dot{width:9px;height:9px;border-radius:50%;background:var(--good);box-shadow:0 0 0 4px var(--good-soft);animation:pulse 2s ease-in-out infinite}
 .ed-title{display:block;width:100%;border:0;border-radius:0;background:transparent;font:600 28px/1.2 var(--f-display);padding:4px 0 6px;margin-top:16px;color:var(--ink)}
@@ -466,7 +466,7 @@ textarea.field{height:auto;min-height:76px;padding:10px 14px;resize:vertical;lin
 .confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:70}
 
 /* ---------- sheets ---------- */
-.scrim{position:fixed;inset:0;background:var(--scrim);z-index:40;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);animation:fade .25s ease both}
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:40;animation:fade .25s ease both}
 .sheet{position:fixed;z-index:41;left:0;right:0;bottom:0;max-height:calc(100% - env(safe-area-inset-top,0px) - 20px);display:flex;flex-direction:column;background:var(--surface);border-radius:22px 22px 0 0;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);box-shadow:var(--shadow);animation:sheet-up .5s cubic-bezier(.32,.72,0,1) both}
 #sheet-root.closing .scrim{animation:fade-out .22s ease both}
 #sheet-root.closing .sheet{animation:sheet-down .24s cubic-bezier(.4,0,1,1) both}
@@ -704,7 +704,7 @@ a.btn{text-decoration:none}
 .msg-n{display:block;font-size:11.5px;font-weight:700;color:var(--muted);margin-bottom:2px}
 .msg-t{display:block;font:500 9.5px var(--f-mono);opacity:.65;margin-top:3px;text-align:right}
 .msg.pending .msg-b{opacity:.65}
-.composer{position:fixed;z-index:22;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));width:min(560px,calc(100% - 20px));display:flex;gap:6px;align-items:flex-end;padding:5px;border-radius:18px;background:color-mix(in oklab, var(--surface) 94%, transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--line);box-shadow:var(--shadow)}
+.composer{position:fixed;z-index:22;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));width:min(560px,calc(100% - 20px));display:flex;gap:6px;align-items:flex-end;padding:5px;border-radius:18px;background:color-mix(in oklab, var(--surface) 94%, transparent);border:1px solid var(--line);box-shadow:var(--shadow)}
 .composer textarea{flex:1;min-width:0;height:42px;max-height:120px;resize:none;border:0;background:transparent;padding:10px;color:var(--ink);font-size:15px;line-height:1.35}
 .composer textarea:focus{outline:none}
 .composer .btn{min-height:42px;width:46px;padding:0;flex:none}
@@ -1233,6 +1233,12 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 .cp-who small{font-size:12.5px;color:var(--muted)}
 .wl-login{margin:-4px auto 16px;display:flex}
 .hint span,.hint b{overflow-wrap:anywhere}
+/* ---------- 2.9: sign-in gate, calmer animations ---------- */
+.gate-intro{margin:0 0 14px;color:var(--ink-2);font-size:14px;line-height:1.4}
+.sheet[data-gate] .grab{display:none}
+body{overscroll-behavior-x:none}
+html.scr .ch *,html.scr .chest *,html.scr .live-dot,html.scr .badge,html.scr .sk,html.scr .giftbtn>.ic:first-child{animation-play-state:paused}
+body.locked #main .ch *,body.locked #main .chest *,body.locked #main .live-dot,body.locked #main .giftbtn>.ic:first-child{animation-play-state:paused}
 /* iPhone zooms the page into any field with text smaller than 16px — keep fields at 16px on touch screens */
 @media (pointer:coarse){input.field,select.field,textarea.field,.set-in,.composer textarea,input[type="search"]{font-size:16px}}
 @keyframes sh{to{background-position:-200% 0}}
@@ -1293,7 +1299,7 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.8.1';
+const APP_VERSION = '2.9.0';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -2295,7 +2301,8 @@ function goalStreak(c = ctxLocal()) {
   while (ws >= first) { if ((wc.get(ws) || 0) >= goal) n++; else if (!weekFrozen(ws, fr)) break; ws = addDays(ws, -7); }
   return { n, curMet, left:Math.max(0, goal - cur), daysLeft:Math.max(1, Math.round((addDays(now, 7) - Date.now()) / DAY)), frozen:weekFrozen(now, fr) };
 }
-function gameStats(c = ctxLocal()) {
+function gameStats(c) { if (c) return gameStats0(c); const g = S.gsC; if (g) return g.v || (g.v = gameStats0(ctxLocal())); return gameStats0(ctxLocal()); }
+function gameStats0(c) {
   const goal = c.profile.goal || 3, wc = weekCounts(c.workouts);
   let tonTotal = 0, early = 0, owl = 0, heavy = 0, sets = 0;
   c.workouts.forEach(w => { const st = wStats(w); tonTotal += st.vol; sets += st.sets; const h = new Date(w.start).getHours(); if (h < 9) early++; if (h >= 21) owl++; workSets(w, (e, s) => { if (e.kind === 'wr' && (num(s.w) || 0) >= 100) heavy++; }); });
@@ -2389,7 +2396,8 @@ function bubbleText(m) {
 /* ================= storage ================= */
 let dirty = false, dirtyT = null;
 function syncCur() { S.store[S.pid] = { profile:S.profile, workouts:S.workouts, active:S.active }; }
-function markDirty() { dirty = true; clearTimeout(dirtyT); dirtyT = setTimeout(flush, 250); }
+let LDIRTY = 0;
+function markDirty() { dirty = true; LDIRTY++; clearTimeout(dirtyT); dirtyT = setTimeout(flush, 250); }
 function flush() { clearTimeout(dirtyT); dirtyT = null; if (!dirty) return; dirty = false; syncCur(); KV.set('p:' + S.pid, { profile:S.profile, workouts:S.workouts, active:S.active }); }
 function saveMeta() { if (S.meta) KV.set('meta', clean(S.meta)); }
 function ensureMeta() { if (!S.meta) S.meta = { profiles:[{ id:'main', name:'', color:'red' }], cur:'main', theme:'auto' }; return S.meta; }
@@ -2724,7 +2732,7 @@ async function boot() {
   render();
   registerSW();
   if (syncCfg()) syncNow(true);
-  joinFromHash(); await googleFinish();
+  joinFromHash(); await googleFinish(); await authLink(); await verifyBoot();
   if (cloudOn()) cloudSync({ links:true });
 }
 window.addEventListener('online', () => { syncNow(); cloudSync(); });
@@ -2797,7 +2805,7 @@ async function keepAwake(on) {
     else if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
   } catch (e) { wakeLock = null; }
 }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { flush(); if (SY.pushT) { clearTimeout(SY.pushT); SY.pushT = null; syncNow(); } if (CL.t) { clearTimeout(CL.t); CL.t = null; cloudSync(); } } else { if (S.active) keepAwake(true); syncNow(); cloudSync({ links:true }); } });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { flush(); if (SY.pushT) { clearTimeout(SY.pushT); SY.pushT = null; syncNow(); } if (CL.t) { clearTimeout(CL.t); CL.t = null; cloudSync(); } } else { if (S.active) keepAwake(true); syncNow(); cloudSync({ links:true }); verifyTick(); } });
 window.addEventListener('pagehide', flush);
 function confetti(x, y, n = 70) {
   if (RM) return;
@@ -3057,10 +3065,13 @@ function drawHeat(el, map, o, anim) {
 
 /* ================= rendering ================= */
 let enterT = null;
-function render() {
+function render() { S.gsC = {}; try { return render0(); } finally { S.gsC = null; } }
+function render0() {
   const ae = document.activeElement, fid = ae && ae.id; let sel = null;
   try { if (fid && typeof ae.selectionStart === 'number') sel = [ae.selectionStart, ae.selectionEnd]; } catch (e) { sel = null; }
   CH = {};
+  if (S.metaLoaded && ready() && !gateOk()) { if (!gateSheet()) { const unv = !!unverAcc(); S.sheets = [{ type:'acc', gate:true, mode:unv ? 'verify' : 'login', email:'', pass:'', busy:false, err:'', key:uid() }]; if (unv) verifyWatch(true); } }
+  else if (gateSheet()) gateDone();
   if (!S.welcomed && S.metaLoaded && !S.meta && ready() && !S.sheets.length) { S.welcomed = true; S.sheets.push({ type:'welcome', name:'', color:'lime', char:'cat', key:uid() }); applyAccent('lime'); }
   if (S.metaLoaded && S.meta && !S.meta.v22seen && ready() && !S.sheets.length && !S.active) { S.meta.v22seen = true; S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; S.meta.v28seen = true; S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
   else if (S.metaLoaded && S.meta && !S.meta.v23seen && ready() && !S.sheets.length && !S.active) { S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; S.meta.v28seen = true; saveMeta(); S.sheets.push({ type:'news23', key:uid() }); }
@@ -3580,7 +3591,7 @@ function photosHTML() {
 /* ================= sheets ================= */
 function openSheet(o) { S.sheets.push({ ...o, key:uid() }); render(); }
 function closeSheet() {
-  const t = top(); if (!t) return;
+  const t = top(); if (!t || (t.gate && !gateOk())) return;
   if (t.type === 'welcome' && !S.meta) { ensureMeta(); saveMeta(); applyAccent(); }
   S.sheets.pop(); render();
 }
@@ -3603,7 +3614,7 @@ function renderSheet() {
     const tmp = document.createElement('section'); tmp.innerHTML = html; morphChildren(sheet, tmp);
   } else {
     closeTok++; root.classList.remove('closing');
-    root.innerHTML = `<div class="scrim" data-act="closeSheet"></div><section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">${html}</section>`;
+    root.innerHTML = `<div class="scrim" data-act="closeSheet"></div><section class="sheet"${t.gate ? ' data-gate="1"' : ''} role="dialog" aria-modal="true" aria-labelledby="sheet-title">${html}</section>`;
     root.dataset.key = t.key; bindDrag(root.querySelector('.sheet'));
     countUp(root);
     if (t.type === 'done' && (t.prs || t.lvlUp || (t.newBadges && t.newBadges.length))) setTimeout(() => confetti(window.innerWidth / 2, window.innerHeight * .3, t.lvlUp ? 150 : 100), 450);
@@ -3611,7 +3622,7 @@ function renderSheet() {
   document.body.classList.add('locked');
 }
 function bindDrag(sheet) {
-  if (!sheet) return;
+  if (!sheet || sheet.dataset.gate) return;
   let y0 = null, dy = 0, t0 = 0;
   sheet.addEventListener('pointerdown', e => {
     if (window.matchMedia('(min-width:720px)').matches) return;
@@ -5534,10 +5545,11 @@ const AUTH_ERR = { EMAIL_EXISTS:'Такая почта уже зарегистр
   WEAK_PASSWORD:'Слишком короткий пароль — нужно хотя бы 6 символов', TOO_MANY_ATTEMPTS_TRY_LATER:'Слишком много попыток. Подождите пару минут', USER_DISABLED:'Аккаунт отключён',
   CREDENTIAL_TOO_OLD_LOGIN_AGAIN:'Для этого действия войдите в аккаунт заново', OPERATION_NOT_ALLOWED:'Этот способ входа выключен', net:'Нет связи с интернетом. Попробуйте ещё раз',
   relogin:'Вход устарел — войдите в аккаунт заново', denied:'Для партнёров в Firebase опубликованы не все правила доступа. Свои данные сохраняются как обычно', badcode:'Код не найден или устарел. Попросите новый', own:'Это ваш собственный код',
-  nomatch:'Пароли не совпадают', short:'Пароль — хотя бы 6 символов', cancel:'Вход отменён', google:'Google не вернул вход. Попробуйте ещё раз или войдите по почте' };
+  nomatch:'Пароли не совпадают', short:'Пароль — хотя бы 6 символов', cancel:'Вход отменён', google:'Google не вернул вход. Попробуйте ещё раз или войдите по почте', unver:'Почта ещё не подтверждена. Откройте ссылку из письма и нажмите «Я подтвердил»', INVALID_OOB_CODE:'Ссылка уже использована или устарела. Запросите новое письмо', EXPIRED_OOB_CODE:'Ссылка устарела. Запросите новое письмо' };
 const authErr = e => AUTH_ERR[(e && e.code) || ''] || 'Не получилось' + (e && e.code ? ` (${e.code})` : '');
-async function idt(method, body) {
-  let r; try { r = await fetch(FB.idt + method + '?key=' + FB.key, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(body) }); } catch (e) { throw { code:'net' }; }
+async function idt(method, body, ru) {
+  const go = h => fetch(FB.idt + method + '?key=' + FB.key, { method:'POST', headers:Object.assign({ 'Content-Type':'application/json' }, h), body:JSON.stringify(body) });
+  let r; try { r = await go(ru ? { 'X-Firebase-Locale':'ru' } : {}); } catch (e) { if (!ru) throw { code:'net' }; try { r = await go({}); } catch (e2) { throw { code:'net' }; } }
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw { code:String((j.error && j.error.message) || 'HTTP_' + r.status).split(/[ :]/)[0] };
   return j;
@@ -5619,6 +5631,7 @@ function mergeCloudWorkouts(d, list, del) {
   if (ch) d.workouts = [...map.values()].sort((a, b) => b.start - a.start);
   return ch;
 }
+const localSig = p => LDIRTY + '|' + (p.sid ? myChat(p.sid).length : 0) + '|' + (shareBodyOn() ? 1 : 0) + '|' + JSON.stringify(cardOf(p));
 const chatOut = sid => myChat(sid).slice(-300).map(x => ({ id:x.id, t:x.t, x:x.x, d:x.d }));
 async function cloudSt(u) { if (!CL.st[u]) CL.st[u] = (await KV.get('cs:' + u)) || { wm:{} }; return CL.st[u]; }
 const saveSt = u => { if (CL.st[u]) KV.set('cs:' + u, CL.st[u]); };
@@ -5631,6 +5644,7 @@ async function cloudSyncAcc(pid, acc, o) {
   const d = S.store[pid] || (S.store[pid] = { profile:{}, workouts:[], active:null });
   d.profile = normP(d.profile); d.workouts = d.workouts || [];
   const head = await fsGet(acc, `users/${u}/pb/main`);
+  if (head && st.done && st.hh === head.h && st.sg === localSig(p)) return false; // nothing changed here or in the cloud
   const rwm = head ? sjson(head.wm, {}) : {};
   const first = !st.done;
   let changed = false, pushProf = !head || profHash(d.profile, p) !== st.ph;
@@ -5652,7 +5666,7 @@ async function cloudSyncAcc(pid, acc, o) {
     need.forEach(m => { const doc = got[`users/${u}/w/${m}`]; if (doc && mergeCloudWorkouts(d, sjson(doc.j, []), del)) changed = true; });
   }
   if (d.workouts.some(w => del.has(w.id))) { d.workouts = d.workouts.filter(w => !del.has(w.id)); changed = true; }
-  if (changed) { KV.set('p:' + pid, d); if (pid === S.pid) loadProfileData(); }
+  if (changed) { LDIRTY++; KV.set('p:' + pid, d); if (pid === S.pid) loadProfileData(); }
   const dd = pid === S.pid ? (syncCur(), S.store[pid]) : d;
   // chat from my other phones
   if (p.sid && head && head.ch && head.ch !== st.ch) { const c = await fsGet(acc, `users/${u}/pb/chat`); const msgs = c ? (sjson(c.j, {}).msgs || []) : []; if (msgs.length) mergeChats({ [p.sid]:msgs }); }
@@ -5670,10 +5684,11 @@ async function cloudSyncAcc(pid, acc, o) {
   if (ch && (!head || head.ch !== ch) && chatOut(p.sid).length) writes.push({ update:fsDoc(`users/${u}/pb/chat`, { j:chatJ }) });
   const pub = payload(pid); delete pub.workouts; delete pub.dev; pub.uid = u;
   const pubJ = JSON.stringify(pub), wmJ = JSON.stringify(lwm), h = hash2(pubJ + wmJ + pt + ch);
-  if (!head || head.h !== h) writes.push({ update:fsDoc(`users/${u}/pb/main`, { j:pubJ, wm:wmJ, pt, ch, h, t:Date.now() }) });
+  let finalH = head ? head.h : '';
+  if (!head || head.h !== h) { writes.push({ update:fsDoc(`users/${u}/pb/main`, { j:pubJ, wm:wmJ, pt, ch, h, t:Date.now() }) }); finalH = h; }
   if (writes.length) await fsCommit(acc, writes);
   if (p.sid && myChat(p.sid).some(x => !x.ok)) { myChat(p.sid).forEach(x => { x.ok = true; }); KV.set('chat-mine', S.chatMine); }
-  st.wm = lwm; st.ph = ph; st.pt = pt; st.ch = ch; st.done = 1; saveSt(u);
+  st.wm = lwm; st.ph = ph; st.pt = pt; st.ch = ch; st.done = 1; st.hh = finalH; st.sg = localSig(p); saveSt(u);
   return changed;
 }
 function applyCard(p, card, first, localEmpty) {
@@ -5704,6 +5719,7 @@ async function cloudPartner(acc, owner) {
 async function cloudPartners(o = {}) {
   const mine = new Set(Object.values(accs()).map(a => a.uid)), next = {}, chats = {}; let any = false;
   for (const acc of Object.values(accs())) {
+    if (acc.bad || acc.ver === 0) continue;
     const st = await cloudSt(acc.uid);
     if (o.links || !st.lk || Date.now() - (st.lkAt || 0) > 60000) { try { st.lk = [...new Set((await fsQuery(acc, 'links', 'reader', acc.uid)).map(l => l.owner).filter(x => x && !mine.has(x)))]; CL.noLinks = 0; } catch (e) { if (e && e.code === 'denied') { st.lk = st.lk || []; CL.noLinks = 1; } else throw e; } st.lkAt = Date.now(); saveSt(acc.uid); }
     for (const owner of st.lk) {
@@ -5754,7 +5770,7 @@ async function cloudSync(o = {}) {
   try {
     for (const [pid, acc] of Object.entries(accs())) {
       if (!profiles().some(p => p.id === pid)) { delete S.meta.accs[pid]; saveMeta(); continue; }
-      if (acc.bad) continue;
+      if (acc.bad || acc.ver === 0) continue;
       try { if (await cloudSyncAcc(pid, acc, o)) changed = true; }
       catch (e) { if (e && e.code === 'relogin') { acc.bad = 1; saveMeta(); } else throw e; }
     }
@@ -5781,30 +5797,6 @@ const cloudText = () => {
 const relTime = t => { const s = Math.round((Date.now() - t) / 1000); return s < 50 ? 'только что' : s < 3600 ? `${Math.round(s / 60)} мин назад` : new Date(t).toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' }); };
 
 /* ---------- signing in ---------- */
-async function afterSignIn(res, prov, sh) {
-  const fromWelcome = !S.meta || S.sheets.some(s => s.type === 'welcome');
-  const m = ensureMeta(), u = res.localId;
-  m.accs = m.accs || {};
-  if (fromWelcome) { ['v2seen', 'v22seen', 'v23seen', 'v24seen', 'v25seen', 'v26seen', 'v27seen', 'v271seen', 'v28seen'].forEach(k => { m[k] = true; }); if (m.chatSeen == null) m.chatSeen = Date.now(); }
-  const other = Object.entries(m.accs).find(([pid, a]) => a.uid === u && pid !== S.pid);
-  if (other) { switchProfile(other[0]); }
-  const pid = other ? other[0] : S.pid;
-  const old = m.accs[pid];
-  if (old && old.uid !== u) { delete CL.st[old.uid]; KV.del('cs:' + old.uid); }
-  m.accs[pid] = { uid:u, email:res.email || (old && old.email) || '', prov, rt:res.refreshToken, it:res.idToken, exp:Date.now() + (+res.expiresIn || 3600) * 1000 };
-  if (fromWelcome && !m.mode) m.mode = 'solo';
-  saveMeta(); buzz([10, 40, 10]); sfx('quest');
-  if (sh) { sh.busy = false; sh.mode = 'me'; sh.pass = ''; sh.pass2 = ''; sh.err = ''; }
-  render();
-  await cloudSync({ first:true, links:true, show:true });
-  if (fromWelcome) {
-    const p = curProf();
-    if (p.name) { S.sheets = []; m.v2seen = m.v22seen = m.v23seen = m.v24seen = m.v25seen = m.v26seen = m.v27seen = m.v271seen = m.v28seen = true; if (m.chatSeen == null) m.chatSeen = Date.now(); saveMeta(); toast(`С возвращением, ${p.name}! Данные загружены`); }
-    else { S.sheets = S.sheets.filter(s => s.type === 'welcome'); const w = S.sheets[0]; if (w && !w.name && res.displayName) w.name = String(res.displayName).split(' ')[0].slice(0, 24); toast('Аккаунт подключён. Осталось познакомиться'); }
-  } else toast(S.workouts.length ? 'Аккаунт подключён — данные в облаке' : 'Аккаунт подключён');
-  if (S.pendingJoin) { const code = S.pendingJoin; S.pendingJoin = null; try { localStorage.removeItem('podhod-join'); } catch (e) { /* private mode */ } openSheet({ type:'cpair', mode:'join', code, busy:false, err:'' }); }
-  render();
-}
 async function googleStart() {
   const j = await idt('createAuthUri', { providerId:'google.com', continueUri:appUrl(), customParameter:{ prompt:'select_account' } });
   try { localStorage.setItem('podhod-g', JSON.stringify({ s:j.sessionId, at:Date.now(), pid:S.pid, w:!S.meta || S.sheets.some(x => x.type === 'welcome') })); } catch (e) { /* private mode */ }
@@ -5818,7 +5810,6 @@ async function googleFinish() {
   if (!g || Date.now() - g.at > 30 * 60000) return;
   if (/error=/.test(h + q)) { toast(AUTH_ERR.cancel); return; }
   if (g.pid && profiles().some(p => p.id === g.pid) && g.pid !== S.pid) switchProfile(g.pid);
-  if (g.w && !S.sheets.some(s => s.type === 'welcome') && !S.meta) S.sheets.push({ type:'welcome', name:'', color:'lime', char:'cat', key:uid() });
   try {
     let res;
     try { res = await idt('signInWithIdp', { requestUri:url, sessionId:g.s, returnSecureToken:true, returnIdpCredential:true }); }
@@ -5889,7 +5880,7 @@ function joinFromHash() {
   if (!code) return;
   if (accOf()) { setTimeout(() => openSheet({ type:'cpair', mode:'join', code, busy:false, err:'' }), 400); return; }
   S.pendingJoin = code; try { localStorage.setItem('podhod-join', code); } catch (e) { /* private mode */ }
-  setTimeout(() => openSheet({ type:'acc', mode:'login', busy:false, err:'', why:'Войдите, чтобы подключиться к партнёру' }), 400);
+    setTimeout(() => { const g = gateSheet(); if (g) { g.why = 'Войдите, чтобы подключиться к партнёру'; render(); } }, 400);
 }
 window.addEventListener('hashchange', () => { if (/join=/.test(location.hash)) joinFromHash(); });
 
@@ -5902,50 +5893,6 @@ const jwtAuthAt = t => { try { return JSON.parse(atob(t.split('.')[1].replace(/-
 const accField = (id, label, key, sh, o = {}) => `<label class="lbl">${label}<span class="pw-wrap"><input class="field" id="${id}" data-in="accF" data-k="${key}" type="${o.type || 'text'}" value="${esc(sh[key] || '')}" autocomplete="${o.ac || 'off'}"${o.im ? ` inputmode="${o.im}"` : ''} autocapitalize="off" spellcheck="false" enterkeyhint="${o.ek || 'next'}"${o.ph ? ` placeholder="${o.ph}"` : ''}>${o.eye ? `<button class="pw-eye icon-btn" type="button" data-act="accEye" aria-label="${sh.eye ? 'Скрыть пароль' : 'Показать пароль'}" aria-pressed="${!!sh.eye}">${icon(sh.eye ? 'eyeOff' : 'eye')}</button>` : ''}</span></label>`;
 ICONS.eye = ICONS.eye || '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>';
 ICONS.eyeOff = ICONS.eyeOff || '<path d="M4 4l16 16"/><path d="M9.9 5.8A9.6 9.6 0 0 1 12 5.5C18 5.5 21.5 12 21.5 12a17 17 0 0 1-3 3.8M6.6 7.4C3.9 9.2 2.5 12 2.5 12S6 18.5 12 18.5c1.6 0 3-.4 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>';
-SHEETS.acc = sh => {
-  const a = accOf(), pw = sh.eye ? 'text' : 'password', err = sh.err ? `<p class="acc-err" role="alert">${esc(sh.err)}</p>` : '';
-  const busy = sh.busy ? ' disabled aria-busy="true"' : '';
-  if (a && sh.mode !== 'pass' && sh.mode !== 'del') {
-    return `${sheetHead('Аккаунт', esc(pname(curProf())))}<div class="sheet-body">
-      <div class="acc-card"><span class="acc-ava" aria-hidden="true">${a.prov === 'google' ? GLOGO : icon('user')}</span><span class="acc-id"><b>${esc(a.email || 'Аккаунт')}</b><small>${a.prov === 'google' ? 'Вход через Google' : 'Вход по почте и паролю'}</small></span></div>
-      <p class="acc-st${a.bad || CL.status === 'err' ? ' bad' : ''}" role="status">${icon(CL.status === 'sync' ? 'repeat' : 'cloud')} ${esc(cloudText())}</p>
-      ${a.bad ? `<button class="btn btn-primary btn-block" data-act="accRelogin">Войти заново</button>` : `<button class="btn btn-block" data-act="accSync"${CL.busy ? ' disabled' : ''}>${icon('repeat')} Синхронизировать сейчас</button>`}
-      <div class="hint" style="margin-top:14px">${icon('cloud')}<span><b>Что хранится в облаке:</b> тренировки, программы, добавки, вес и замеры, сундуки и гардероб, настройки. Войдите с другого телефона — всё появится там. <b>Фото тела остаются только на этом телефоне.</b></span></div>
-      <div class="sblock"><div class="row">${a.prov !== 'google' ? `<button class="btn btn-sm" data-act="accMode" data-m="pass">${icon('key')} Сменить пароль</button>` : ''}<button class="btn btn-sm" data-act="accOut">${icon('logout')} ${sh.outc ? 'Точно выйти?' : 'Выйти'}</button><button class="btn btn-sm btn-danger-soft" data-act="accMode" data-m="del">${icon('trash')} Удалить аккаунт</button></div>
-      <p class="fine" style="margin:10px 0 0">После выхода данные остаются на телефоне, но перестают сохраняться в облако.</p></div>
-    </div>`;
-  }
-  if (a && sh.mode === 'pass') return `${sheetHead('Новый пароль', esc(a.email))}<div class="sheet-body"><form class="acc-form" onsubmit="return false">
-      ${accField('acc-cur', 'Текущий пароль', 'cur', sh, { type:pw, ac:'current-password' })}
-      ${accField('acc-new', 'Новый пароль', 'pass', sh, { type:pw, ac:'new-password', eye:true, ek:'done', ph:'Не меньше 6 символов' })}
-      ${err}<button class="btn btn-primary btn-block" data-act="accPassSave"${busy}>${sh.busy ? 'Сохраняем…' : 'Сменить пароль'}</button>
-      <button class="btn btn-ghost btn-block" type="button" data-act="accMode" data-m="me">Назад</button></form></div>`;
-  if (a && sh.mode === 'del') {
-    const fresh = Date.now() - jwtAuthAt(a.it || '') < 4 * 60000;
-    return `${sheetHead('Удалить аккаунт', esc(a.email))}<div class="sheet-body">
-      <p>Удалим аккаунт и всё, что хранится в облаке: тренировки, программы, добавки, вес. Партнёр перестанет видеть ваши тренировки. <b>На этом телефоне данные останутся.</b></p>
-      ${a.prov === 'google' && !fresh ? `<div class="hint">${icon('help')}<span>Для удаления Google просит подтвердить, что это вы. Войдите через Google ещё раз — и сразу удаляйте.</span></div><button class="btn btn-block" style="margin-top:12px" data-act="accGoogle">${GLOGO} Подтвердить через Google</button>`
-        : `${a.prov === 'google' ? '' : accField('acc-dp', 'Пароль для подтверждения', 'cur', sh, { type:pw, ac:'current-password', eye:true, ek:'done' })}${err}<button class="btn btn-danger btn-block" style="margin-top:12px" data-act="accDel"${busy}>${sh.busy ? 'Удаляем…' : sh.delc ? 'Да, удалить навсегда' : 'Удалить аккаунт и облако'}</button>`}
-      <button class="btn btn-ghost btn-block" data-act="accMode" data-m="me">Отмена</button></div>`;
-  }
-  const mode = sh.mode || 'login';
-  if (mode === 'reset') return `${sheetHead('Восстановить пароль', 'Аккаунт')}<div class="sheet-body">${sh.sent
-      ? `<div class="hint">${icon('check')}<span>Если такой аккаунт есть, письмо уже летит на <b>${esc(sh.sent)}</b>. Откройте ссылку из письма, задайте новый пароль и войдите. Письма нет пару минут — загляните в «Спам».</span></div><button class="btn btn-primary btn-block" style="margin-top:14px" data-act="accMode" data-m="login">Ко входу</button>`
-      : `<form class="acc-form" onsubmit="return false">${accField('acc-email', 'Почта', 'email', sh, { type:'email', ac:'email', im:'email', ek:'send', ph:'name@mail.ru' })}${err}
-        <button class="btn btn-primary btn-block" data-act="accReset"${busy}>${sh.busy ? 'Отправляем…' : 'Прислать ссылку'}</button><button class="btn btn-ghost btn-block" type="button" data-act="accMode" data-m="login">Назад</button></form>`}</div>`;
-  const up = mode === 'signup';
-  return `${sheetHead(up ? 'Создать аккаунт' : 'Вход', sh.why ? esc(sh.why) : 'Данные в облаке')}<div class="sheet-body">
-    <button class="btn btn-block btn-g" data-act="accGoogle"${busy}>${GLOGO} ${up ? 'Создать через Google' : 'Войти через Google'}</button>
-    <div class="or"><span>или по почте</span></div>
-    <form class="acc-form" onsubmit="return false">
-      ${accField('acc-email', 'Почта', 'email', sh, { type:'email', ac:'email', im:'email', ph:'name@mail.ru' })}
-      ${accField('acc-pass', 'Пароль', 'pass', sh, { type:pw, ac:up ? 'new-password' : 'current-password', eye:true, ek:'go', ph:up ? 'Не меньше 6 символов' : '' })}
-      ${err}<button class="btn btn-primary btn-block" data-act="${up ? 'accSignup' : 'accLogin'}"${busy}>${sh.busy ? (up ? 'Создаём…' : 'Входим…') : up ? 'Создать аккаунт' : 'Войти'}</button>
-    </form>
-    <div class="acc-links">${up ? `<button class="link" data-act="accMode" data-m="login">Уже есть аккаунт? Войти</button>` : `<button class="link" data-act="accMode" data-m="signup">Создать аккаунт</button><button class="link" data-act="accMode" data-m="reset">Забыли пароль?</button>`}</div>
-    <p class="fine">Без аккаунта приложение работает как раньше — всё хранится на телефоне. С аккаунтом данные сохраняются в облаке (Google Firebase): новый телефон — и всё на месте. Фото тела в облако не попадают.</p>
-  </div>`;
-};
 SHEETS.cpair = sh => {
   const a = accOf(), ps = Object.values(cmembers()), err = sh.err ? `<p class="acc-err" role="alert">${esc(sh.err)}</p>` : '', busy = sh.busy ? ' disabled aria-busy="true"' : '';
   if (!a) return `${sheetHead('Партнёр', 'Подключение')}<div class="sheet-body"><p>Чтобы видеть тренировки, рекорды и чат друг друга, войдите в аккаунт — у партнёра тоже нужен аккаунт.</p><button class="btn btn-primary btn-block" data-act="accOpen" data-why="Чтобы подключить партнёра">${icon('user')} Войти</button></div>`;
@@ -5986,7 +5933,7 @@ document.addEventListener('keydown', e => { if (e.key !== 'Enter' || !e.target |
 Object.assign(IN, { accF: el => { const sh = top(); if (sh) { sh[el.dataset.k] = el.value; if (sh.err) { sh.err = ''; const e = $('#sheet-root .acc-err'); if (e) e.remove(); } } } });
 Object.assign(A, {
   accOpen: el => openSheet({ type:'acc', mode:accOf() ? 'me' : 'login', email:'', pass:'', busy:false, err:'', why:el && el.dataset && el.dataset.why || '' }),
-  accMode: el => { const sh = top(); sh.mode = el.dataset.m; sh.err = ''; sh.sent = ''; sh.delc = false; sh.cur = ''; sh.pass = ''; render(); },
+  accMode: el => { const sh = top(); sh.mode = el.dataset.m; sh.err = ''; sh.sent = ''; sh.delc = false; sh.done = false; sh.cur = ''; sh.pass = ''; render(); },
   accEye: () => { const sh = top(); sh.eye = !sh.eye; render(); },
   accGoogle: () => { const sh = top(); accRun(sh, () => googleStart()); },
   accRelogin: () => { const sh = top(); const a = accOf(); sh.email = (a && a.email) || ''; if (a && a.prov === 'google') { accRun(sh, () => googleStart()); return; } signOut(); sh.mode = 'login'; render(); },
@@ -5995,16 +5942,9 @@ Object.assign(A, {
     accRun(sh, async () => { const res = await idt('signInWithPassword', { email, password:pass, returnSecureToken:true }); await afterSignIn(res, 'password', sh); }); },
   accSignup: () => { const sh = top(), email = (sh.email || '').trim(), pass = sh.pass || '';
     if (!email) { sh.err = authErr({ code:'MISSING_EMAIL' }); render(); return; } if (pass.length < 6) { sh.err = authErr({ code:'short' }); render(); return; }
-    accRun(sh, async () => { const res = await idt('signUp', { email, password:pass, returnSecureToken:true }); await afterSignIn(res, 'password', sh); }); },
+    accRun(sh, async () => { const res = await idt('signUp', { email, password:pass, returnSecureToken:true }); await afterSignIn(res, 'password', sh, true); }); },
   accReset: () => { const sh = top(), email = (sh.email || '').trim(); if (!email) { sh.err = authErr({ code:'MISSING_EMAIL' }); render(); return; }
-    accRun(sh, async () => { await idt('sendOobCode', { requestType:'PASSWORD_RESET', email }); sh.sent = email; }); },
-  accPassSave: () => { const sh = top(), a = accOf(); if (!a) return; if ((sh.pass || '').length < 6) { sh.err = authErr({ code:'short' }); render(); return; }
-    accRun(sh, async () => {
-      const r1 = await idt('signInWithPassword', { email:a.email, password:sh.cur || '', returnSecureToken:true });
-      const r2 = await idt('update', { idToken:r1.idToken, password:sh.pass, returnSecureToken:true });
-      a.it = r2.idToken || r1.idToken; a.rt = r2.refreshToken || r1.refreshToken; a.exp = Date.now() + (+(r2.expiresIn || r1.expiresIn) || 3600) * 1000; delete a.bad; saveMeta();
-      sh.mode = 'me'; sh.cur = ''; sh.pass = ''; toast('Пароль изменён'); sfx('set');
-    }); },
+    accRun(sh, async () => { await idt('sendOobCode', { requestType:'PASSWORD_RESET', email, continueUrl:appUrl() }, true); sh.sent = email; }); },
   accSync: () => { cloudSync({ links:true, show:true }); render(); },
   accOut: () => { const sh = top(); if (!sh.outc) { sh.outc = true; render(); return; } signOut(); sh.outc = false; sh.mode = 'login'; toast('Вы вышли. Данные остались на телефоне'); render(); },
   accDel: () => { const sh = top(), a = accOf(); if (!a) return; if (!sh.delc) { sh.delc = true; render(); return; }
@@ -6035,6 +5975,196 @@ SHEETS.news28 = () => `${sheetHead('Что нового', 'Версия ' + APP_
     <li>${icon('check')}<span>Аккаунт не обязателен: без него всё работает как раньше, без интернета</span></li>
   </ul>
 </div><footer class="sheet-foot"><button class="btn" data-act="closeSheet">Позже</button><button class="btn btn-primary" data-act="accOpen">${icon('user')} Войти</button></footer>`;
+
+/* ================= 2.9: sign-in is required, e-mail must be confirmed ================= */
+const NEWS_FLAGS = ['v2seen', 'v22seen', 'v23seen', 'v24seen', 'v25seen', 'v26seen', 'v27seen', 'v271seen', 'v28seen'];
+const verOk = a => !!a && !a.bad && a.ver !== 0;
+const gateOk = () => Object.values(accs()).some(verOk);
+const gateSheet = () => S.sheets.find(s => s.gate);
+const gateDone = () => { S.sheets = S.sheets.filter(s => !s.gate); };
+const unverAcc = () => Object.values(accs()).find(a => a.ver === 0 && !a.bad);
+const gateHead = (title, eyebrow = '') => `<header class="sheet-head"><div>${eyebrow ? `<div class="eyebrow">${eyebrow}</div>` : ''}<h2 id="sheet-title">${title}</h2></div></header>`;
+async function sendVerify(acc, force) {
+  if (!force && acc.vs && Date.now() - acc.vs < 55000) return;
+  acc.vs = Date.now(); saveMeta();
+  await idt('sendOobCode', { requestType:'VERIFY_EMAIL', idToken:await accToken(acc), continueUrl:appUrl() }, true);
+}
+async function checkVerified(acc) {
+  const j = await idt('lookup', { idToken:await accToken(acc) }), u = (j.users || [])[0];
+  if (!u) throw { code:'relogin' };
+  if (u.emailVerified) { acc.ver = 1; await accToken(acc, true); saveMeta(); return true; } // a fresh token carries the «verified» mark the cloud rules look for
+  acc.ver = 0; saveMeta(); return false;
+}
+let vPoll = null;
+function verifyWatch(on) { clearInterval(vPoll); vPoll = on ? setInterval(verifyTick, 4000) : null; }
+async function verifyTick() {
+  const a = unverAcc(); if (!a) { verifyWatch(false); return; }
+  if (document.visibilityState !== 'visible' || navigator.onLine === false) return;
+  try { if (await checkVerified(a)) { verifyWatch(false); await finishSignIn(); } } catch (e) { /* try again in a moment */ }
+}
+async function verifyBoot() {
+  for (const a of Object.values(accs())) {
+    if (a.prov === 'google') { a.ver = 1; continue; }
+    if (a.bad || a.ver === 1 || navigator.onLine === false) continue;
+    try { if (!(await checkVerified(a))) { sendVerify(a).catch(() => {}); verifyWatch(true); } } catch (e) { if (e && e.code === 'relogin') a.bad = 1; }
+  }
+  saveMeta(); render();
+}
+async function finishSignIn() {
+  const m = ensureMeta(), a = Object.values(accs()).find(verOk), fresh = !curProf().name;
+  if (fresh) { NEWS_FLAGS.forEach(k => { m[k] = true; }); if (!m.mode) m.mode = 'solo'; if (m.chatSeen == null) m.chatSeen = Date.now(); }
+  saveMeta(); buzz([10, 40, 10]); sfx('quest'); gateDone(); render();
+  await cloudSync({ first:true, links:true, show:true });
+  const p = curProf();
+  if (!p.name) { S.welcomed = true; S.sheets = S.sheets.filter(s => s.type !== 'welcome'); S.sheets.push({ type:'welcome', name:String((a && a.dn) || '').split(' ')[0].slice(0, 24), color:'lime', char:'cat', key:uid() }); applyAccent('lime'); toast('Почта подтверждена. Осталось познакомиться'); }
+  else toast(fresh ? `С возвращением, ${p.name}! Данные загружены` : 'Аккаунт подключён — данные в облаке');
+  if (S.pendingJoin) { const code = S.pendingJoin; S.pendingJoin = null; try { localStorage.removeItem('podhod-join'); } catch (e) { /* private mode */ } openSheet({ type:'cpair', mode:'join', code, busy:false, err:'' }); }
+  render();
+}
+async function afterSignIn(res, prov, sh, isNew) {
+  const m = ensureMeta(), u = res.localId;
+  m.accs = m.accs || {};
+  const other = Object.entries(m.accs).find(([pid, a]) => a.uid === u && pid !== S.pid);
+  if (other) switchProfile(other[0]);
+  const pid = other ? other[0] : S.pid, old = m.accs[pid];
+  if (old && old.uid !== u) { delete CL.st[old.uid]; KV.del('cs:' + old.uid); }
+  const a = m.accs[pid] = { uid:u, email:res.email || (old && old.email) || '', prov, rt:res.refreshToken, it:res.idToken, exp:Date.now() + (+res.expiresIn || 3600) * 1000, dn:res.displayName || '' };
+  if (prov === 'google' || res.emailVerified === true) a.ver = 1;
+  else if (isNew) a.ver = 0;
+  else { try { await checkVerified(a); } catch (e) { a.ver = 0; } }
+  saveMeta();
+  if (sh) { sh.busy = false; sh.pass = ''; sh.err = ''; }
+  if (a.ver === 0) {
+    const g = gateSheet() || sh || top();
+    try { await sendVerify(a, !!isNew); } catch (e) { if (g) g.err = authErr(e); }
+    if (g) { g.mode = 'verify'; g.gate = true; }
+    verifyWatch(true); render(); return;
+  }
+  verifyWatch(false); await finishSignIn();
+}
+/* links from the e-mails: …/?mode=verifyEmail&oobCode=… and …/?mode=resetPassword&oobCode=… (if the action URL is set to the app in Firebase) */
+async function authLink() {
+  const q = new URLSearchParams(location.search), mode = q.get('mode'), oob = q.get('oobCode'); if (!mode || !oob) return;
+  history.replaceState(null, '', appUrl() + (location.hash || ''));
+  if (mode === 'verifyEmail') {
+    try { await idt('update', { oobCode:oob }); toast('Почта подтверждена. Вернитесь в приложение и войдите'); verifyTick(); } catch (e) { toast(authErr(e)); }
+  } else if (mode === 'resetPassword') {
+    const g = gateSheet(), sh = { type:'acc', gate:!gateOk(), mode:'newpass', oob, pass:'', busy:false, err:'', key:uid() };
+    if (g) Object.assign(g, sh, { key:g.key }); else S.sheets = [sh];
+    render();
+  }
+}
+
+SHEETS.acc = sh => {
+  const H = sh.gate ? gateHead : sheetHead, a = sh.gate ? null : accOf(), pw = sh.eye ? 'text' : 'password', mode = sh.mode || 'login';
+  const err = sh.err ? `<p class="acc-err" role="alert">${esc(sh.err)}</p>` : '', busy = sh.busy ? ' disabled aria-busy="true"' : '';
+  if (mode === 'verify') {
+    const u = unverAcc(), cool = (sh.cool || 0) > Date.now();
+    return `${H('Подтвердите почту', 'Последний шаг')}<div class="sheet-body">
+      <div class="hint">${icon('cloud')}<span>Мы отправили письмо на <b>${esc(u ? u.email : '')}</b>. Откройте ссылку в письме и вернитесь сюда — вход откроется сам. Письма нет пару минут — загляните в «Спам».</span></div>
+      ${err}<button class="btn btn-primary btn-block" style="margin-top:14px" data-act="accCheck"${busy}>${sh.busy ? 'Проверяем…' : 'Я подтвердил'}</button>
+      <button class="btn btn-block" data-act="accResend"${cool || sh.busy ? ' disabled' : ''}>${cool ? 'Письмо отправлено' : 'Отправить письмо ещё раз'}</button>
+      <button class="btn btn-ghost btn-block" data-act="accOut2">Другая почта</button></div>`;
+  }
+  if (mode === 'newpass') return `${H('Новый пароль', 'Восстановление')}<div class="sheet-body">${sh.done
+    ? `<div class="hint">${icon('check')}<span>Пароль изменён. Теперь войдите с новым паролем.</span></div><button class="btn btn-primary btn-block" style="margin-top:14px" data-act="accMode" data-m="login">Войти</button>`
+    : `<form class="acc-form" onsubmit="return false">${accField('acc-new', 'Новый пароль', 'pass', sh, { type:pw, ac:'new-password', eye:true, ek:'done', ph:'Не меньше 6 символов' })}${err}<button class="btn btn-primary btn-block" data-act="accNewPass"${busy}>${sh.busy ? 'Сохраняем…' : 'Сохранить пароль'}</button></form>`}</div>`;
+  if (a && mode !== 'pass' && mode !== 'del') {
+    return `${H('Аккаунт', esc(pname(curProf())))}<div class="sheet-body">
+      <div class="acc-card"><span class="acc-ava" aria-hidden="true">${a.prov === 'google' ? GLOGO : icon('user')}</span><span class="acc-id"><b>${esc(a.email || 'Аккаунт')}</b><small>${a.prov === 'google' ? 'Вход через Google' : 'Вход по почте, почта подтверждена'}</small></span></div>
+      <p class="acc-st${a.bad || CL.status === 'err' ? ' bad' : ''}" role="status">${icon(CL.status === 'sync' ? 'repeat' : 'cloud')} ${esc(cloudText())}</p>
+      ${a.bad ? `<button class="btn btn-primary btn-block" data-act="accRelogin">Войти заново</button>` : `<button class="btn btn-block" data-act="accSync"${CL.busy ? ' disabled' : ''}>${icon('repeat')} Синхронизировать сейчас</button>`}
+      <div class="hint" style="margin-top:14px">${icon('cloud')}<span><b>Что хранится в облаке:</b> тренировки, программы, добавки, вес и замеры, сундуки и гардероб, настройки. Войдите с другого телефона — всё появится там. <b>Фото тела остаются только на этом телефоне.</b></span></div>
+      <div class="sblock"><div class="row">${a.prov !== 'google' ? `<button class="btn btn-sm" data-act="accMode" data-m="pass">${icon('key')} Сменить пароль</button>` : ''}<button class="btn btn-sm" data-act="accOut">${icon('logout')} ${sh.outc ? 'Точно выйти?' : 'Выйти'}</button><button class="btn btn-sm btn-danger-soft" data-act="accMode" data-m="del">${icon('trash')} Удалить аккаунт</button></div>
+      <p class="fine" style="margin:10px 0 0">После выхода нужно будет войти снова. Данные на телефоне остаются.</p></div>
+    </div>`;
+  }
+  if (a && mode === 'pass') return `${H('Смена пароля', esc(a.email))}<div class="sheet-body">${sh.sent
+    ? `<div class="hint">${icon('check')}<span>Письмо отправлено на <b>${esc(sh.sent)}</b>. Откройте ссылку в письме, задайте новый пароль и войдите снова. Письма нет — загляните в «Спам».</span></div><button class="btn btn-block" style="margin-top:14px" data-act="accMode" data-m="me">Готово</button>`
+    : `<p>Для безопасности пароль меняется по ссылке из письма. Мы отправим её на <b>${esc(a.email)}</b>.</p>${err}<button class="btn btn-primary btn-block" data-act="accPassMail"${busy}>${sh.busy ? 'Отправляем…' : 'Прислать письмо'}</button><button class="btn btn-ghost btn-block" data-act="accMode" data-m="me">Назад</button>`}</div>`;
+  if (a && mode === 'del') {
+    const fresh = Date.now() - jwtAuthAt(a.it || '') < 4 * 60000;
+    return `${H('Удалить аккаунт', esc(a.email))}<div class="sheet-body">
+      <p>Удалим аккаунт и всё, что хранится в облаке: тренировки, программы, добавки, вес. Партнёр перестанет видеть ваши тренировки. <b>На этом телефоне данные останутся</b>, но чтобы пользоваться приложением дальше, нужно будет создать аккаунт заново.</p>
+      ${a.prov === 'google' && !fresh ? `<div class="hint">${icon('help')}<span>Для удаления Google просит подтвердить, что это вы. Войдите через Google ещё раз — и сразу удаляйте.</span></div><button class="btn btn-block" style="margin-top:12px" data-act="accGoogle">${GLOGO} Подтвердить через Google</button>`
+        : `${a.prov === 'google' ? '' : accField('acc-dp', 'Пароль для подтверждения', 'cur', sh, { type:pw, ac:'current-password', eye:true, ek:'done' })}${err}<button class="btn btn-danger btn-block" style="margin-top:12px" data-act="accDel"${busy}>${sh.busy ? 'Удаляем…' : sh.delc ? 'Да, удалить навсегда' : 'Удалить аккаунт и облако'}</button>`}
+      <button class="btn btn-ghost btn-block" data-act="accMode" data-m="me">Отмена</button></div>`;
+  }
+  if (mode === 'reset') return `${H('Восстановить пароль', 'Аккаунт')}<div class="sheet-body">${sh.sent
+      ? `<div class="hint">${icon('check')}<span>Если такой аккаунт есть, письмо уже летит на <b>${esc(sh.sent)}</b>. Откройте ссылку из письма, задайте новый пароль и войдите. Письма нет пару минут — загляните в «Спам».</span></div><button class="btn btn-primary btn-block" style="margin-top:14px" data-act="accMode" data-m="login">Ко входу</button>`
+      : `<form class="acc-form" onsubmit="return false">${accField('acc-email', 'Почта', 'email', sh, { type:'email', ac:'email', im:'email', ek:'send', ph:'name@mail.ru' })}${err}
+        <button class="btn btn-primary btn-block" data-act="accReset"${busy}>${sh.busy ? 'Отправляем…' : 'Прислать ссылку'}</button><button class="btn btn-ghost btn-block" type="button" data-act="accMode" data-m="login">Назад</button></form>`}</div>`;
+  const up = mode === 'signup';
+  const intro = sh.gate ? `<p class="gate-intro">${up ? 'Создайте аккаунт: на вашу почту придёт письмо со ссылкой. Пока почта не подтверждена, приложение закрыто — так в нём только настоящие люди.' : 'Войдите или создайте аккаунт, чтобы пользоваться «Подходом». Данные не пропадут при смене телефона.'}</p>` : '';
+  return `${H(up ? 'Создать аккаунт' : 'Вход', sh.why ? esc(sh.why) : sh.gate ? 'Подход' : 'Данные в облаке')}<div class="sheet-body">${intro}
+    <button class="btn btn-block btn-g" data-act="accGoogle"${busy}>${GLOGO} ${up ? 'Создать через Google' : 'Войти через Google'}</button>
+    <div class="or"><span>или по почте</span></div>
+    <form class="acc-form" onsubmit="return false">
+      ${accField('acc-email', 'Почта', 'email', sh, { type:'email', ac:'email', im:'email', ph:'name@mail.ru' })}
+      ${accField('acc-pass', 'Пароль', 'pass', sh, { type:pw, ac:up ? 'new-password' : 'current-password', eye:true, ek:'go', ph:up ? 'Не меньше 6 символов' : '' })}
+      ${err}<button class="btn btn-primary btn-block" data-act="${up ? 'accSignup' : 'accLogin'}"${busy}>${sh.busy ? (up ? 'Создаём…' : 'Входим…') : up ? 'Создать аккаунт' : 'Войти'}</button>
+    </form>
+    <div class="acc-links">${up ? `<button class="link" data-act="accMode" data-m="login">Уже есть аккаунт? Войти</button>` : `<button class="link" data-act="accMode" data-m="signup">Создать аккаунт</button><button class="link" data-act="accMode" data-m="reset">Забыли пароль?</button>`}</div>
+    <p class="fine">Данные сохраняются в облаке (Google Firebase): новый телефон — и всё на месте. Фото тела в облако не попадают.</p>
+  </div>`;
+};
+Object.assign(A, {
+  accPassMail: () => { const sh = top(), a = accOf(); if (!a) return; accRun(sh, async () => { await idt('sendOobCode', { requestType:'PASSWORD_RESET', email:a.email, continueUrl:appUrl() }, true); sh.sent = a.email; }); },
+  accNewPass: () => { const sh = top(); if ((sh.pass || '').length < 6) { sh.err = authErr({ code:'short' }); render(); return; } accRun(sh, async () => { await idt('resetPassword', { oobCode:sh.oob, newPassword:sh.pass }); sh.done = true; sh.pass = ''; sfx('set'); }); },
+  accCheck: () => { const sh = top(), a = unverAcc(); if (!a) { render(); return; } accRun(sh, async () => { if (await checkVerified(a)) { verifyWatch(false); await finishSignIn(); } else throw { code:'unver' }; }); },
+  accResend: () => { const sh = top(), a = unverAcc(); if (!a) return; sh.cool = Date.now() + 60000; setTimeout(render, 60500); accRun(sh, async () => { await sendVerify(a, true); toast('Письмо отправлено ещё раз'); }); },
+  accOut2: () => { Object.entries(accs()).forEach(([pid, a]) => { if (a.ver === 0) signOut(pid); }); verifyWatch(false); const g = gateSheet() || top(); if (g) { g.mode = 'signup'; g.err = ''; } render(); },
+});
+
+/* ================= 2.9: swipes like on an iPhone =================
+   sheet: pull down, or swipe right, or swipe from the left edge → close
+   main screens: swipe left / right → next / previous tab
+   Not in fields, charts, scrolling strips, the rest bar, the chat composer or while a sign-in screen is shown. */
+function swipeTab(dir) {
+  if (S.view === 'editor' || S.sheets.length) return;
+  const ids = tabsNow().map(t => t[0]), i = ids.indexOf(S.view), n = i < 0 ? null : ids[i + dir]; if (!n) return;
+  buzz(6); sfx('tab'); go(n);
+  if (!RM) { const m = $('#main'); try { m.animate([{ transform:`translateX(${dir * 36}px)`, opacity:.35 }, { transform:'none', opacity:1 }], { duration:240, easing:'cubic-bezier(.2,.8,.2,1)' }); } catch (e) { /* no animations API */ } }
+}
+(() => {
+  let t = null;
+  const NOX = 'input,textarea,select,[data-noswipe],.chart,.seg,.chips,.aw-strip,.grab,.sheet-head,.restbar,.composer,.rkrow';
+  const blockedX = el => { for (let e = el; e && e !== document.body; e = e.parentElement) { if (e.matches && e.matches(NOX)) return true; const cs = getComputedStyle(e); if (/(auto|scroll)/.test(cs.overflowX) && e.scrollWidth > e.clientWidth + 2) return true; } return false; };
+  const scrolledY = (el, stop) => { for (let e = el; e && e !== stop && e !== document.body; e = e.parentElement) { if (e.scrollHeight > e.clientHeight + 1 && /(auto|scroll)/.test(getComputedStyle(e).overflowY) && e.scrollTop > 0) return true; } return false; };
+  const snap = s => { if (!s) return; s.style.transition = 'transform .25s cubic-bezier(.2,.8,.2,1)'; s.style.transform = ''; setTimeout(() => { s.style.transition = ''; }, 280); };
+  document.addEventListener('touchstart', e => {
+    const tp = top(); if (e.touches.length !== 1 || (tp && tp.gate)) { t = null; return; }
+    const p = e.touches[0];
+    t = { x:p.clientX, y:p.clientY, at:performance.now(), el:e.target, mode:null, dx:0, dy:0, sheet:tp ? $('#sheet-root .sheet') : null };
+  }, { passive:true });
+  document.addEventListener('touchmove', e => {
+    if (!t) return;
+    const p = e.touches[0]; t.dx = p.clientX - t.x; t.dy = p.clientY - t.y;
+    if (!t.mode) {
+      const ax = Math.abs(t.dx), ay = Math.abs(t.dy); if (ax < 10 && ay < 10) return;
+      if (t.sheet && t.dy > 0 && ay > ax * 1.2 && t.el.closest && t.el.closest('.sheet') && !t.el.closest('.grab,.sheet-head,input,textarea,select') && !scrolledY(t.el, t.sheet)) t.mode = 'down';
+      else if (ax > ay * 1.8 && ax > 14) t.mode = t.dx > 0 && t.x < 24 ? 'edge' : blockedX(t.el) ? 'none' : 'h';
+      else t.mode = 'none';
+    }
+    if (t.mode === 'down') { t.sheet.style.transition = 'none'; t.sheet.style.transform = `translateY(${Math.max(0, t.dy)}px)`; }
+  }, { passive:true });
+  document.addEventListener('touchend', () => {
+    const s = t; t = null; if (!s || !s.mode || s.mode === 'none') return;
+    const dt = Math.max(1, performance.now() - s.at), vx = Math.abs(s.dx) / dt, vy = s.dy / dt;
+    if (s.mode === 'down') {
+      if (s.dy > 110 || (s.dy > 40 && vy > .6)) { buzz(6); s.sheet.style.transition = 'transform .25s cubic-bezier(.2,.8,.2,1)'; s.sheet.style.transform = 'translateY(105%)'; setTimeout(() => { if (top()) closeSheet(); }, 200); }
+      else snap(s.sheet);
+      return;
+    }
+    if (!(Math.abs(s.dx) > 80 || (Math.abs(s.dx) > 40 && vx > .5))) return;
+    if (S.sheets.length) { if (s.dx > 0) { buzz(6); sfx('close'); closeSheet(); } return; }
+    if (s.mode === 'h') swipeTab(s.dx < 0 ? 1 : -1);
+  }, { passive:true });
+  document.addEventListener('touchcancel', () => { if (t && t.mode === 'down') snap(t.sheet); t = null; }, { passive:true });
+  /* pause the little animations while scrolling and behind sheets: less repainting, smoother scroll */
+  let sc = 0; const root = document.documentElement;
+  window.addEventListener('scroll', () => { if (!sc) root.classList.add('scr'); clearTimeout(sc); sc = setTimeout(() => { root.classList.remove('scr'); sc = 0; }, 160); }, { passive:true });
+})();
 
 /* ================= events ================= */
 document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const fn = A[el.dataset.act]; if (fn) { e.preventDefault(); SFXN.n = 0; fn(el, e); if (!SFXN.n) sfx(el.dataset.act === 'nav' ? 'tab' : el.dataset.act === 'closeSheet' ? 'close' : el.getAttribute('role') === 'switch' ? 'toggle' : 'tap'); } });
