@@ -1246,6 +1246,47 @@ body.locked #main .ch *,body.locked #main .chest *,body.locked #main .live-dot,b
 .ver-mate.wait{width:104px;height:104px;animation:none}
 .ver-check{position:absolute;right:-8px;bottom:0;width:48px;height:48px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;box-shadow:0 0 0 5px var(--surface);animation:pop-in .55s .4s var(--spring) both}
 .ver-check .ic{width:26px;height:26px;stroke-width:3}
+/* ---------- 2.9.4: glass lens on the tab bar ---------- */
+.tabbar{touch-action:none;transition:transform .32s var(--spring),background-color .3s,box-shadow .3s}
+.tab-ind::before{transition:top .3s var(--spring),height .3s var(--spring),width .3s var(--spring),border-radius .3s,background .3s,box-shadow .3s,transform .3s var(--spring)}
+.tabbar.press{transform:translateX(-50%) scale(1.035);background:color-mix(in oklab,var(--surface) 56%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);box-shadow:0 20px 44px -12px rgba(0,0,0,.55)}
+.tabbar.press .tab-ind.ready{transition:transform .09s linear}
+.tabbar.press .tab-ind::before{top:0;height:100%;width:calc(100% - 2px);border-radius:24px;transform:translateX(-50%) scale(1.08);background:linear-gradient(180deg,color-mix(in oklab,var(--accent) 48%,rgba(255,255,255,.3)),color-mix(in oklab,var(--accent) 22%,rgba(255,255,255,.07)));box-shadow:inset 0 1.5px 0 rgba(255,255,255,.65),inset 0 -1.5px 0 rgba(255,255,255,.14),inset 0 0 16px rgba(255,255,255,.14),0 14px 30px -8px rgba(0,0,0,.55);-webkit-backdrop-filter:blur(6px) saturate(1.8);backdrop-filter:blur(6px) saturate(1.8)}
+.tabbar.press .tab[aria-current="page"],.tabbar.press .tab[aria-current="page"] .ic{color:var(--ink)}
+.tabbar.press .tab .ic{transition:transform .32s var(--spring),color .2s}
+.tabbar.press .tab[aria-current="page"] .ic{transform:scale(1.3) translateY(-2px)}
+.tabbar.press .tab[aria-current="page"] span{font-weight:700}
+@media (prefers-reduced-motion:reduce){.tabbar.press{transform:translateX(-50%)}}
+
+/* ---------- 2.9.4: the first screen — sign-up only, nothing of the app behind it ---------- */
+body.gated #main,body.gated .tabbar,body.gated .rail,body.gated #rest-root,body.gated .composer{display:none!important}
+#sheet-root:has(.sheet[data-gate]) .scrim{display:none}
+.sheet[data-gate]{position:fixed;inset:0;width:auto;max-width:none;max-height:none;height:auto;border-radius:0;transform:none;background:var(--bg);padding:0;box-shadow:none;overflow-y:auto;overscroll-behavior:contain;animation:fade .45s ease both}
+.gate-bg{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.gate-bg i{position:absolute;border-radius:50%;background:radial-gradient(circle,color-mix(in oklab,var(--accent) 32%,transparent),transparent 68%)}
+.gate-bg .g1{width:560px;height:560px;left:50%;top:-230px;margin-left:-280px;animation:gdrift 14s ease-in-out infinite}
+.gate-bg .g2{width:400px;height:400px;right:-150px;bottom:-140px;opacity:.5;animation:gdrift 18s ease-in-out -6s infinite reverse}
+@keyframes gdrift{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(22px,16px,0) scale(1.08)}}
+.gate-wrap{position:relative;z-index:1;width:100%;max-width:440px;margin:0 auto;min-height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:20px;padding:max(28px,env(safe-area-inset-top)) 22px max(28px,env(safe-area-inset-bottom))}
+.gate-wrap.compact{justify-content:flex-start;gap:14px;padding-top:max(40px,env(safe-area-inset-top))}
+.gate-hero{display:grid;justify-items:center;gap:10px;text-align:center;animation:rise-in .7s var(--out) both}
+.gate-mate{position:relative;width:150px;height:150px;display:grid;place-items:center}
+.gate-mate::before{content:"";position:absolute;inset:-12px;border-radius:50%;border:1.5px solid color-mix(in oklab,var(--accent) 55%,transparent);animation:gring 3.2s ease-out infinite}
+.gate-mate svg{width:100%;height:100%;display:block;overflow:visible}
+@keyframes gring{0%{transform:scale(.8);opacity:.85}100%{transform:scale(1.4);opacity:0}}
+.gate-wrap.compact .gate-mate{width:84px;height:84px}
+.gate-title{margin:0;font:700 clamp(40px,13vw,54px)/1 var(--f-display);letter-spacing:.05em;text-transform:uppercase}
+.gate-title.sm{font-size:20px;letter-spacing:.14em;color:var(--ink-2)}
+.gate-sub{margin:0;color:var(--ink-2);font-size:16px;line-height:1.45;max-width:27ch}
+.gate-wrap .sheet-body{overflow:visible;padding:0;display:grid;gap:12px;animation:rise-in .7s .08s var(--out) both}
+.gate-h h2{margin:0;font:600 26px/1.1 var(--f-display);text-transform:uppercase}
+.gate-feats{list-style:none;margin:2px 0 8px;padding:0;display:grid;gap:14px}
+.gate-feats li{display:grid;grid-template-columns:42px minmax(0,1fr);gap:14px;align-items:center;font-size:15px;line-height:1.35}
+.gate-feats .ic-w{width:42px;height:42px;border-radius:14px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+.gate-feats .ic{width:22px;height:22px}
+.gate-has{justify-self:center;padding:10px}
+.gate-back{position:absolute;left:14px;top:max(16px,env(safe-area-inset-top));width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);color:var(--ink);z-index:2}
+.btn-lg.btn-g{min-height:52px}
 /* iPhone zooms the page into any field with text smaller than 16px — keep fields at 16px on touch screens */
 @media (pointer:coarse){input.field,select.field,textarea.field,.set-in,.composer textarea,input[type="search"]{font-size:16px}}
 @keyframes sh{to{background-position:-200% 0}}
@@ -1306,7 +1347,7 @@ body.locked #main .ch *,body.locked #main .chest *,body.locked #main .live-dot,b
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.9.3';
+const APP_VERSION = '2.9.4';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -3077,7 +3118,7 @@ function render0() {
   const ae = document.activeElement, fid = ae && ae.id; let sel = null;
   try { if (fid && typeof ae.selectionStart === 'number') sel = [ae.selectionStart, ae.selectionEnd]; } catch (e) { sel = null; }
   CH = {};
-  if (S.metaLoaded && ready() && !gateOk()) { if (!gateSheet()) { const unv = !!unverAcc(); S.sheets = [{ type:'acc', gate:true, mode:unv ? 'verify' : 'login', email:'', pass:'', busy:false, err:'', key:uid() }]; if (unv) verifyWatch(true); } }
+  if (S.metaLoaded && ready() && !gateOk()) { if (!gateSheet()) { const unv = !!unverAcc(); S.sheets = [{ type:'acc', gate:true, mode:unv ? 'verify' : Object.keys(accs()).length ? 'login' : 'start', email:'', pass:'', busy:false, err:'', key:uid() }]; if (unv) verifyWatch(true); if (!curProf().name) applyAccent('lime'); } }
   else if (gateSheet()) gateDone();
   if (!S.welcomed && S.metaLoaded && !S.meta && ready() && !S.sheets.length) { S.welcomed = true; S.sheets.push({ type:'welcome', name:'', color:'lime', char:'cat', key:uid() }); applyAccent('lime'); }
   if (S.metaLoaded && S.meta && !S.meta.v22seen && ready() && !S.sheets.length && !S.active) { S.meta.v22seen = true; S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; S.meta.v28seen = true; S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
@@ -3129,7 +3170,7 @@ function renderNav() {
 const WIDE = matchMedia('(min-width:960px)');
 function moveInd() {
   const tb = $('#tabbar'), ti = tb && tb.querySelector('.tab-ind');
-  if (ti) { const i = [...tb.querySelectorAll('.tab')].findIndex(t => t.hasAttribute('aria-current')); ti.hidden = i < 0; if (i >= 0) { tb.style.setProperty('--ti', i); if (!ti.classList.contains('ready')) requestAnimationFrame(() => ti.classList.add('ready')); } }
+  if (ti) { const i = [...tb.querySelectorAll('.tab')].findIndex(t => t.hasAttribute('aria-current')); ti.hidden = i < 0; if (i >= 0) { if (!tb.classList.contains('press')) tb.style.setProperty('--ti', i); if (!ti.classList.contains('ready')) requestAnimationFrame(() => ti.classList.add('ready')); } }
   if (!WIDE.matches) return; // the side rail is shown only on wide screens
   const r = $('.rlink[aria-current]'), ri = $('.rail-ind');
   if (r && ri && r.offsetHeight) { ri.style.transform = `translateY(${r.offsetTop}px)`; requestAnimationFrame(() => ri.classList.add('ready')); }
@@ -3607,6 +3648,7 @@ const closeOnly = () => `<header class="sheet-head" style="justify-content:flex-
 let closeTok = 0;
 function renderSheet() {
   const root = $('#sheet-root'), t = top();
+  document.body.classList.toggle('gated', !!(t && t.gate));
   if (!t) {
     document.body.classList.remove('locked');
     if (root.firstChild && !root.classList.contains('closing')) {
@@ -6064,13 +6106,18 @@ async function authLink() {
   }
 }
 
-SHEETS.acc = sh => {
-  const H = sh.gate ? gateHead : sheetHead, a = sh.gate ? null : accOf(), pw = sh.eye ? 'text' : 'password', mode = sh.mode || 'login';
+const gateH = (t, e = '') => `<div class="gate-h">${e ? `<div class="eyebrow">${e}</div>` : ''}<h2 id="sheet-title">${t}</h2></div>`;
+const accBody = sh => {
+  const H = sh.gate ? gateH : sheetHead, a = sh.gate ? null : accOf(), pw = sh.eye ? 'text' : 'password', mode = sh.mode || 'login';
   const err = sh.err ? `<p class="acc-err" role="alert">${esc(sh.err)}</p>` : '', busy = sh.busy ? ' disabled aria-busy="true"' : '';
+  if (mode === 'start') return `<div class="sheet-body"><ul class="gate-feats">${[['trophy', 'Рекорды, серии и уровни — как в игре'], ['heart', 'Напарник растёт вместе с вашими тренировками'], ['cloud', 'Всё в облаке: тренировки не пропадут при смене телефона']].map(([i, t]) => `<li><span class="ic-w">${icon(i)}</span><span>${t}</span></li>`).join('')}</ul>
+    <button class="btn btn-primary btn-lg btn-block" data-act="accMode" data-m="signup">Создать аккаунт</button>
+    <button class="btn btn-g btn-lg btn-block" data-act="accGoogle"${busy}>${GLOGO} Продолжить с Google</button>
+    ${err}<button class="link gate-has" data-act="accMode" data-m="login">У меня уже есть аккаунт</button></div>`;
   if (mode === 'verify') {
     const u = unverAcc(), cool = (sh.cool || 0) > Date.now();
     return `${H('Подтвердите почту', 'Последний шаг')}<div class="sheet-body">
-      <div class="ver-hero"><div class="ver-mate wait">${charSVG(charOf(curProf()), 'calm')}</div></div>
+      ${sh.gate ? '' : `<div class="ver-hero"><div class="ver-mate wait">${charSVG(charOf(curProf()), 'calm')}</div></div>`}
       <div class="hint">${icon('cloud')}<span>Мы отправили письмо на <b>${esc(u ? u.email : '')}</b>. Откройте ссылку в письме и вернитесь сюда — вход откроется сам. Письмо придёт от адреса noreply@podhod-5d27f.firebaseapp.com. Нет пару минут — загляните в «Спам» и «Промоакции».</span></div>
       ${err}<button class="btn btn-primary btn-block" style="margin-top:14px" data-act="accCheck"${busy}>${sh.busy ? 'Проверяем…' : 'Я подтвердил'}</button>
       <button class="btn btn-block" data-act="accResend"${cool || sh.busy ? ' disabled' : ''}>${cool ? 'Письмо отправлено' : 'Отправить письмо ещё раз'}</button>
@@ -6106,7 +6153,7 @@ SHEETS.acc = sh => {
         <button class="btn btn-primary btn-block" data-act="accReset"${busy}>${sh.busy ? 'Отправляем…' : 'Прислать ссылку'}</button><button class="btn btn-ghost btn-block" type="button" data-act="accMode" data-m="login">Назад</button></form>`}</div>`;
   const up = mode === 'signup';
   const intro = sh.gate ? `<p class="gate-intro">${up ? 'Создайте аккаунт: на вашу почту придёт письмо со ссылкой. Пока почта не подтверждена, приложение закрыто — так в нём только настоящие люди.' : 'Войдите или создайте аккаунт, чтобы пользоваться «Подходом». Данные не пропадут при смене телефона.'}</p>` : '';
-  return `${H(up ? 'Создать аккаунт' : 'Вход', sh.why ? esc(sh.why) : sh.gate ? 'Подход' : 'Данные в облаке')}<div class="sheet-body">${intro}
+  return `${H(up ? 'Создать аккаунт' : 'Вход', sh.why ? esc(sh.why) : sh.gate ? '' : 'Данные в облаке')}<div class="sheet-body">${intro}
     <button class="btn btn-block btn-g" data-act="accGoogle"${busy}>${GLOGO} ${up ? 'Создать через Google' : 'Войти через Google'}</button>
     <div class="or"><span>или по почте</span></div>
     <form class="acc-form" onsubmit="return false">
@@ -6118,6 +6165,12 @@ SHEETS.acc = sh => {
     <p class="fine">Данные сохраняются в облаке (Google Firebase): новый телефон — и всё на месте. Фото тела в облако не попадают.</p>
   </div>`;
 };
+const GATE_SUB = 'Дневник тренировок с напарником, который растёт вместе с вами';
+const gateFrame = (sh, inner) => {
+  const mode = sh.mode || 'login', start = mode === 'start', back = ['login', 'signup', 'reset'].includes(mode);
+  return `<div class="gate-bg" aria-hidden="true"><i class="g1"></i><i class="g2"></i></div><div class="gate-wrap${start ? '' : ' compact'}">${back ? `<button class="gate-back" data-act="accMode" data-m="start" aria-label="Назад">${icon('back')}</button>` : ''}<div class="gate-hero"><div class="gate-mate">${charSVG('owl', 'happy')}</div>${start ? `<h1 id="sheet-title" class="gate-title">Подход</h1><p class="gate-sub">${GATE_SUB}</p>` : '<div class="gate-title sm" aria-hidden="true">Подход</div>'}</div>${inner}</div>`;
+};
+SHEETS.acc = sh => sh.gate ? gateFrame(sh, accBody(sh)) : accBody(sh);
 SHEETS.verified = () => `${closeOnly()}<div class="sheet-body"><div class="ver-hero"><div class="ver-mate">${charSVG(charOf(curProf()), 'happy')}<span class="ver-check">${icon('check')}</span></div><h2 id="sheet-title" class="big-title">Почта подтверждена</h2><p>Теперь «Подход» ваш: данные сохраняются в облаке и ждут вас на любом телефоне.</p></div></div><footer class="sheet-foot"><button class="btn btn-primary btn-lg btn-block" data-act="closeSheet">Поехали</button></footer>`;
 Object.assign(A, {
   accPassMail: () => { const sh = top(), a = accOf(); if (!a) return; accRun(sh, async () => { await idt('sendOobCode', { requestType:'PASSWORD_RESET', email:a.email, continueUrl:appUrl() }, true); sh.sent = a.email; }); },
@@ -6139,7 +6192,7 @@ function swipeTab(dir) {
 }
 (() => {
   let t = null;
-  const NOX = 'input,textarea,select,[data-noswipe],.chart,.seg,.chips,.aw-strip,.grab,.sheet-head,.restbar,.composer,.rkrow';
+  const NOX = '#tabbar,input,textarea,select,[data-noswipe],.chart,.seg,.chips,.aw-strip,.grab,.sheet-head,.restbar,.composer,.rkrow';
   const blockedX = el => { for (let e = el; e && e !== document.body; e = e.parentElement) { if (e.matches && e.matches(NOX)) return true; const cs = getComputedStyle(e); if (/(auto|scroll)/.test(cs.overflowX) && e.scrollWidth > e.clientWidth + 2) return true; } return false; };
   const scrolledY = (el, stop) => { for (let e = el; e && e !== stop && e !== document.body; e = e.parentElement) { if (e.scrollHeight > e.clientHeight + 1 && /(auto|scroll)/.test(getComputedStyle(e).overflowY) && e.scrollTop > 0) return true; } return false; };
   const snap = s => { if (!s) return; s.style.transition = 'transform .25s cubic-bezier(.2,.8,.2,1)'; s.style.transform = ''; setTimeout(() => { s.style.transition = ''; }, 280); };
@@ -6175,6 +6228,39 @@ function swipeTab(dir) {
   /* pause the little animations while scrolling and behind sheets: less repainting, smoother scroll */
   let sc = 0; const root = document.documentElement;
   window.addEventListener('scroll', () => { if (!sc) root.classList.add('scr'); clearTimeout(sc); sc = setTimeout(() => { root.classList.remove('scr'); sc = 0; }, 160); }, { passive:true });
+})();
+
+/* ================= 2.9.4: glass tab bar — press and slide a finger along it, the lens follows and the screens flip live ================= */
+(() => {
+  const tb = $('#tabbar'); if (!tb) return;
+  let st = null;
+  const PAD = 4, geo = () => { const r = tb.getBoundingClientRect(), n = tb.querySelectorAll('.tab').length || 1; return { l:r.left + PAD, w:(r.width - 2 * PAD) / n, n }; };
+  const idxAt = x => { const g = geo(); return Math.max(0, Math.min(g.n - 1, Math.floor((x - g.l) / g.w))); };
+  const fracAt = x => { const g = geo(); return Math.max(0, Math.min(g.n - 1, (x - g.l) / g.w - .5)); };
+  const go2 = () => { if (!st) return; st.raf = 0; const v = (tabsNow()[st.idx] || [])[0]; if (v && v !== S.view) go(v); };
+  tb.addEventListener('pointerdown', e => {
+    if ((e.pointerType === 'mouse' && e.button > 0) || !e.target.closest('.tab') || S.sheets.length) return;
+    st = { id:e.pointerId, x0:e.clientX, moved:false, idx:idxAt(e.clientX), raf:0 };
+    try { tb.setPointerCapture(e.pointerId); } catch (err) { /* capture unsupported */ }
+    tb.style.setProperty('--ti', fracAt(e.clientX)); tb.classList.add('press'); buzz(4);
+  });
+  tb.addEventListener('pointermove', e => {
+    if (!st || e.pointerId !== st.id) return;
+    if (!st.moved && Math.abs(e.clientX - st.x0) > 6) st.moved = true;
+    tb.style.setProperty('--ti', fracAt(e.clientX));
+    const i = idxAt(e.clientX);
+    if (i !== st.idx) { st.idx = i; buzz(5); sfx('tab'); if (!st.raf) st.raf = requestAnimationFrame(go2); }
+  });
+  const end = e => {
+    if (!st || e.pointerId !== st.id) return;
+    const s = st; cancelAnimationFrame(s.raf); tb._sw = Date.now();
+    if (e.type !== 'pointercancel') { const v = (tabsNow()[idxAt(e.clientX)] || [])[0]; if (v && (v !== S.view || !s.moved)) go(v); }
+    st = null; tb.classList.remove('press'); moveInd(); requestAnimationFrame(moveInd);
+  };
+  tb.addEventListener('pointerup', end); tb.addEventListener('pointercancel', end);
+  tb.addEventListener('contextmenu', e => { if (st) e.preventDefault(); });
+  // the press already handled the tap — the click that follows must not do it twice
+  tb.addEventListener('click', e => { if (tb._sw && Date.now() - tb._sw < 600 && e.detail > 0) { e.stopPropagation(); e.preventDefault(); } }, true);
 })();
 
 /* ================= events ================= */
