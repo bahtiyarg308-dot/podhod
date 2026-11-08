@@ -1239,6 +1239,13 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 body{overscroll-behavior-x:none}
 html.scr .ch *,html.scr .chest *,html.scr .live-dot,html.scr .badge,html.scr .sk,html.scr .giftbtn>.ic:first-child{animation-play-state:paused}
 body.locked #main .ch *,body.locked #main .chest *,body.locked #main .live-dot,body.locked #main .giftbtn>.ic:first-child{animation-play-state:paused}
+.ver-hero{display:grid;justify-items:center;gap:10px;text-align:center;padding:4px 0 10px}
+.ver-hero p{margin:0;color:var(--ink-2);max-width:30ch}
+.ver-mate{position:relative;width:132px;height:132px;animation:growin .8s var(--spring) both}
+.ver-mate svg{width:100%;height:100%;display:block;overflow:visible}
+.ver-mate.wait{width:104px;height:104px;animation:none}
+.ver-check{position:absolute;right:-8px;bottom:0;width:48px;height:48px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;box-shadow:0 0 0 5px var(--surface);animation:pop-in .55s .4s var(--spring) both}
+.ver-check .ic{width:26px;height:26px;stroke-width:3}
 /* iPhone zooms the page into any field with text smaller than 16px — keep fields at 16px on touch screens */
 @media (pointer:coarse){input.field,select.field,textarea.field,.set-in,.composer textarea,input[type="search"]{font-size:16px}}
 @keyframes sh{to{background-position:-200% 0}}
@@ -1299,7 +1306,7 @@ body.locked #main .ch *,body.locked #main .chest *,body.locked #main .live-dot,b
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.9.1';
+const APP_VERSION = '2.9.2';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -6000,7 +6007,7 @@ function verifyWatch(on) { clearInterval(vPoll); vPoll = on ? setInterval(verify
 async function verifyTick() {
   const a = unverAcc(); if (!a) { verifyWatch(false); return; }
   if (document.visibilityState !== 'visible' || navigator.onLine === false) return;
-  try { if (await checkVerified(a)) { verifyWatch(false); await finishSignIn(); } } catch (e) { /* try again in a moment */ }
+  try { if (await checkVerified(a)) { verifyWatch(false); await finishSignIn(true); } } catch (e) { /* try again in a moment */ }
 }
 async function verifyBoot() {
   for (const a of Object.values(accs())) {
@@ -6010,13 +6017,15 @@ async function verifyBoot() {
   }
   saveMeta(); render();
 }
-async function finishSignIn() {
+async function finishSignIn(celebrate) {
   const m = ensureMeta(), a = Object.values(accs()).find(verOk), fresh = !curProf().name;
   if (fresh) { NEWS_FLAGS.forEach(k => { m[k] = true; }); if (!m.mode) m.mode = 'solo'; if (m.chatSeen == null) m.chatSeen = Date.now(); }
-  saveMeta(); buzz([10, 40, 10]); sfx('quest'); gateDone(); render();
+  saveMeta(); buzz([10, 40, 10]); sfx(celebrate ? 'goal' : 'quest'); gateDone();
+  if (celebrate) { S.sheets.push({ type:'verified', key:uid() }); setTimeout(() => confetti(innerWidth / 2, innerHeight * .32, 120), 450); }
+  render();
   await cloudSync({ first:true, links:true, show:true });
   const p = curProf();
-  if (!p.name) { S.welcomed = true; S.sheets = S.sheets.filter(s => s.type !== 'welcome'); S.sheets.push({ type:'welcome', name:String((a && a.dn) || '').split(' ')[0].slice(0, 24), color:'lime', char:'cat', key:uid() }); applyAccent('lime'); toast('Почта подтверждена. Осталось познакомиться'); }
+  if (!p.name) { S.welcomed = true; S.sheets = S.sheets.filter(s => s.type !== 'welcome'); S.sheets.unshift({ type:'welcome', name:String((a && a.dn) || '').split(' ')[0].slice(0, 24), color:'lime', char:'cat', key:uid() }); applyAccent('lime'); toast('Почта подтверждена. Осталось познакомиться'); }
   else toast(fresh ? `С возвращением, ${p.name}! Данные загружены` : 'Аккаунт подключён — данные в облаке');
   if (S.pendingJoin) { const code = S.pendingJoin; S.pendingJoin = null; try { localStorage.removeItem('podhod-join'); } catch (e) { /* private mode */ } openSheet({ type:'cpair', mode:'join', code, busy:false, err:'' }); }
   render();
@@ -6061,6 +6070,7 @@ SHEETS.acc = sh => {
   if (mode === 'verify') {
     const u = unverAcc(), cool = (sh.cool || 0) > Date.now();
     return `${H('Подтвердите почту', 'Последний шаг')}<div class="sheet-body">
+      <div class="ver-hero"><div class="ver-mate wait">${charSVG(charOf(curProf()), 'calm')}</div></div>
       <div class="hint">${icon('cloud')}<span>Мы отправили письмо на <b>${esc(u ? u.email : '')}</b>. Откройте ссылку в письме и вернитесь сюда — вход откроется сам. Письма нет пару минут — загляните в «Спам».</span></div>
       ${err}<button class="btn btn-primary btn-block" style="margin-top:14px" data-act="accCheck"${busy}>${sh.busy ? 'Проверяем…' : 'Я подтвердил'}</button>
       <button class="btn btn-block" data-act="accResend"${cool || sh.busy ? ' disabled' : ''}>${cool ? 'Письмо отправлено' : 'Отправить письмо ещё раз'}</button>
@@ -6108,10 +6118,11 @@ SHEETS.acc = sh => {
     <p class="fine">Данные сохраняются в облаке (Google Firebase): новый телефон — и всё на месте. Фото тела в облако не попадают.</p>
   </div>`;
 };
+SHEETS.verified = () => `${closeOnly()}<div class="sheet-body"><div class="ver-hero"><div class="ver-mate">${charSVG(charOf(curProf()), 'happy')}<span class="ver-check">${icon('check')}</span></div><h2 id="sheet-title" class="big-title">Почта подтверждена</h2><p>Теперь «Подход» ваш: данные сохраняются в облаке и ждут вас на любом телефоне.</p></div></div><footer class="sheet-foot"><button class="btn btn-primary btn-lg btn-block" data-act="closeSheet">Поехали</button></footer>`;
 Object.assign(A, {
   accPassMail: () => { const sh = top(), a = accOf(); if (!a) return; accRun(sh, async () => { await idt('sendOobCode', { requestType:'PASSWORD_RESET', email:a.email, continueUrl:appUrl() }, true); sh.sent = a.email; }); },
   accNewPass: () => { const sh = top(); if ((sh.pass || '').length < 6) { sh.err = authErr({ code:'short' }); render(); return; } accRun(sh, async () => { await idt('resetPassword', { oobCode:sh.oob, newPassword:sh.pass }); sh.done = true; sh.pass = ''; sfx('set'); }); },
-  accCheck: () => { const sh = top(), a = unverAcc(); if (!a) { render(); return; } accRun(sh, async () => { if (await checkVerified(a)) { verifyWatch(false); await finishSignIn(); } else throw { code:'unver' }; }); },
+  accCheck: () => { const sh = top(), a = unverAcc(); if (!a) { render(); return; } accRun(sh, async () => { if (await checkVerified(a)) { verifyWatch(false); await finishSignIn(true); } else throw { code:'unver' }; }); },
   accResend: () => { const sh = top(), a = unverAcc(); if (!a) return; sh.cool = Date.now() + 60000; setTimeout(render, 60500); accRun(sh, async () => { await sendVerify(a, true); toast('Письмо отправлено ещё раз'); }); },
   accOut2: () => { Object.entries(accs()).forEach(([pid, a]) => { if (a.ver === 0) signOut(pid); }); verifyWatch(false); const g = gateSheet() || top(); if (g) { g.mode = 'signup'; g.err = ''; } render(); },
 });

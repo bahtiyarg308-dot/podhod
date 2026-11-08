@@ -1,5 +1,5 @@
 /* «Подход» — офлайн-кеш. При каждом обновлении приложения меняйте VERSION. */
-const VERSION = 'podhod-2.9.1';
+const VERSION = 'podhod-2.9.2';
 const ASSETS = [
   './',
   './index.html',
