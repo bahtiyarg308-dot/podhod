@@ -1056,6 +1056,60 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 .rep small.up{color:var(--good)}
 .rep small.down{color:var(--bad)}
 .rep-btn{margin-top:12px}
+/* ---------- 2.6: supersets, plan, technique, animations ---------- */
+.xcard.ss{border-left:3px solid var(--accent)}
+.xcard.ss:not(.ss-last){margin-bottom:4px;border-bottom-left-radius:8px;border-bottom-right-radius:8px}
+.xcard.ss:not(.ss-first){border-top-left-radius:8px;border-top-right-radius:8px}
+.ss-tag{display:inline-flex;align-items:center;gap:5px;font:600 10px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:3px}
+.ss-tag .ic{width:12px;height:12px}
+.x-rest{color:var(--ink-2)}
+.x-rest .ic{width:15px;height:15px}
+.plan-today{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;margin:0 0 10px;border-radius:16px;background:var(--accent-soft);border:1px solid color-mix(in oklab, var(--accent) 35%, transparent)}
+.plan-today span{display:grid;gap:2px;min-width:0}
+.plan-today small{font:500 10px var(--f-mono);text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2)}
+.plan-today b{font:600 18px var(--f-display);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plan-today.done>.ic{color:var(--good);width:26px;height:26px;flex:none}
+.wd.plan::after{content:"";display:block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin:4px auto 0}
+.wd.plan.on::after{background:var(--good)}
+.plan-row{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.plan-row b{font-weight:600;font-size:14px}
+.tech{display:grid;gap:12px;padding-left:22px;list-style:decimal;margin:0 0 16px}
+.tech li{font-size:15px;line-height:1.45;color:var(--ink);padding-left:4px}
+.seg.wrap{flex-wrap:wrap}
+.log-search{position:relative;margin:0 0 14px}
+.log-search .field{padding-left:40px}
+.log-search>.ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);width:18px;height:18px;pointer-events:none}
+.log-search .icon-btn{position:absolute;right:4px;top:50%;transform:translateY(-50%)}
+.log-found{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:-4px 0 12px}
+/* chest: anticipation, light from the seam, flash, the item flying out */
+.chest .k-seam{fill:var(--rc);opacity:0}
+.chest.shake{animation:kshake2 1.35s ease-in both;transform-origin:60px 92px}
+.chest.shake .k-seam{animation:seam 1.35s ease-in both}
+.chest.shake .k-lidc{animation:lidpeek 1.35s ease-in both;transform-origin:60px 53px}
+.chest.open .k-lid{transform-origin:60px 52px;animation:lidpop .55s var(--spring) both}
+.reveal .mate-r{animation:itemrise .8s var(--spring) .1s both}
+.reveal .rch{animation:pop-in .45s .45s var(--spring) both}
+.reveal .big-title{animation:rise-in .5s .55s var(--out) both}
+.reveal>p{animation:fade .5s .7s both}
+.flash{position:fixed;inset:0;z-index:80;pointer-events:none;background:radial-gradient(circle at 50% 42%, color-mix(in oklab, var(--rc) 75%, #fff) 0%, color-mix(in oklab, var(--rc) 35%, transparent) 35%, transparent 70%);animation:flash .75s ease-out both}
+.sheet.jolt{animation:jolt .5s ease-in-out}
+.rank-hero .rk.big{animation:rankin .9s var(--spring) both}
+.rk .rk-shine{fill:#fff;opacity:.5;animation:rkshine 1.5s .7s ease-in-out both}
+.grow-hero .mate{animation:growin 1s var(--spring) both,glowpulse 2.4s 1s ease-in-out infinite}
+.tile{transition:transform .15s,border-color .2s,background-color .2s}
+.tile:active,.giftbtn:active,.chestbtn:active,.sup-chip:active{transform:scale(.96)}
+.giftbtn,.chestbtn{transition:transform .15s}
+@keyframes kshake2{0%{transform:none}10%{transform:rotate(-2deg)}20%{transform:rotate(2deg)}30%{transform:rotate(-3deg) translateY(-1px)}40%{transform:rotate(3.5deg)}50%{transform:rotate(-4.5deg) translateY(-2px)}60%{transform:rotate(5deg)}70%{transform:rotate(-6deg) translateY(-3px)}80%{transform:rotate(6.5deg)}88%{transform:rotate(-7deg) translateY(-4px) scale(1.04)}100%{transform:scale(1.1,.92)}}
+@keyframes seam{0%{opacity:0}60%{opacity:.5}100%{opacity:1}}
+@keyframes lidpeek{0%,60%{transform:none}80%{transform:translateY(-2px)}100%{transform:translateY(-5px)}}
+@keyframes lidpop{0%{transform:translateY(20px) scaleY(.15);opacity:.4}60%{transform:translateY(-6px) scaleY(1.06);opacity:1}100%{transform:none}}
+@keyframes itemrise{0%{opacity:0;transform:translateY(60px) scale(.3)}55%{opacity:1;transform:translateY(-10px) scale(1.07)}75%{transform:translateY(2px) scale(.98)}100%{transform:none}}
+@keyframes flash{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+@keyframes jolt{0%,100%{transform:none}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+@keyframes rankin{0%{opacity:0;transform:scale(.3) rotate(-25deg)}60%{opacity:1;transform:scale(1.12) rotate(4deg)}100%{transform:none}}
+@keyframes rkshine{0%{transform:translateX(0)}100%{transform:translateX(70px)}}
+@keyframes growin{0%{transform:scale(.72);filter:brightness(1.4)}55%{transform:scale(1.08)}100%{transform:none;filter:none}}
+@keyframes glowpulse{50%{box-shadow:0 0 0 3px color-mix(in oklab, var(--accent) 45%, transparent),0 0 30px color-mix(in oklab, var(--accent) 35%, transparent)}}
 /* iPhone zooms the page into any field with text smaller than 16px — keep fields at 16px on touch screens */
 @media (pointer:coarse){input.field,select.field,textarea.field,.set-in,.composer textarea,input[type="search"]{font-size:16px}}
 @keyframes sh{to{background-position:-200% 0}}
@@ -1116,7 +1170,7 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.5.0';
+const APP_VERSION = '2.6.0';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -1235,6 +1289,8 @@ const ICONS = {
   snow:'<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.6 4.6L12 7l2.4-2.4M9.6 19.4L12 17l2.4 2.4"/>',
   box:'<path d="M4 7.8l8-4 8 4v8.4l-8 4-8-4z"/><path d="M4 7.8l8 4 8-4M12 11.8v8.4"/>',
   back:'<path d="M14.5 6l-6 6 6 6"/>',
+  clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  search:'<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
   gift:'<rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v8h14v-8M12 8.5v12M12 8.5c-1.5-3.8-6-4.4-6-1.8 0 1.4 2.4 1.8 6 1.8zM12 8.5c1.5-3.8 6-4.4 6-1.8 0 1.4-2.4 1.8-6 1.8z"/>',
   user:'<circle cx="12" cy="8.5" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/>',
   sound:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.2 6.4a7.6 7.6 0 0 1 0 11.2"/>',
@@ -1571,11 +1627,11 @@ function thumbSVG(id, color, locked) {
 }
 function chestSVG(kind = 'std', open = false, rar = 'c', cls = '') {
   const gold = kind === 'gold', body = gold ? 'k-gold' : 'k-body', band = gold ? 'k-gold2' : 'k-band';
-  const lidClosed = `<path class="${body}" d="M18 53 V41 Q18 22 60 22 Q102 22 102 41 V53Z"/><path class="${band}" d="M31 24.5 h9 V53 h-9Z M80 24.5 h9 V53 h-9Z"/>`;
-  const lidOpen = `<path class="k-inner" d="M21 51 L29 15 Q60 9 91 15 L99 51Z"/><path class="${band}" style="opacity:.35" d="M33 50 L37 15 h7 L41 50Z M79 50 L76 15 h7 L87 50Z"/><path class="${body}" d="M29 15 Q60 9 91 15 L90.5 8.5 Q60 2 29.5 8.5Z"/><path class="${band}" d="M37 13.6 L37.4 6.8 h7 L44 12.4Z M76 12.4 L75.6 6.8 h7 L83 13.6Z"/>`;
+  const lidClosed = `<g class="k-lidc"><path class="${body}" d="M18 53 V41 Q18 22 60 22 Q102 22 102 41 V53Z"/><path class="${band}" d="M31 24.5 h9 V53 h-9Z M80 24.5 h9 V53 h-9Z"/></g>`;
+  const lidOpen = `<g class="k-lid"><path class="k-inner" d="M21 51 L29 15 Q60 9 91 15 L99 51Z"/><path class="${band}" style="opacity:.35" d="M33 50 L37 15 h7 L41 50Z M79 50 L76 15 h7 L87 50Z"/><path class="${body}" d="M29 15 Q60 9 91 15 L90.5 8.5 Q60 2 29.5 8.5Z"/><path class="${band}" d="M37 13.6 L37.4 6.8 h7 L44 12.4Z M76 12.4 L75.6 6.8 h7 L83 13.6Z"/></g>`;
   const rc = RAR[rar] ? RAR[rar].col : RAR.c.col;
   const burst = open ? `<g class="k-burst" style="--rc:${rc}"><circle cx="60" cy="40" r="44" class="k-glow"/><g class="k-rays">${Array.from({ length:12 }, (_, i) => { const a = i * 30 * Math.PI / 180, d = 4 * Math.PI / 180; return `<path d="M60 40 L${(60 + 70 * Math.cos(a - d)).toFixed(1)} ${(40 + 70 * Math.sin(a - d)).toFixed(1)} L${(60 + 70 * Math.cos(a + d)).toFixed(1)} ${(40 + 70 * Math.sin(a + d)).toFixed(1)}Z"/>`; }).join('')}</g></g>` : '';
-  return `<svg class="chest${open ? ' open' : ''}${gold ? ' gold' : ''}${cls ? ' ' + cls : ''}" viewBox="0 0 120 100" aria-hidden="true">${burst}<ellipse class="k-shadow" cx="60" cy="92" rx="42" ry="5"/>${open ? lidOpen : ''}<rect class="${body}" x="18" y="50" width="84" height="40" rx="6"/>${open ? `<ellipse class="k-light" style="--rc:${rc}" cx="60" cy="52" rx="38" ry="5"/>` : ''}<rect class="k-dark" x="18" y="80" width="84" height="10" rx="5" style="opacity:.35"/><path class="${band}" d="M31 50 h9 V90 h-9Z M80 50 h9 V90 h-9Z"/><rect class="${band}" x="15" y="48" width="90" height="7" rx="2.5"/>${open ? '' : lidClosed}<rect class="k-lock" x="52" y="${open ? 51 : 45}" width="16" height="17" rx="3.5"/><path class="k-key" d="M60 ${open ? 56 : 50} a2.6 2.6 0 1 1 .01 0Z M58.8 ${open ? 58 : 52} h2.4 v4 h-2.4Z"/></svg>`;
+  return `<svg class="chest${open ? ' open' : ''}${gold ? ' gold' : ''}${cls ? ' ' + cls : ''}" viewBox="0 0 120 100" aria-hidden="true">${burst}<ellipse class="k-shadow" cx="60" cy="92" rx="42" ry="5"/>${open ? lidOpen : ''}<rect class="${body}" x="18" y="50" width="84" height="40" rx="6"/>${open ? `<ellipse class="k-light" style="--rc:${rc}" cx="60" cy="52" rx="38" ry="5"/>` : ''}<rect class="k-dark" x="18" y="80" width="84" height="10" rx="5" style="opacity:.35"/><path class="${band}" d="M31 50 h9 V90 h-9Z M80 50 h9 V90 h-9Z"/><rect class="${band}" x="15" y="48" width="90" height="7" rx="2.5"/>${open ? '' : lidClosed + `<rect class="k-seam" style="--rc:${rc}" x="19" y="51" width="82" height="3.2" rx="1.6"/>`}<rect class="k-lock" x="52" y="${open ? 51 : 45}" width="16" height="17" rx="3.5"/><path class="k-key" d="M60 ${open ? 56 : 50} a2.6 2.6 0 1 1 .01 0Z M58.8 ${open ? 58 : 52} h2.4 v4 h-2.4Z"/></svg>`;
 }
 
 const charOf = p => (p && CHARS[p.char]) ? p.char : 'cat';
@@ -1725,7 +1781,7 @@ const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.
 function normP(d) {
   const p = Object.assign(clone(DEFAULT_PROFILE), d ? clone(d) : {});
   ['templates','custom','body','meas','deleted','freeze','supps','sfull'].forEach(k => { if (!Array.isArray(p[k])) p[k] = []; });
-  ['kudos','gear','slog'].forEach(k => { if (!p[k] || typeof p[k] !== 'object' || Array.isArray(p[k])) p[k] = {}; });
+  ['kudos','gear','slog','plan','rx'].forEach(k => { if (!p[k] || typeof p[k] !== 'object' || Array.isArray(p[k])) p[k] = {}; });
   p.supps = p.supps.filter(x => x && x.id && typeof x.name === 'string');
   if (p.chest && (typeof p.chest !== 'object' || !p.chest.op || typeof p.chest.op !== 'object')) delete p.chest;
   if (p.chest) { if (!Array.isArray(p.chest.st)) p.chest.st = []; if (!Array.isArray(p.chest.buy)) p.chest.buy = []; }
@@ -1875,7 +1931,7 @@ const lvlNeed = k => 100 * (k - 1) + 20 * k * (k - 1); // total XP needed to rea
 function rankBadge(k, cls = '') {
   const r = rankIdx(k), c = r < RANK_COL.length ? RANK_COL[r] : '#FFD23F', div = (k - 1) % 5 + 1;
   const dots = [0, 1, 2, 3, 4].map(i => `<circle cx="${12 + i * 4}" cy="34.5" r="1.45" style="fill:${i < div ? '#fff' : 'rgba(0,0,0,.28)'}"/>`).join('');
-  return `<svg class="rk${cls ? ' ' + cls : ''}" viewBox="0 0 40 46" aria-hidden="true"><path d="M20 1.5 L37.5 7.5 V22 C37.5 33 29 40.5 20 44.5 C11 40.5 2.5 33 2.5 22 V7.5Z" style="fill:${c}"/><path d="M20 5.5 L33.5 10.2 V22 C33.5 30.6 27 36.6 20 40 C13 36.6 6.5 30.6 6.5 22 V10.2Z" style="fill:rgba(0,0,0,.2)"/>${r >= 20 ? '<path d="M14 4 L20 1 L26 4 L24 7 H16Z" style="fill:#fff;opacity:.8"/>' : ''}<text x="20" y="27" text-anchor="middle" class="rk-n">${k}</text>${dots}</svg>`;
+  return `<svg class="rk${cls ? ' ' + cls : ''}" viewBox="0 0 40 46" aria-hidden="true"><path d="M20 1.5 L37.5 7.5 V22 C37.5 33 29 40.5 20 44.5 C11 40.5 2.5 33 2.5 22 V7.5Z" style="fill:${c}"/><path d="M20 5.5 L33.5 10.2 V22 C33.5 30.6 27 36.6 20 40 C13 36.6 6.5 30.6 6.5 22 V10.2Z" style="fill:rgba(0,0,0,.2)"/>${r >= 20 ? '<path d="M14 4 L20 1 L26 4 L24 7 H16Z" style="fill:#fff;opacity:.8"/>' : ''}<text x="20" y="27" text-anchor="middle" class="rk-n">${k}</text>${dots}${cls.includes('big') ? `<clipPath id="rkc${k}"><path d="M20 1.5 L37.5 7.5 V22 C37.5 33 29 40.5 20 44.5 C11 40.5 2.5 33 2.5 22 V7.5Z"/></clipPath><g clip-path="url(#rkc${k})"><rect class="rk-shine" x="-30" y="-4" width="12" height="54" transform="skewX(-18)"/></g>` : ''}</svg>`;
 }
 function levelOf(xp) { let k = 1; while (xp >= lvlNeed(k + 1)) k++; const a = lvlNeed(k), b = lvlNeed(k + 1); return { k, title:rankName(k), rank:rankIdx(k), div:(k - 1) % 5 + 1, cur: xp - a, need: b - a, pct: Math.min(100, (xp - a) / (b - a) * 100), xp }; }
 const workoutXP = (w, Dx = D) => 40 + Math.min(40, wStats(w).sets * 2) + (Dx.prCount[w.id] || 0) * 15;
@@ -2695,10 +2751,11 @@ function render() {
   try { if (fid && typeof ae.selectionStart === 'number') sel = [ae.selectionStart, ae.selectionEnd]; } catch (e) { sel = null; }
   CH = {};
   if (!S.welcomed && S.metaLoaded && !S.meta && ready() && !S.sheets.length) { S.welcomed = true; S.sheets.push({ type:'welcome', name:'', color:'lime', char:'cat', key:uid() }); applyAccent('lime'); }
-  if (S.metaLoaded && S.meta && !S.meta.v22seen && ready() && !S.sheets.length && !S.active) { S.meta.v22seen = true; S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v23seen && ready() && !S.sheets.length && !S.active) { S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; saveMeta(); S.sheets.push({ type:'news23', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v24seen && ready() && !S.sheets.length && !S.active) { S.meta.v24seen = true; S.meta.v25seen = true; saveMeta(); S.sheets.push({ type:'news24', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v25seen && ready() && !S.sheets.length && !S.active) { S.meta.v25seen = true; saveMeta(); S.sheets.push({ type:'news25', key:uid() }); }
+  if (S.metaLoaded && S.meta && !S.meta.v22seen && ready() && !S.sheets.length && !S.active) { S.meta.v22seen = true; S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v23seen && ready() && !S.sheets.length && !S.active) { S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; saveMeta(); S.sheets.push({ type:'news23', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v24seen && ready() && !S.sheets.length && !S.active) { S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; saveMeta(); S.sheets.push({ type:'news24', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v25seen && ready() && !S.sheets.length && !S.active) { S.meta.v25seen = true; S.meta.v26seen = true; saveMeta(); S.sheets.push({ type:'news25', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v26seen && ready() && !S.sheets.length && !S.active) { S.meta.v26seen = true; saveMeta(); S.sheets.push({ type:'news26', key:uid() }); }
   if (S.view === 'chat' && S.metaLoaded && !pairOn()) S.view = 'today';
   const main = $('#main');
   const vk = [S.view, S.pid, S.view === 'today' && S.active ? 'live:' + S.active.id : '', S.view === 'editor' && S.editing ? S.editing.id : '', ready() ? 'r' : 'l'].join('|');
@@ -2813,7 +2870,7 @@ function viewToday() {
   if (!ready()) return headHTML('Подход', eb) + loadingHTML();
   if (S.active) return editorHTML(S.active, 'active');
   const ws = weekStart(now), trained = new Set(S.workouts.map(w => dayKey(w.start)));
-  const days = Array.from({ length:7 }, (_, i) => { const t = addDays(ws, i), dd = new Date(t); const cls = [trained.has(dayKey(t)) ? 'on' : '', dayKey(t) === dayKey(now) ? 'today' : '', t > now ? 'future' : ''].join(' '); return `<div class="wd ${cls}"><span>${WD[dd.getDay()]}</span><b style="--i:${i}">${dd.getDate()}</b></div>`; }).join('');
+  const days = Array.from({ length:7 }, (_, i) => { const t = addDays(ws, i), dd = new Date(t); const cls = [trained.has(dayKey(t)) ? 'on' : '', dayKey(t) === dayKey(now) ? 'today' : '', t > now ? 'future' : '', S.profile.plan && S.profile.templates.some(x => x.id === S.profile.plan[dd.getDay()]) ? 'plan' : ''].join(' '); return `<div class="wd ${cls}"><span>${WD[dd.getDay()]}</span><b style="--i:${i}">${dd.getDate()}</b></div>`; }).join('');
   const thisWeek = S.workouts.filter(w => w.start >= ws), a = agg(thisWeek);
   const sum = thisWeek.length ? `${a.n} ${plural(a.n, ['тренировка','тренировки','тренировок'])} · ${ton(a.vol)} · ${fmtDur(a.dur)}` : 'На этой неделе тренировок пока нет';
   const tpls = S.profile.templates, last = S.workouts[0];
@@ -2821,13 +2878,13 @@ function viewToday() {
     ${dbgHTML()}${hungerHTML()}${heroHTML()}
     <section class="week" aria-label="Эта неделя">${days}</section>
     <p class="week-sum">${sum}</p>
-    <button class="btn btn-primary btn-lg btn-block start" data-act="startEmpty">${icon('play', 'ic-f')} Начать тренировку</button>
+    ${planTodayHTML()}<button class="btn btn-primary btn-lg btn-block start" data-act="startEmpty">${icon('play', 'ic-f')} Начать тренировку</button>
     ${reportBanner()}${bannersHTML()}
     ${supCardHTML()}
     ${recCardHTML()}
     ${questsHTML()}
     ${pairCard()}
-    <section class="sec"><div class="sec-head"><h2 class="h2">Программы</h2></div>
+    <section class="sec"><div class="sec-head"><h2 class="h2">Программы</h2>${S.profile.templates.length ? `<button class="btn btn-sm btn-ghost" data-act="planOpen">${icon('today')} План недели</button>` : ''}</div>
       <div class="progs">${tpls.map(progCard).join('')}<button class="prog prog-new" data-act="tplNew">${icon('plus')}<span>Новая программа</span><small>Набор упражнений с подходами, чтобы начинать тренировку в одно касание</small></button></div>
     </section>
     ${last ? `<section class="sec"><div class="sec-head"><h2 class="h2">Последняя тренировка</h2><button class="btn btn-sm btn-ghost" data-act="nav" data-v="log">Весь журнал ${icon('chevron')}</button></div><ul>${jrow(last, 0)}</ul></section>` : firstRun()}`;
@@ -2910,12 +2967,13 @@ function xcardHTML(w, x, xi, prs) {
   }).join('');
   const sub = `${MUSCLES[ex.muscle] || ''} · ${EQUIP[ex.equip] || ''} · ${last ? 'прошлый раз ' + dShort(last.start) : 'впервые'}`;
   const plates = ex.equip === 'barbell' ? `<div class="plates" id="pl-${x.k}">${platesHTML(topWeight(w, x, ex.kind), S.profile.bar)}</div>` : '';
-  return `<article class="xcard" data-key="x-${x.k}">
-    <div class="x-head"><div><h3 class="x-name">${esc(ex.name)}</h3><p class="x-sub">${esc(sub)}</p></div><button class="icon-btn" data-act="exMenu" data-x="${xi}" aria-label="Действия с упражнением">${icon('more', 'ic-f')}</button></div>
+  const ss = ssOf(w, xi);
+  return `<article class="xcard${ss ? ' ss' + (ss.first ? ' ss-first' : '') + (ss.last ? ' ss-last' : '') : ''}" data-key="x-${x.k}">
+    <div class="x-head"><div>${ss ? `<span class="ss-tag">${icon('link')} Суперсет ${ss.letter}</span>` : ''}<h3 class="x-name">${esc(ex.name)}</h3><p class="x-sub">${esc(sub)}</p></div><button class="icon-btn" data-act="exMenu" data-x="${xi}" aria-label="Действия с упражнением">${icon('more', 'ic-f')}</button></div>
     ${hintHTML(x, xi, ex, last)}
     ${x.note != null ? `<div class="x-note"><textarea class="field" id="xn-${x.k}" data-in="exNote" data-x="${xi}" placeholder="Заметка: техника, ощущения, настройки тренажёра" aria-label="Заметка к упражнению">${esc(x.note)}</textarea></div>` : ''}
     <div class="sets"><div class="set-row set-hd" aria-hidden="true"><span>#</span><span>Прошлый</span><span>${K.f[0][1]}</span><span>${K.f[1][1]}</span><span></span><span></span></div>${rows}</div>
-    <div class="x-foot"><span class="x-btns"><button class="btn btn-sm btn-soft" data-act="setAdd" data-x="${xi}">${icon('plus')} Подход</button>${ex.kind === 'wr' && !x.sets.some(q => q.warm) ? `<button class="btn btn-sm" data-act="warmup" data-x="${xi}">${icon('flame')} Разминка</button>` : ''}</span><span class="x-sum" id="xs-${x.k}">${xSummary(x, ex.kind)}</span></div>
+    <div class="x-foot"><span class="x-btns"><button class="btn btn-sm btn-soft" data-act="setAdd" data-x="${xi}">${icon('plus')} Подход</button>${ex.kind === 'wr' && !x.sets.some(q => q.warm) ? `<button class="btn btn-sm" data-act="warmup" data-x="${xi}">${icon('flame')} Разминка</button>` : ''}<button class="btn btn-sm btn-ghost x-rest" data-act="exMenu" data-x="${xi}" aria-label="Отдых после подхода: ${fmtClock(restFor(x.ex))}. Изменить">${icon('clock')} ${fmtClock(restFor(x.ex))}</button></span><span class="x-sum" id="xs-${x.k}">${xSummary(x, ex.kind)}</span></div>
     ${plates}
   </article>`;
 }
@@ -3004,10 +3062,13 @@ function viewLog() {
   const head = headHTML('Журнал', S.workouts.length ? `${S.workouts.length} ${plural(S.workouts.length, ['тренировка','тренировки','тренировок'])}` : 'Все тренировки', add);
   if (!ready()) return head + loadingHTML();
   if (!S.workouts.length) return `${head}<div class="empty"><h3>Здесь появятся ваши тренировки</h3><p>Начните тренировку на вкладке «Сегодня» или запишите ту, что уже прошла.</p><button class="btn btn-primary" data-act="nav" data-v="today">${icon('play', 'ic-f')} К тренировке</button></div>`;
+  const q = normQ(S.logQ).trim(), words = q.split(/\s+/).filter(Boolean), list = words.length ? S.workouts.filter(w => logMatch(w, words)) : S.workouts;
+  const search = `<div class="log-search">${icon('search')}<input class="field" type="search" id="log-q" data-in="logQ" value="${esc(S.logQ || '')}" placeholder="Поиск: жим, «Верх», заметка" autocomplete="off" aria-label="Поиск по журналу">${S.logQ ? `<button class="icon-btn" data-act="logClear" aria-label="Очистить поиск">${icon('x')}</button>` : ''}</div>${words.length ? `<p class="log-found">Найдено: ${list.length} ${plural(list.length, ['тренировка','тренировки','тренировок'])}</p>` : ''}`;
+  if (words.length && !list.length) return `${head}${search}<div class="empty"><h3>Ничего не нашлось</h3><p>Попробуйте часть слова: «жим», «прис», «тяг».</p></div>`;
   const groups = []; let cur = null;
-  S.workouts.forEach(w => { const d = new Date(w.start), key = d.getFullYear() * 12 + d.getMonth(); if (!cur || cur.key !== key) { cur = { key, y:d.getFullYear(), m:d.getMonth(), list:[] }; groups.push(cur); } cur.list.push(w); });
+  list.forEach(w => { const d = new Date(w.start), key = d.getFullYear() * 12 + d.getMonth(); if (!cur || cur.key !== key) { cur = { key, y:d.getFullYear(), m:d.getMonth(), list:[] }; groups.push(cur); } cur.list.push(w); });
   const thisY = new Date().getFullYear(); let idx = 0;
-  return `${head}${groups.map(g => { const a = agg(g.list); return `<section class="month" data-key="m-${g.key}"><div class="month-head"><h2>${MON_NOM[g.m]}${g.y !== thisY ? ' ' + g.y : ''}</h2><span>${a.n} ${plural(a.n, ['трен.','трен.','трен.'])} · ${ton(a.vol)}</span></div><ul>${g.list.map(w => jrow(w, idx++)).join('')}</ul></section>`; }).join('')}`;
+  return `${head}${search}${groups.map(g => { const a = agg(g.list); return `<section class="month" data-key="m-${g.key}"><div class="month-head"><h2>${MON_NOM[g.m]}${g.y !== thisY ? ' ' + g.y : ''}</h2><span>${a.n} ${plural(a.n, ['трен.','трен.','трен.'])} · ${ton(a.vol)}</span></div><ul>${g.list.map(w => jrow(w, idx++)).join('')}</ul></section>`; }).join('')}`;
 }
 
 /* ---------- progress ---------- */
@@ -3552,7 +3613,7 @@ SHEETS.set = () => {
     <div class="srow"><div class="srow-t"><b>Спрашивать запас повторов</b><span>После подхода: сколько ещё могли сделать. Подсказки веса станут точнее</span></div><button class="switch" role="switch" aria-checked="${p.rirAsk !== false}" aria-label="Спрашивать запас повторов" data-act="toggleRir"></button></div>
     <div class="sblock"><b>Вес грифа</b><div class="seg" role="group" aria-label="Вес грифа">${[20, 15, 10].map(v => `<button data-act="setBar" data-v="${v}" aria-pressed="${p.bar === v}">${v} кг</button>`).join('')}</div><p class="fine" style="margin-top:8px">Нужен, чтобы считать блины на каждую сторону.</p></div>
     <div class="sblock"><b>Тема</b><div class="seg" role="group" aria-label="Тема">${[['auto', 'Как в системе'], ['dark', 'Тёмная'], ['light', 'Светлая']].map(([k, l]) => `<button data-act="setTheme" data-v="${k}" aria-pressed="${th === k}">${l}</button>`).join('')}</div></div>
-    ${p.custom.length ? `<div class="sblock"><b>Свои упражнения</b><ul class="blist">${p.custom.map(e => `<li style="grid-template-columns:minmax(0,1fr) auto 34px"><span>${esc(e.name)}</span><span class="muted" style="font-size:12px">${MUSCLES[e.muscle] || ''}</span><button class="icon-btn" data-act="customDel" data-id="${esc(e.id)}" aria-label="Удалить упражнение">${icon('x')}</button></li>`).join('')}</ul></div>` : ''}
+    ${p.custom.length ? `<div class="sblock"><b>Свои упражнения</b><ul class="blist">${p.custom.map(e => `<li style="grid-template-columns:minmax(0,1fr) auto 34px 34px"><span>${esc(e.name)}</span><span class="muted" style="font-size:12px">${MUSCLES[e.muscle] || ''}</span><button class="icon-btn" data-act="cxEdit" data-id="${esc(e.id)}" aria-label="Переименовать: ${esc(e.name)}">${icon('edit')}</button><button class="icon-btn" data-act="customDel" data-id="${esc(e.id)}" aria-label="Удалить упражнение">${icon('x')}</button></li>`).join('')}</ul></div>` : ''}
     <div class="sblock"><b>Резервная копия</b><p class="fine" style="margin:0 0 10px">Последняя: ${lastB}. В файл попадают все профили.</p><div class="row">${canShare ? `<button class="btn btn-sm btn-primary" data-act="backupShare">${icon('share')} Сохранить / отправить</button>` : ''}<button class="btn btn-sm${canShare ? '' : ' btn-primary'}" data-act="backupFile">${icon('download')} Скачать файл</button><label class="btn btn-sm" for="imp-file">${icon('upload')} Восстановить из файла</label><button class="btn btn-sm" data-act="exportCsv">${icon('download')} Таблица CSV</button></div></div>
     <div class="srow"><div class="srow-t"><b>Установка</b><span>${isStandalone() ? 'Приложение установлено на этот телефон' : 'Открыто в браузере. Установите на главный экран — так надёжнее и работает офлайн.'}</span></div>${isStandalone() ? `<span class="tick" style="color:var(--good)">${icon('check')}</span>` : `<button class="btn btn-sm" data-act="${S.installEvt ? 'install' : 'help'}">${S.installEvt ? 'Установить' : 'Как'}</button>`}</div>
     <div class="srow"><div class="srow-t"><b>Защита данных</b><span>${S.persisted ? 'Браузер не будет очищать данные приложения сам' : 'Попросите браузер не очищать данные приложения'}</span></div>${S.persisted ? `<span style="color:var(--good)">${icon('shield')}</span>` : `<button class="btn btn-sm" data-act="persist">Включить</button>`}</div>
@@ -3590,8 +3651,8 @@ function newEx(id, w, it) {
 function startWorkout(tpl, fromW) {
   if (S.active) { toast('Сначала завершите текущую тренировку'); go('today'); return; }
   const w = { id:uid(), title: tpl ? tpl.name : fromW ? (fromW.title || '') : '', tpl: tpl ? tpl.id : fromW ? (fromW.tpl || null) : null, start:Date.now(), exercises:[] };
-  if (tpl) tpl.items.forEach(it => w.exercises.push(newEx(it.ex, w, it)));
-  if (fromW) fromW.exercises.forEach(x => w.exercises.push({ k:uid(), ex:x.ex, sets:x.sets.filter(s => valid(s, exById(x.ex).kind)).map(s => (s.warm ? { warm:true } : {})), target:null }));
+  if (tpl) tpl.items.forEach(it => { const nx = newEx(it.ex, w, it); if (it.ss) nx.ss = it.ss; w.exercises.push(nx); });
+  if (fromW) fromW.exercises.forEach(x => w.exercises.push({ k:uid(), ex:x.ex, sets:x.sets.filter(s => valid(s, exById(x.ex).kind)).map(s => (s.warm ? { warm:true } : {})), target:null, ...(x.ss ? { ss:x.ss } : {}) }));
   S.active = w; S.sheets = []; saveActive(true); keepAwake(true); unlockAudio(); buzz(15); sfx('start');
   go('today'); schedulePush();
 }
@@ -3810,7 +3871,7 @@ const A = {
   wlColor: el => { top().color = el.dataset.c; applyAccent(el.dataset.c); render(); },
   welcomeSave: () => {
     const sh = top(), name = (sh.name || '').trim();
-    S.meta = { profiles:[{ id:'main', name, color:sh.color || 'lime', char:sh.char || 'cat' }], cur:'main', theme:'auto', mode:sh.mode === 'pair' ? 'pair' : 'solo', v2seen:true, v22seen:true, v23seen:true, v24seen:true, v25seen:true, chatSeen:Date.now() }; saveMeta(); applyAccent();
+    S.meta = { profiles:[{ id:'main', name, color:sh.color || 'lime', char:sh.char || 'cat' }], cur:'main', theme:'auto', mode:sh.mode === 'pair' ? 'pair' : 'solo', v2seen:true, v22seen:true, v23seen:true, v24seen:true, v25seen:true, v26seen:true, chatSeen:Date.now() }; saveMeta(); applyAccent();
     S.sheets = []; S.bubble = null; render(); buzz([10, 40, 10]); toast(name ? `Привет, ${name}! Поехали` : 'Поехали!');
   },
   startEmpty: () => startWorkout(null),
@@ -3852,7 +3913,7 @@ const A = {
       toast(`Новый рекорд · ${ex.name} · ${setLong(s, ex.kind)}`, 'pr'); S.bumpPr = true; buzz([20, 50, 30]); sfx('pr');
       const r = el.getBoundingClientRect(); setTimeout(() => confetti(r.left + r.width / 2, r.top + r.height / 2, 60), 120);
     } else { buzz(12); sfx('set'); }
-    if (isLive(w)) startRest(s.warm ? Math.min(60, S.profile.rest) : S.profile.rest);
+    if (isLive(w)) { const nx = !s.warm && w.exercises[xi + 1] && x.ss && w.exercises[xi + 1].ss === x.ss ? xi + 1 : null; if (nx != null) ssGo(w, nx); else { const r = restFor(x.ex); startRest(s.warm ? Math.min(60, r) : r); } }
     changed(); render(); S.bumpPr = false;
   },
   setWarm: el => { const c = ctx(el); if (!c) return; c.s.warm = !c.s.warm; buzz(6); sfx('tick'); changed(); render(); },
@@ -3874,8 +3935,8 @@ const A = {
   exMenu: el => openSheet({ type:'xm', x:+el.dataset.x }),
   exNoteOpen: () => { const sh = top(), x = curW().exercises[sh.x]; if (x.note == null) x.note = ''; S.sheets.pop(); changed(); render(); const t = document.getElementById('xn-' + x.k); if (t) { t.focus(); t.scrollIntoView({ block:'center' }); } },
   exReplace: () => { const sh = top(); S.sheets.pop(); openSheet({ type:'pick', mode:'replace', x:sh.x, q:'', m:'all', sel:[] }); },
-  exMove: el => { const sh = top(), w = curW(), i = sh.x, j = i + +el.dataset.d; if (j < 0 || j >= w.exercises.length) return; [w.exercises[i], w.exercises[j]] = [w.exercises[j], w.exercises[i]]; S.sheets.pop(); changed(); render(); },
-  exRemove: () => { const sh = top(); if (!sh.confirm) { sh.confirm = true; render(); return; } curW().exercises.splice(sh.x, 1); S.sheets.pop(); changed(); render(); },
+  exMove: el => { const sh = top(), w = curW(), i = sh.x, j = i + +el.dataset.d; if (j < 0 || j >= w.exercises.length) return; [w.exercises[i], w.exercises[j]] = [w.exercises[j], w.exercises[i]]; ssClean(w); S.sheets.pop(); changed(); render(); },
+  exRemove: () => { const sh = top(); if (!sh.confirm) { sh.confirm = true; render(); return; } curW().exercises.splice(sh.x, 1); ssClean(curW()); S.sheets.pop(); changed(); render(); },
   finishOpen: () => openSheet({ type:'fin', feel:null, note:'' }),
   finFeel: el => { const sh = top(), v = +el.dataset.v; sh.feel = sh.feel === v ? null : v; render(); },
   finishSave: () => {
@@ -3894,7 +3955,7 @@ const A = {
   wRepeat: () => { const w = S.workouts.find(x => x.id === top().id); if (w) startWorkout(null, w); },
   wAsTpl: () => {
     const w = S.workouts.find(x => x.id === top().id); if (!w) return;
-    const items = w.exercises.map(x => { const k = exById(x.ex).kind, ws = x.sets.filter(s => !s.warm && valid(s, k)); const vals = ws.map(s => k === 'time' ? num(s.t) : k === 'cardio' ? Math.round((num(s.t) || 0) / 60) : num(s.r)); const mode = [...vals].sort((a, b) => vals.filter(v => v === b).length - vals.filter(v => v === a).length)[0]; return { ex:x.ex, sets:Math.max(1, ws.length), reps:mode ?? null }; });
+    const items = w.exercises.map(x => { const k = exById(x.ex).kind, ws = x.sets.filter(s => !s.warm && valid(s, k)); const vals = ws.map(s => k === 'time' ? num(s.t) : k === 'cardio' ? Math.round((num(s.t) || 0) / 60) : num(s.r)); const mode = [...vals].sort((a, b) => vals.filter(v => v === b).length - vals.filter(v => v === a).length)[0]; return { ex:x.ex, sets:Math.max(1, ws.length), reps:mode ?? null, ...(x.ss ? { ss:x.ss } : {}) }; });
     const name = w.title || 'Программа ' + (S.profile.templates.length + 1);
     S.profile.templates.push({ id:uid(), name, items }); saveProfile(); toast(`Программа «${name}» сохранена`); render();
   },
@@ -4324,7 +4385,7 @@ SHEETS.chest = sh => {
   const left = cs.closed.filter(x => x.id !== ch.id).length;
   if (sh.phase !== 'open') {
     const why = ch.rank != null ? 'Награда за новый ранг. Внутри минимум редкая вещь, а шанс эпической и легендарной выше.' : ch.gift ? 'Каждый седьмой подарок дня — сундук.' : ch.gold ? 'Золотой сундук — за неделю со всеми заданиями. Внутри минимум редкая вещь.' : ch.prs ? `Рекорд${ch.prs > 1 ? 'ы' : ''} в тренировке ${ch.prs > 1 ? 'подняли' : 'поднял'} шанс редкой вещи.` : ch.starter ? 'Подарок к новой версии: напарник может носить вещи.' : 'Внутри — вещь для напарника.';
-    return `${closeOnly()}<div class="sheet-body"><div class="reveal"><button class="chest-tap${sh.phase === 'shake' ? ' busy' : ''}" data-act="chestOpen" aria-label="Открыть сундук">${chestSVG(type, false, 'c', sh.phase === 'shake' ? 'shake' : 'idle')}</button>
+    return `${closeOnly()}<div class="sheet-body"><div class="reveal"><button class="chest-tap${sh.phase === 'shake' ? ' busy' : ''}" data-act="chestOpen" aria-label="Открыть сундук">${chestSVG(type, false, sh.phase === 'shake' && ITEM[cs.op[ch.id]] ? ITEM[cs.op[ch.id]].r : 'c', sh.phase === 'shake' ? 'shake' : 'idle')}</button>
       <div class="eyebrow">${from}</div><h2 id="sheet-title" class="big-title">${ch.gold ? 'Золотой сундук' : 'Сундук'}</h2><p>${why}</p></div></div>
       <footer class="sheet-foot"><button class="btn btn-primary btn-lg btn-block" data-act="chestOpen"${sh.phase === 'shake' ? ' disabled' : ''}>${sh.phase === 'shake' ? 'Открываем…' : 'Открыть'}</button></footer>`;
   }
@@ -4404,7 +4465,7 @@ Object.assign(A, {
     }
     const it = ITEM[S.profile.chest.op[ch.id]], reveal = () => {
       if (top() !== sh) return;
-      sh.phase = 'open'; render();
+      sh.phase = 'open'; render(); chestFlash(it.r);
       buzz(it.r === 'l' ? [40, 60, 40, 60, 120] : it.r === 'r' ? [30, 50, 30, 50, 60] : [20, 40, 20]); sfx('open' + it.r);
       if (it.r !== 'c') { const r = $('#sheet-root .reveal .chest'); const b = r ? r.getBoundingClientRect() : { left:innerWidth / 2, top:innerHeight / 3, width:0, height:0 }; confetti(b.left + b.width / 2, b.top + b.height / 2, it.r === 'l' ? 110 : 60); }
     };
@@ -4726,6 +4787,159 @@ SHEETS.news25 = () => `${sheetHead('Что нового', 'Версия ' + APP_
     <li>${icon('progress')}<span><b>Отчёт за месяц</b> — итоги, сравнение с прошлым месяцем и рекорды. Можно поделиться</span></li>
   </ul></div><footer class="sheet-foot"><button class="btn" data-act="closeSheet">Готово</button><button class="btn btn-primary" data-act="newsProgress">Посмотреть</button></footer>`;
 Object.assign(A, { newsProgress: () => { S.sheets = []; go('progress'); } });
+
+/* ================= 2.6: technique, supersets, rest per exercise, weekly plan ================= */
+const TECH = (() => { const t = {}, a = (id, ...c) => { t[id] = c; };
+  a('bench', 'Лопатки сведены и опущены, лёгкий прогиб в пояснице, стопы упираются в пол.', 'Гриф опускайте на низ груди, локти примерно под 45° к корпусу.', 'Выжимайте вверх и чуть к стойкам, таз не отрывайте от скамьи.');
+  a('incline-bench', 'Наклон скамьи 30–45°, лопатки сведены.', 'Гриф касается верха груди под ключицами.', 'Локти под грифом, не разводите их в стороны на 90°.');
+  a('db-bench', 'Опускайте гантели до уровня груди, локти около 45°.', 'Вверху не стучите гантелями друг о друга.', 'Лопатки прижаты к скамье всё движение.');
+  a('incline-db', 'Скамья 30–45°, гантели над верхом груди.', 'Опускайте подконтрольно, 2–3 секунды.', 'Таз остаётся на скамье, без сильного прогиба в пояснице.');
+  a('fly', 'Локти слегка согнуты и не меняют угол.', 'Опускайте до лёгкого растяжения в груди, не ниже плеч.', 'Сводите руки по дуге, будто обнимаете бочку.');
+  a('crossover', 'Корпус немного наклонён вперёд, одна нога впереди.', 'Сводите руки по дуге перед собой, локти мягкие.', 'Секунда паузы в сведении, возвращайте медленно.');
+  a('chest-press', 'Сиденье так, чтобы рукояти были на уровне середины груди.', 'Лопатки прижаты к спинке.', 'Не выпрямляйте локти до щелчка.');
+  a('dips', 'Корпус немного наклонён вперёд — больше работает грудь.', 'Опускайтесь, пока плечо не станет параллельно полу, без боли в плечах.', 'Без раскачки, локти назад, а не в стороны.');
+  a('pushup', 'Тело — прямая линия от пяток до головы, пресс напряжён.', 'Ладони чуть шире плеч, локти около 45° к корпусу.', 'Опускайтесь почти до пола и выжимайтесь полностью.');
+  a('deadlift', 'Гриф над серединой стопы, голени почти касаются грифа.', 'Спина нейтральная, вдох и напряжение пресса до старта.', 'Толкайте пол ногами, гриф скользит по ногам; наверху не заваливайтесь назад.');
+  a('pullup', 'Начинайте из полного виса, плечи опустите вниз.', 'Тяните локти к рёбрам, грудь к перекладине.', 'Без рывков и раскачки, опускайтесь до конца.');
+  a('assist-pullup', 'Подберите противовес, чтобы делать 6–12 чистых повторов.', 'Тяните локтями вниз, грудь вперёд.', 'Уменьшайте противовес по мере прогресса.');
+  a('row', 'Наклон корпуса 30–45°, спина прямая, колени чуть согнуты.', 'Тяните гриф к низу живота, локти назад.', 'Не помогайте корпусом, опускайте под контролем.');
+  a('db-row', 'Опора рукой и коленом на скамью, спина ровная.', 'Тяните гантель к поясу, локоть вдоль корпуса.', 'Не скручивайте корпус в верхней точке.');
+  a('lat-pulldown', 'Хват чуть шире плеч, бёдра под валиками.', 'Тяните рукоять к верху груди, сводя лопатки.', 'Не отклоняйтесь сильно назад и не тяните за голову.');
+  a('cable-row', 'Спина прямая, колени слегка согнуты.', 'Тяните рукоять к животу, в конце сводите лопатки.', 'Не раскачивайтесь корпусом вперёд-назад.');
+  a('t-row', 'Наклон корпуса 30–45°, спина прямая.', 'Тяните к груди или животу, сжимая лопатки.', 'Не округляйте поясницу.');
+  a('hyperext', 'Валик под тазовыми костями.', 'Опускайтесь с прямой спиной и поднимайтесь до прямой линии тела.', 'Не переразгибайтесь в верхней точке.');
+  a('squat', 'Стопы на ширине плеч, носки чуть врозь, гриф на трапециях.', 'Таз назад и вниз, колени идут по направлению носков.', 'Глубина — пока поясница остаётся ровной; вставайте, толкая пол всей стопой.');
+  a('front-squat', 'Гриф на передних дельтах, локти высоко.', 'Корпус вертикальный, колени вперёд по линии носков.', 'Если локти падают — снизьте вес.');
+  a('goblet', 'Гантель у груди, внизу локти внутри коленей.', 'Садитесь между ног, корпус прямой.', 'Пятки не отрываются от пола.');
+  a('leg-press', 'Стопы на платформе на ширине плеч.', 'Опускайте, пока таз не начнёт отрываться от спинки.', 'Не выпрямляйте колени до щелчка.');
+  a('rdl', 'Колени чуть согнуты и почти не меняют угол.', 'Таз уходит назад, гриф скользит по бёдрам до середины голени.', 'Спина прямая, растяжение — в задней поверхности бедра.');
+  a('lunge', 'Длинный шаг, корпус прямой.', 'Опускайтесь до 90° в обоих коленях, заднее колено почти касается пола.', 'Переднее колено идёт по линии носка.');
+  a('bulgarian', 'Задняя нога на скамье, передняя — на шаг вперёд.', 'Опускайтесь вертикально вниз, корпус чуть наклонён.', 'Толкайтесь пяткой передней ноги.');
+  a('leg-ext', 'Ось тренажёра на уровне колена.', 'Разгибайте до прямых ног и задержитесь на секунду.', 'Опускайте медленно, без рывков.');
+  a('leg-curl', 'Ось тренажёра на уровне колена, бёдра прижаты.', 'Сгибайте до упора, не отрывая таз.', 'Возвращайте медленно, не бросая вес.');
+  a('calf', 'Полная амплитуда: внизу растяжение, вверху на носках.', 'Пауза 1–2 секунды наверху.', 'Колени почти прямые, без пружинящих отскоков.');
+  a('hip-thrust', 'Лопатки на краю скамьи, гриф на сгибе бёдер с подкладкой.', 'Поднимайте таз до прямой линии от колен до плеч, голени вертикальны.', 'Сжимайте ягодицы наверху, подбородок к груди, поясницу не прогибайте.');
+  a('glute-bridge', 'Лёжа на спине, стопы ближе к тазу.', 'Поднимайте таз, сжимая ягодицы, до прямой линии.', 'Задержитесь на 1–2 секунды наверху.');
+  a('glute-kick', 'Корпус немного наклонён, опора на тренажёр.', 'Отводите ногу назад ягодицей, без прогиба в пояснице.', 'Возвращайте медленно.');
+  a('hip-abd', 'Сядьте ровно, спина прижата.', 'Разводите ноги силой ягодиц, пауза в крайней точке.', 'Возвращайте под контролем, не бросая вес.');
+  a('hip-add', 'Спина прижата, движение плавное.', 'Сводите ноги до касания подушек.', 'Не используйте инерцию.');
+  a('step-up', 'Тумба примерно на высоте колена.', 'Толкайтесь ногой на тумбе, не отталкиваясь нижней.', 'Корпус прямой, колено по линии носка.');
+  a('ohp', 'Хват чуть шире плеч, пресс и ягодицы напряжены.', 'Выжимайте гриф вертикально: голова чуть назад, затем под гриф.', 'Не прогибайтесь в пояснице.');
+  a('db-press', 'Спинка скамьи почти вертикальна.', 'Гантели от уровня ушей вверх, не стучите ими.', 'Локти чуть впереди корпуса.');
+  a('lateral', 'Лёгкий наклон корпуса, локти чуть согнуты.', 'Поднимайте до уровня плеч, ведите локтями.', 'Без рывков и раскачки корпусом.');
+  a('rear-delt', 'Корпус почти параллелен полу.', 'Разводите руки локтями в стороны, в конце сводите лопатки.', 'Небольшой вес и чистая техника.');
+  a('face-pull', 'Канат на уровне лица.', 'Тяните к лбу, разводя руки и локти в стороны и вверх.', 'Пауза в конце, плечи опущены.');
+  a('shrug', 'Руки прямые, поднимайте плечи вертикально вверх.', 'Пауза 1 секунда наверху.', 'Не вращайте плечами.');
+  a('curl', 'Локти прижаты к корпусу и не уходят вперёд.', 'Поднимайте без раскачки корпусом.', 'Опускайте медленно почти до прямых рук.');
+  a('db-curl', 'Вверху разворачивайте кисть мизинцем вверх.', 'Локти неподвижны.', 'Опускание медленное, 2–3 секунды.');
+  a('hammer', 'Нейтральный хват: ладони смотрят друг на друга.', 'Локти прижаты.', 'Без раскачки.');
+  a('triceps-push', 'Локти прижаты к бокам и неподвижны.', 'Разгибайте до прямых рук, сжимая трицепс.', 'Возвращайте до угла 90°.');
+  a('skull', 'Локти смотрят вверх и не расходятся.', 'Опускайте гриф ко лбу или за голову под контролем.', 'Двигаются только предплечья.');
+  a('cg-bench', 'Хват на ширине плеч, не уже.', 'Локти вдоль корпуса.', 'Опускайте гриф на низ груди.');
+  a('plank', 'Тело — прямая линия, пресс и ягодицы напряжены.', 'Локти под плечами.', 'Не проваливайте поясницу и не поднимайте таз.');
+  a('crunch', 'Скручивайтесь, поднимая лопатки; шею руками не тяните.', 'Поясница прижата к полу.', 'Выдох на подъёме.');
+  a('leg-raise', 'Без раскачки: ноги поднимает пресс.', 'Вверху подкручивайте таз.', 'Опускайте медленно.');
+  a('ab-wheel', 'Начните с колен.', 'Катите вперёд с напряжённым прессом, не прогибая поясницу.', 'Возвращайтесь прессом, а не руками.');
+  a('run', 'Короткий шаг, приземление под центр тяжести.', 'Плечи расслаблены, руки работают вперёд-назад.', 'Большая часть бега — в темпе, при котором можно разговаривать.');
+  a('treadmill', 'Наклон около 1% похож на бег на улице.', 'Не держитесь за поручни.', 'Разминка 5 минут шагом.');
+  a('bike', 'Седло: в нижней точке нога почти прямая.', 'Ровный каденс 80–95 оборотов в минуту.', 'Сопротивление — чтобы можно было говорить фразами.');
+  a('ellipse', 'Спина прямая, не наваливайтесь на поручни.', 'Толкайте педали всей стопой.', 'Меняйте направление для разнообразия.');
+  a('row-erg', 'Порядок: ноги — корпус — руки, обратно наоборот.', 'Спина прямая, не округляйте её.', 'Основная сила — от ног.');
+  a('stairs', 'Не опирайтесь на поручни.', 'Наступайте на всю стопу.', 'Держите корпус прямо.');
+  a('walk', 'Быстрый шаг, руки работают.', '8–10 тысяч шагов в день — хорошая база.', 'Подъём в горку добавит нагрузки.');
+  a('jump-rope', 'Прыгайте на носках, невысоко.', 'Вращайте скакалку кистями, локти у корпуса.', 'Начинайте с коротких интервалов.');
+  return t; })();
+const restFor = id => +((S.profile.rx || {})[id]) || S.profile.rest || 90;
+/* supersets: neighbouring exercises with the same ss id */
+function ssGroups(w) { const ids = []; (w.exercises || []).forEach((x, i, a) => { if (x.ss && a[i + 1] && a[i + 1].ss === x.ss && !ids.includes(x.ss)) ids.push(x.ss); }); return ids; }
+function ssOf(w, xi) {
+  const xs = w.exercises, x = xs[xi]; if (!x || !x.ss) return null;
+  const same = j => xs[j] && xs[j].ss === x.ss; if (!same(xi - 1) && !same(xi + 1)) return null;
+  const i = ssGroups(w).indexOf(x.ss); return { letter:'АБВГДЕЖИ'[Math.max(0, i)] || '·', first:!same(xi - 1), last:!same(xi + 1) };
+}
+function ssClean(w) { const n = {}; w.exercises.forEach((x, i, a) => { if (x.ss && ((a[i - 1] && a[i - 1].ss === x.ss) || (a[i + 1] && a[i + 1].ss === x.ss))) n[i] = 1; }); w.exercises.forEach((x, i) => { if (x.ss && !n[i]) delete x.ss; }); }
+function ssGo(w, nx) {
+  const x = w.exercises[nx]; if (!x) return;
+  toast(`Суперсет · дальше: ${exById(x.ex).name}`);
+  setTimeout(() => { const c = $$('.xcard')[nx]; if (c) c.scrollIntoView({ behavior:RM ? 'auto' : 'smooth', block:'start' }); }, 260);
+}
+function planTodayHTML() {
+  const p = S.profile.plan || {}, id = p[new Date(Date.now()).getDay()], t = id && S.profile.templates.find(x => x.id === id); if (!t) return '';
+  const done = S.workouts.some(w => dayKey(w.start) === dayKey(Date.now()));
+  return `<div class="plan-today${done ? ' done' : ''}"><span><small>${done ? 'План на сегодня выполнен' : 'По плану сегодня'}</small><b>${esc(t.name)}</b></span>${done ? icon('check') : `<button class="btn btn-primary btn-sm" data-act="startTpl" data-id="${esc(t.id)}">${icon('play', 'ic-f')} Начать</button>`}</div>`;
+}
+SHEETS.xm = sh => {
+  const w = curW(), x = w && w.exercises[sh.x]; if (!x) return sheetHead('Упражнение');
+  const ex = exById(x.ex), nx = w.exercises[sh.x + 1], linked = nx && x.ss && nx.ss === x.ss, cur = +((S.profile.rx || {})[x.ex]) || 0;
+  return `${sheetHead(esc(ex.name), 'Упражнение')}<div class="sheet-body"><div class="menu">
+    <button data-act="techOpen" data-id="${esc(x.ex)}">${icon('help')} Техника выполнения</button>
+    <button data-act="exNoteOpen">${icon('note')} ${x.note != null ? 'Перейти к заметке' : 'Добавить заметку'}</button>
+    <button data-act="exReplace">${icon('swap')} Заменить упражнение</button>
+    ${nx ? (linked ? `<button data-act="ssUnlink">${icon('link')} Разъединить суперсет</button>` : `<button data-act="ssLink">${icon('link')} Суперсет со следующим: ${esc(exById(nx.ex).name)}</button>`) : ''}
+    <button data-act="exMove" data-d="-1"${sh.x === 0 ? ' disabled' : ''}>${icon('up')} Переместить выше</button>
+    <button data-act="exMove" data-d="1"${sh.x === w.exercises.length - 1 ? ' disabled' : ''}>${icon('down')} Переместить ниже</button>
+    <button class="danger" data-act="exRemove">${icon('trash')} ${sh.confirm ? 'Нажмите ещё раз, чтобы удалить' : 'Удалить из тренировки'}</button>
+  </div>
+  <div class="sblock"><b>Отдых после подхода</b><div class="seg wrap" role="group" aria-label="Отдых для упражнения">${[0, 45, 60, 90, 120, 180, 240].map(v => `<button data-act="exRest" data-v="${v}" aria-pressed="${cur === v}">${v ? fmtClock(v) : 'Общий'}</button>`).join('')}</div>
+  <p class="fine" style="margin-top:8px">Запомнится для «${esc(ex.name)}» во всех тренировках. «Общий» — ${fmtClock(S.profile.rest)} из настроек. В суперсете отдых начинается после последнего упражнения круга.</p></div></div>`;
+};
+SHEETS.tech = sh => {
+  const ex = exById(sh.id), t = TECH[sh.id];
+  return `${sheetHead(esc(ex.name), 'Техника')}<div class="sheet-body">${t ? `<ol class="tech">${t.map(c => `<li>${esc(c)}</li>`).join('')}</ol>` : '<p class="fine" style="margin-top:0">Для своих упражнений подсказок нет. Запишите ориентиры в заметку к упражнению — она сохранится в тренировке.</p>'}
+    <div class="hint">${icon('shield')}<span><b>Общее правило.</b> Рабочий вес — тот, с которым остаётся 1–3 повтора в запасе и техника не ломается. Боль в суставах — сигнал остановиться и снизить вес.</span></div></div>`;
+};
+SHEETS.plan = () => {
+  const t = S.profile.templates, p = S.profile.plan || {}, n = Object.values(p).filter(id => t.some(x => x.id === id)).length;
+  if (!t.length) return `${sheetHead('План на неделю')}<div class="sheet-body"><div class="empty"><h3>Сначала создайте программу</h3><p>Например, «Верх» и «Низ». Потом расставьте их по дням недели.</p></div></div><footer class="sheet-foot"><button class="btn btn-primary btn-block" data-act="tplNew">${icon('plus')} Новая программа</button></footer>`;
+  return `${sheetHead('План на неделю', `${n} ${plural(n, ['тренировка','тренировки','тренировок'])} в неделю`)}<div class="sheet-body">
+    ${WD_ORDER.map(d => `<label class="plan-row"><b>${WD_FULL[d]}</b><select class="field" data-ch="planDay" data-d="${d}" aria-label="${WD_FULL[d]}"><option value="">Отдых</option>${t.map(x => `<option value="${esc(x.id)}"${p[d] === x.id ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>`).join('')}
+    <p class="fine">В эти дни на главной появится «По плану сегодня». Тренироваться можно и в другие дни — пропуск ничего не сжигает.</p>
+    ${n && n !== S.profile.goal && n <= 6 ? `<button class="btn btn-sm" style="margin-top:6px" data-act="planGoal" data-v="${n}">${icon('target')} Сделать цель недели = ${n}</button>` : ''}
+  </div>`;
+};
+SHEETS.news26 = () => `${sheetHead('Что нового', 'Версия ' + APP_VERSION)}<div class="sheet-body"><ul class="pr-list news">
+    <li>${icon('today')}<span><b>План на неделю</b> — расставьте программы по дням; на главной будет «По плану сегодня» с кнопкой «Начать»</span></li>
+    <li>${icon('link')}<span><b>Суперсеты</b> — объедините упражнения: после подхода приложение подскажет следующее, а отдых начнётся в конце круга</span></li>
+    <li>${icon('clock')}<span><b>Свой отдых</b> — для каждого упражнения: присед 3 минуты, махи 45 секунд</span></li>
+    <li>${icon('help')}<span><b>Техника</b> — подсказки для всех 56 встроенных упражнений: меню «⋯» у упражнения</span></li>
+  </ul></div><footer class="sheet-foot"><button class="btn btn-primary btn-block" data-act="closeSheet">Готово</button></footer>`;
+Object.assign(A, {
+  techOpen: el => openSheet({ type:'tech', id:el.dataset.id }),
+  exRest: el => { const sh = top(), w = curW(), x = w && w.exercises[sh.x]; if (!x) return; const v = +el.dataset.v, rx = S.profile.rx || (S.profile.rx = {}); if (v) rx[x.ex] = v; else delete rx[x.ex]; saveProfile(); render(); },
+  ssLink: () => { const sh = top(), w = curW(), a = w.exercises[sh.x], b = w.exercises[sh.x + 1]; if (!a || !b) return; const id = a.ss || b.ss || uid(); if (b.ss && b.ss !== id) { const old = b.ss; w.exercises.forEach(e => { if (e.ss === old) e.ss = id; }); } a.ss = id; b.ss = id; S.sheets.pop(); changed(); render(); toast('Суперсет: упражнения идут по кругу'); },
+  ssUnlink: () => { const sh = top(), w = curW(), a = w.exercises[sh.x]; if (!a || !a.ss) return; const id = a.ss, nid = uid(); for (let j = sh.x + 1; j < w.exercises.length && w.exercises[j].ss === id; j++) w.exercises[j].ss = nid; ssClean(w); S.sheets.pop(); changed(); render(); },
+  planOpen: () => openSheet({ type:'plan' }),
+  planGoal: el => { S.profile.goal = +el.dataset.v; saveProfile(); toast(`Цель недели: ${el.dataset.v}`); render(); },
+});
+Object.assign(CHG, {
+  planDay: el => { const p = S.profile.plan || (S.profile.plan = {}), d = el.dataset.d; if (el.value) p[d] = el.value; else delete p[d]; saveProfile(); render(); },
+});
+/* rename own exercises (name, muscle, equipment; the kind stays — old sets keep their meaning) */
+SHEETS.cx = sh => `${sheetHead('Своё упражнение')}<div class="sheet-body">
+  <label class="lbl">Название<input class="field" id="cx-name" data-in="cxF" data-f="name" value="${esc(sh.d.name)}" autocomplete="off" maxlength="40"></label>
+  <label class="lbl" style="margin-top:12px">Группа мышц<select class="field" data-ch="cxSel" data-f="muscle">${Object.entries(MUSCLES).map(([k, l]) => `<option value="${k}"${sh.d.muscle === k ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
+  <label class="lbl" style="margin-top:12px">Снаряд<select class="field" data-ch="cxSel" data-f="equip">${Object.entries(EQUIP).map(([k, l]) => `<option value="${k}"${sh.d.equip === k ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
+  <p class="fine">Новое название появится и в прошлых тренировках, рекорды и графики сохранятся.</p>
+</div><footer class="sheet-foot"><button class="btn" data-act="closeSheet">Отмена</button><button class="btn btn-primary" data-act="cxSave">Сохранить</button></footer>`;
+/* log search: every word must be found in the title, an exercise name or a note; ё = е */
+const normQ = s => String(s || '').toLowerCase().replace(/ё/g, 'е');
+function logMatch(w, words) {
+  const hay = normQ([w.title, w.note, ...(w.exercises || []).map(x => exById(x.ex).name + ' ' + (x.note || ''))].join(' '));
+  return words.every(t => hay.includes(t));
+}
+Object.assign(A, {
+  cxEdit: el => { const e = S.profile.custom.find(x => x.id === el.dataset.id); if (e) openSheet({ type:'cx', id:e.id, d:{ name:e.name, muscle:e.muscle, equip:e.equip } }); },
+  cxSave: () => { const sh = top(), e = S.profile.custom.find(x => x.id === sh.id), name = (sh.d.name || '').trim(); if (!e) return; if (!name) { toast('Введите название'); return; } Object.assign(e, { name:name.slice(0, 40), muscle:sh.d.muscle, equip:sh.d.equip }); saveProfile(); S.sheets.pop(); toast('Упражнение переименовано'); render(); },
+  logClear: () => { S.logQ = ''; render(); const i = $('#log-q'); if (i) i.focus(); },
+});
+Object.assign(IN, { cxF: el => { top().d[el.dataset.f] = el.value; }, logQ: el => { S.logQ = el.value; render(); } });
+Object.assign(CHG, { cxSel: el => { top().d[el.dataset.f] = el.value; } });
+/* game-like chest reveal: light leaking from the lid while it shakes, a flash, the item flying out */
+function chestFlash(r) {
+  if (RM || r === 'c') return;
+  const f = document.createElement('div'); f.className = 'flash'; f.style.setProperty('--rc', RAR[r].col); document.body.appendChild(f); setTimeout(() => f.remove(), 800);
+  if (r === 'l') { const s = $('#sheet-root .sheet'); if (s) { s.classList.remove('jolt'); void s.offsetWidth; s.classList.add('jolt'); setTimeout(() => s.classList.remove('jolt'), 600); } }
+}
 
 /* ================= events ================= */
 document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const fn = A[el.dataset.act]; if (fn) { e.preventDefault(); SFXN.n = 0; fn(el, e); if (!SFXN.n) sfx(el.dataset.act === 'nav' ? 'tab' : el.dataset.act === 'closeSheet' ? 'close' : el.getAttribute('role') === 'switch' ? 'toggle' : 'tap'); } });
