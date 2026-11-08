@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-look="noir" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1287,6 +1287,47 @@ body.gated #main,body.gated .tabbar,body.gated .rail,body.gated #rest-root,body.
 .gate-has{justify-self:center;padding:10px}
 .gate-back{position:absolute;left:14px;top:max(16px,env(safe-area-inset-top));width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);color:var(--ink);z-index:2}
 .btn-lg.btn-g{min-height:52px}
+/* ================= 2.10: «Мрак» — dark, quiet, minimal ================= */
+html[data-look="noir"]{--bg:#070708;--surface:#0E0E10;--surface-2:#151517;--line:#232326;--ink:#E9E7E2;--ink-2:#A5A39E;--muted:#6B6A66;--r:10px;--r-lg:12px;
+  --gold:#B79F6B;--gold-fill:#B79F6B;--gold-soft:#241F14;--on-gold:#14110A;--good:#86A683;--good-soft:#121A12;--on-good:#08100A;--bad:#B8514B;--bad-soft:#241211;--on-bad:#140808;
+  --shadow:0 14px 36px rgba(0,0,0,.65);--scrim:rgba(0,0,0,.74);--h0:#1A1A1C}
+html[data-look="noir"][data-theme="light"]{--bg:#E8E7E3;--surface:#F2F1ED;--surface-2:#DEDDD8;--line:#CBCAC4;--ink:#0F0F10;--ink-2:#38373A;--muted:#6A6A6C;
+  --gold:#80693A;--gold-fill:#B79F6B;--gold-soft:#EDE6D3;--good:#4C6E49;--good-soft:#E0E8DD;--on-good:#FFFFFF;--bad:#9C3C37;--bad-soft:#F0DEDC;--on-bad:#FFFFFF;--shadow:0 14px 34px rgba(20,20,20,.12);--scrim:rgba(10,10,10,.5);--h0:#DAD9D4}
+html[data-look="noir"] .btn,html[data-look="noir"] .btn-lg{border-radius:10px}
+html[data-look="noir"] .btn-lg{font-weight:500;letter-spacing:.14em}
+html[data-look="noir"] .btn-primary{box-shadow:none}
+html[data-look="noir"] .field{border-radius:10px;border-width:1px}
+html[data-look="noir"] .seg{border-radius:11px}
+html[data-look="noir"] .seg button{border-radius:8px}
+html[data-look="noir"] .chip{border-radius:8px}
+html[data-look="noir"] .panel,html[data-look="noir"] .xcard{box-shadow:none}
+html[data-look="noir"] .h1,html[data-look="noir"] .big-title,html[data-look="noir"] .sheet-head h2{font-weight:500;letter-spacing:.07em}
+html[data-look="noir"] .h1{font-size:28px}
+html[data-look="noir"] .tabbar{border-radius:16px;box-shadow:none;background:color-mix(in oklab,var(--surface) 96%,transparent)}
+html[data-look="noir"] .tab-ind::before{border-radius:12px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
+html[data-look="noir"] .tab[aria-current="page"] .ic{color:var(--ink)}
+html[data-look="noir"] .sheet{border-radius:18px 18px 0 0}
+html[data-look="noir"] .scrim{background:var(--scrim)}
+
+/* the first screen: a mark, a name, three lines, two buttons */
+.gate-mark{width:58px;height:58px;color:var(--ink);animation:rise-in .8s var(--out) both}
+.gate-mark svg{width:100%;height:100%;display:block}
+.gate-wrap.compact .gate-mark{width:34px;height:34px}
+.gate-hero{gap:16px}
+.gate-bg{background:radial-gradient(ellipse 80% 45% at 50% -5%,color-mix(in oklab,var(--ink) 9%,transparent),transparent 70%)}
+.gate-bg i{display:none}
+.gate-title{font:500 22px/1 var(--f-display);letter-spacing:.46em;text-indent:.46em;text-transform:uppercase}
+.gate-title.sm{font-size:13px;letter-spacing:.4em;text-indent:.4em;color:var(--muted)}
+.gate-sub{font:400 11.5px/1.8 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);max-width:30ch}
+.gate-h h2{font:500 22px/1.1 var(--f-display);letter-spacing:.08em}
+.gate-feats{gap:0;margin:6px 0 14px;border-bottom:1px solid var(--line)}
+.gate-feats li{grid-template-columns:34px minmax(0,1fr);padding:15px 0;border-top:1px solid var(--line);font-size:14.5px;color:var(--ink-2)}
+.gate-feats .num{font:400 11px var(--f-mono);letter-spacing:.1em;color:var(--muted)}
+.btn-g{background:transparent;box-shadow:inset 0 0 0 1px var(--line);color:var(--ink)}
+.gate-back{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
+.gate-wrap .sheet-body{gap:10px}
+.gate-intro{font-size:13.5px;color:var(--muted)}
+.gate-wrap .sheet-body{align-content:start;grid-auto-rows:auto}
 /* iPhone zooms the page into any field with text smaller than 16px — keep fields at 16px on touch screens */
 @media (pointer:coarse){input.field,select.field,textarea.field,.set-in,.composer textarea,input[type="search"]{font-size:16px}}
 @keyframes sh{to{background-position:-200% 0}}
@@ -1347,7 +1388,7 @@ body.gated #main,body.gated .tabbar,body.gated .rail,body.gated #rest-root,body.
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.9.5';
+const APP_VERSION = '2.10.0';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -1843,14 +1884,18 @@ const COLORS = {
 const profiles = () => (S.meta && Array.isArray(S.meta.profiles) && S.meta.profiles.length) ? S.meta.profiles : [{ id:'main', name:'', color:'red' }];
 const curProf = () => profiles().find(p => p.id === S.pid) || profiles()[0];
 const pname = p => (p && p.name) || 'Я';
-const col = p => COLORS[p && p.color] || COLORS.red;
+const lookOf = () => (S.meta && S.meta.look) || 'noir';
+const NC = {};
+const noirC = k => NC[k] || (NC[k] = (() => { const c = COLORS[k] || COLORS.red, m = h => { const n = parseInt(h.slice(1), 16), r = n >> 16, g = n >> 8 & 255, b = n & 255, y = .3 * r + .59 * g + .11 * b, f = v => Math.round(y + (v - y) * .3).toString(16).padStart(2, '0'); return '#' + f(r) + f(g) + f(b); }; return [m(c[0]), m(c[1]), c[2], c[3], c[4]]; })());
+const col = p => lookOf() === 'noir' ? noirC(p && p.color) : (COLORS[p && p.color] || COLORS.red);
 const isLight = () => { const t = document.documentElement.getAttribute('data-theme'); if (t) return t === 'light'; try { return matchMedia('(prefers-color-scheme: light)').matches; } catch (e) { return false; } };
 const pcolor = p => col(p)[isLight() ? 0 : 1];
 const ava = (p, cls = '') => `<span class="ava ${cls}" style="--pc:${col(p)[0]};--pci:${col(p)[2]}" aria-hidden="true">${esc((pname(p)[0] || '?').toUpperCase())}</span>`;
-function applyAccent(colorKey) { const c = COLORS[colorKey || curProf().color] || COLORS.red; const st = document.documentElement.style; st.setProperty('--acc-l', c[0]); st.setProperty('--acc-d', c[1]); st.setProperty('--acc-ink-l', c[2]); st.setProperty('--acc-ink-d', c[3]); }
+function applyAccent(colorKey) { const c = lookOf() === 'noir' ? COLORS.mono : (COLORS[colorKey || curProf().color] || COLORS.red); const st = document.documentElement.style; st.setProperty('--acc-l', c[0]); st.setProperty('--acc-d', c[1]); st.setProperty('--acc-ink-l', c[2]); st.setProperty('--acc-ink-d', c[3]); }
 const nextColor = () => { const used = new Set(profiles().map(p => p.color)); return ['pink', 'lime', 'sky', 'orange', 'violet', 'mint', 'coral', 'blue', 'amber', 'fuchsia', 'teal', 'green', 'yellow', 'red', 'sand', 'mono'].find(k => !used.has(k)) || 'pink'; };
 function applyTheme() {
-  const t = (S.meta && S.meta.theme) || 'auto', r = document.documentElement;
+  const t0 = (S.meta && S.meta.theme) || 'auto', t = t0 === 'auto' && lookOf() === 'noir' ? 'dark' : t0, r = document.documentElement;
+  r.setAttribute('data-look', lookOf());
   if (t === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', t);
   requestAnimationFrame(() => { const bg = getComputedStyle(r).getPropertyValue('--bg').trim(); const m = $('meta[name="theme-color"]'); if (m && bg) m.setAttribute('content', bg); });
 }
@@ -3120,7 +3165,7 @@ function render0() {
   const ae = document.activeElement, fid = ae && ae.id; let sel = null;
   try { if (fid && typeof ae.selectionStart === 'number') sel = [ae.selectionStart, ae.selectionEnd]; } catch (e) { sel = null; }
   CH = {};
-  if (S.metaLoaded && ready() && !gateOk()) { if (!gateSheet()) { const unv = !!unverAcc(); S.sheets = [{ type:'acc', gate:true, mode:unv ? 'verify' : Object.keys(accs()).length ? 'login' : 'start', email:'', pass:'', busy:false, err:'', key:uid() }]; if (unv) verifyWatch(true); if (!curProf().name) applyAccent('lime'); } }
+  if (S.metaLoaded && ready() && !gateOk()) { if (!gateSheet()) { const unv = !!unverAcc(); S.sheets = [{ type:'acc', gate:true, mode:unv ? 'verify' : Object.keys(accs()).length ? 'login' : 'start', email:'', pass:'', busy:false, err:'', key:uid() }]; if (unv) verifyWatch(true); if (!curProf().name) applyAccent(); } }
   else if (gateSheet()) gateDone();
   if (!S.welcomed && S.metaLoaded && !S.meta && ready() && !S.sheets.length) { S.welcomed = true; S.sheets.push({ type:'welcome', name:'', color:'lime', char:'cat', key:uid() }); applyAccent('lime'); }
   if (S.metaLoaded && S.meta && !S.meta.v22seen && ready() && !S.sheets.length && !S.active) { S.meta.v22seen = true; S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; S.meta.v28seen = true; S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
@@ -3995,6 +4040,7 @@ SHEETS.set = () => {
     <div class="srow"><div class="srow-t"><b>Сигнал после отдыха</b><span>Звук и вибрация, когда таймер закончился</span></div><button class="switch" role="switch" aria-checked="${!!p.sound}" aria-label="Сигнал после отдыха" data-act="toggleSound"></button></div>
     <div class="srow"><div class="srow-t"><b>Спрашивать запас повторов</b><span>После подхода: сколько ещё могли сделать. Подсказки веса станут точнее</span></div><button class="switch" role="switch" aria-checked="${p.rirAsk !== false}" aria-label="Спрашивать запас повторов" data-act="toggleRir"></button></div>
     <div class="sblock"><b>Вес грифа</b><div class="seg" role="group" aria-label="Вес грифа">${[20, 15, 10].map(v => `<button data-act="setBar" data-v="${v}" aria-pressed="${p.bar === v}">${v} кг</button>`).join('')}</div><p class="fine" style="margin-top:8px">Нужен, чтобы считать блины на каждую сторону.</p></div>
+    <div class="sblock"><b>Оформление</b><div class="seg" role="group" aria-label="Оформление">${[['noir', 'Мрак'], ['color', 'Цветное']].map(([k, l]) => `<button data-act="setLook" data-v="${k}" aria-pressed="${lookOf() === k}">${l}</button>`).join('')}</div><p class="fine" style="margin-top:8px">«Мрак» — тёмное, спокойное, без ярких красок. «Цветное» — прежний вид с цветом профиля.</p></div>
     <div class="sblock"><b>Тема</b><div class="seg" role="group" aria-label="Тема">${[['auto', 'Как в системе'], ['dark', 'Тёмная'], ['light', 'Светлая']].map(([k, l]) => `<button data-act="setTheme" data-v="${k}" aria-pressed="${th === k}">${l}</button>`).join('')}</div></div>
     ${p.custom.length ? `<div class="sblock"><b>Свои упражнения</b><ul class="blist">${p.custom.map(e => `<li style="grid-template-columns:minmax(0,1fr) auto 34px 34px"><span>${esc(e.name)}</span><span class="muted" style="font-size:12px">${MUSCLES[e.muscle] || ''}</span><button class="icon-btn" data-act="cxEdit" data-id="${esc(e.id)}" aria-label="Переименовать: ${esc(e.name)}">${icon('edit')}</button><button class="icon-btn" data-act="customDel" data-id="${esc(e.id)}" aria-label="Удалить упражнение">${icon('x')}</button></li>`).join('')}</ul></div>` : ''}
     <div class="sblock"><b>Резервная копия</b><p class="fine" style="margin:0 0 10px">Последняя: ${lastB}. В файл попадают все профили.</p><div class="row">${canShare ? `<button class="btn btn-sm btn-primary" data-act="backupShare">${icon('share')} Сохранить / отправить</button>` : ''}<button class="btn btn-sm${canShare ? '' : ' btn-primary'}" data-act="backupFile">${icon('download')} Скачать файл</button><label class="btn btn-sm" for="imp-file">${icon('upload')} Восстановить из файла</label><button class="btn btn-sm" data-act="exportCsv">${icon('download')} Таблица CSV</button></div></div>
@@ -4373,6 +4419,7 @@ const A = {
   toggleSound: () => { S.profile.sound = !S.profile.sound; saveProfile(); unlockAudio(); buzz(8); render(); },
   setBar: el => { S.profile.bar = +el.dataset.v; saveProfile(); render(); },
   setTheme: el => { ensureMeta().theme = el.dataset.v; saveMeta(); applyTheme(); render(); },
+  setLook: el => { ensureMeta().look = el.dataset.v === 'color' ? 'color' : 'noir'; saveMeta(); applyTheme(); applyAccent(); render(); },
   customDel: el => { const id = el.dataset.id; if (D.usage[id]) { toast('Это упражнение уже есть в журнале, поэтому его нельзя удалить'); return; } S.profile.custom = S.profile.custom.filter(e => e.id !== id); saveProfile(); render(); },
   backupShare: () => doBackup(true),
   backupFile: () => doBackup(false),
@@ -6112,7 +6159,7 @@ const gateH = (t, e = '') => `<div class="gate-h">${e ? `<div class="eyebrow">${
 const accBody = sh => {
   const H = sh.gate ? gateH : sheetHead, a = sh.gate ? null : accOf(), pw = sh.eye ? 'text' : 'password', mode = sh.mode || 'login';
   const err = sh.err ? `<p class="acc-err" role="alert">${esc(sh.err)}</p>` : '', busy = sh.busy ? ' disabled aria-busy="true"' : '';
-  if (mode === 'start') return `<div class="sheet-body"><ul class="gate-feats">${[['trophy', 'Рекорды, серии и уровни — как в игре'], ['heart', 'Напарник растёт вместе с вашими тренировками'], ['cloud', 'Всё в облаке: тренировки не пропадут при смене телефона']].map(([i, t]) => `<li><span class="ic-w">${icon(i)}</span><span>${t}</span></li>`).join('')}</ul>
+  if (mode === 'start') return `<div class="sheet-body"><ul class="gate-feats">${['Подходы, рекорды, прогресс', 'Напарник, который растёт вместе с вами', 'Данные в облаке — на любом телефоне'].map((t, i) => `<li><span class="num">0${i + 1}</span><span>${t}</span></li>`).join('')}</ul>
     <button class="btn btn-primary btn-lg btn-block" data-act="accMode" data-m="signup">Создать аккаунт</button>
     <button class="btn btn-g btn-lg btn-block" data-act="accGoogle"${busy}>${GLOGO} Продолжить с Google</button>
     ${err}<button class="link gate-has" data-act="accMode" data-m="login">У меня уже есть аккаунт</button></div>`;
@@ -6167,10 +6214,11 @@ const accBody = sh => {
     <p class="fine">Данные сохраняются в облаке (Google Firebase): новый телефон — и всё на месте. Фото тела в облако не попадают.</p>
   </div>`;
 };
-const GATE_SUB = 'Дневник тренировок с напарником, который растёт вместе с вами';
+const GATE_SUB = 'Дневник тренировок';
+const GATE_MARK = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M8 32h48M17 17v30M26 22v20M38 22v20M47 17v30"/></svg>';
 const gateFrame = (sh, inner) => {
   const mode = sh.mode || 'login', start = mode === 'start', back = ['login', 'signup', 'reset'].includes(mode);
-  return `<div class="gate-bg" aria-hidden="true"><i class="g1"></i><i class="g2"></i></div><div class="gate-wrap${start ? '' : ' compact'}">${back ? `<button class="gate-back" data-act="accMode" data-m="start" aria-label="Назад">${icon('back')}</button>` : ''}<div class="gate-hero"><div class="gate-mate">${charSVG('owl', 'happy')}</div>${start ? `<h1 id="sheet-title" class="gate-title">Подход</h1><p class="gate-sub">${GATE_SUB}</p>` : '<div class="gate-title sm" aria-hidden="true">Подход</div>'}</div>${inner}</div>`;
+  return `<div class="gate-bg" aria-hidden="true"><i class="g1"></i><i class="g2"></i></div><div class="gate-wrap${start ? '' : ' compact'}">${back ? `<button class="gate-back" data-act="accMode" data-m="start" aria-label="Назад">${icon('back')}</button>` : ''}<div class="gate-hero"><div class="gate-mark">${GATE_MARK}</div>${start ? `<h1 id="sheet-title" class="gate-title">Подход</h1><p class="gate-sub">${GATE_SUB}</p>` : '<div class="gate-title sm" aria-hidden="true">Подход</div>'}</div>${inner}</div>`;
 };
 SHEETS.acc = sh => sh.gate ? gateFrame(sh, accBody(sh)) : accBody(sh);
 SHEETS.verified = () => `${closeOnly()}<div class="sheet-body"><div class="ver-hero"><div class="ver-mate">${charSVG(charOf(curProf()), 'happy')}<span class="ver-check">${icon('check')}</span></div><h2 id="sheet-title" class="big-title">Почта подтверждена</h2><p>Теперь «Подход» ваш: данные сохраняются в облаке и ждут вас на любом телефоне.</p></div></div><footer class="sheet-foot"><button class="btn btn-primary btn-lg btn-block" data-act="closeSheet">Поехали</button></footer>`;
