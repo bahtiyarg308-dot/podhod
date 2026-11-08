@@ -1293,7 +1293,7 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.8.0';
+const APP_VERSION = '2.8.1';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -5533,7 +5533,7 @@ const AUTH_ERR = { EMAIL_EXISTS:'Такая почта уже зарегистр
   INVALID_LOGIN_CREDENTIALS:'Неверная почта или пароль', INVALID_EMAIL:'Проверьте адрес почты', MISSING_EMAIL:'Введите почту', MISSING_PASSWORD:'Введите пароль',
   WEAK_PASSWORD:'Слишком короткий пароль — нужно хотя бы 6 символов', TOO_MANY_ATTEMPTS_TRY_LATER:'Слишком много попыток. Подождите пару минут', USER_DISABLED:'Аккаунт отключён',
   CREDENTIAL_TOO_OLD_LOGIN_AGAIN:'Для этого действия войдите в аккаунт заново', OPERATION_NOT_ALLOWED:'Этот способ входа выключен', net:'Нет связи с интернетом. Попробуйте ещё раз',
-  relogin:'Вход устарел — войдите в аккаунт заново', denied:'Облако не пускает: проверьте правила доступа в Firebase', badcode:'Код не найден или устарел. Попросите новый', own:'Это ваш собственный код',
+  relogin:'Вход устарел — войдите в аккаунт заново', denied:'Для партнёров в Firebase опубликованы не все правила доступа. Свои данные сохраняются как обычно', badcode:'Код не найден или устарел. Попросите новый', own:'Это ваш собственный код',
   nomatch:'Пароли не совпадают', short:'Пароль — хотя бы 6 символов', cancel:'Вход отменён', google:'Google не вернул вход. Попробуйте ещё раз или войдите по почте' };
 const authErr = e => AUTH_ERR[(e && e.code) || ''] || 'Не получилось' + (e && e.code ? ` (${e.code})` : '');
 async function idt(method, body) {
@@ -5705,7 +5705,7 @@ async function cloudPartners(o = {}) {
   const mine = new Set(Object.values(accs()).map(a => a.uid)), next = {}, chats = {}; let any = false;
   for (const acc of Object.values(accs())) {
     const st = await cloudSt(acc.uid);
-    if (o.links || !st.lk || Date.now() - (st.lkAt || 0) > 60000) { st.lk = [...new Set((await fsQuery(acc, 'links', 'reader', acc.uid)).map(l => l.owner).filter(x => x && !mine.has(x)))]; st.lkAt = Date.now(); saveSt(acc.uid); }
+    if (o.links || !st.lk || Date.now() - (st.lkAt || 0) > 60000) { try { st.lk = [...new Set((await fsQuery(acc, 'links', 'reader', acc.uid)).map(l => l.owner).filter(x => x && !mine.has(x)))]; CL.noLinks = 0; } catch (e) { if (e && e.code === 'denied') { st.lk = st.lk || []; CL.noLinks = 1; } else throw e; } st.lkAt = Date.now(); saveSt(acc.uid); }
     for (const owner of st.lk) {
       if (next[owner]) continue;
       let r = null; try { r = await cloudPartner(acc, owner); } catch (e) { if (e && e.code === 'denied') { st.lk = st.lk.filter(x => x !== owner); st.lkAt = 0; saveSt(acc.uid); KV.del('cp:' + owner); delete CL.parts[owner]; continue; } throw e; }
@@ -5759,7 +5759,7 @@ async function cloudSync(o = {}) {
       catch (e) { if (e && e.code === 'relogin') { acc.bad = 1; saveMeta(); } else throw e; }
     }
     if (await cloudPartners(o)) changed = true;
-    await cloudGistMigrate();
+    try { await cloudGistMigrate(); } catch (e) { if (!(e && e.code === 'denied')) throw e; }
     CL.status = Object.values(accs()).some(a => a.bad) ? 'relogin' : 'ok'; CL.msg = ''; CL.last = Date.now();
   } catch (e) {
     CL.status = e && e.code === 'net' ? 'off' : 'err';
