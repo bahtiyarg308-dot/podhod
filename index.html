@@ -1306,7 +1306,7 @@ body.locked #main .ch *,body.locked #main .chest *,body.locked #main .live-dot,b
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.9.2';
+const APP_VERSION = '2.9.3';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -5556,7 +5556,7 @@ const AUTH_ERR = { EMAIL_EXISTS:'Такая почта уже зарегистр
 const authErr = e => AUTH_ERR[(e && e.code) || ''] || 'Не получилось' + (e && e.code ? ` (${e.code})` : '');
 async function idt(method, body, ru) {
   const go = h => fetch(FB.idt + method + '?key=' + FB.key, { method:'POST', headers:Object.assign({ 'Content-Type':'application/json' }, h), body:JSON.stringify(body) });
-  let r; try { r = await go({}); } catch (e) { if (!ru) throw { code:'net' }; try { r = await go({}); } catch (e2) { throw { code:'net' }; } }
+  let r; try { r = await go(ru ? { 'X-Firebase-Locale':'ru' } : {}); } catch (e) { if (!ru) throw { code:'net' }; try { r = await go({}); } catch (e2) { throw { code:'net' }; } }
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw { code:String((j.error && j.error.message) || 'HTTP_' + r.status).split(/[ :]/)[0] };
   return j;
@@ -6071,7 +6071,7 @@ SHEETS.acc = sh => {
     const u = unverAcc(), cool = (sh.cool || 0) > Date.now();
     return `${H('Подтвердите почту', 'Последний шаг')}<div class="sheet-body">
       <div class="ver-hero"><div class="ver-mate wait">${charSVG(charOf(curProf()), 'calm')}</div></div>
-      <div class="hint">${icon('cloud')}<span>Мы отправили письмо на <b>${esc(u ? u.email : '')}</b>. Откройте ссылку в письме и вернитесь сюда — вход откроется сам. Письма нет пару минут — загляните в «Спам».</span></div>
+      <div class="hint">${icon('cloud')}<span>Мы отправили письмо на <b>${esc(u ? u.email : '')}</b>. Откройте ссылку в письме и вернитесь сюда — вход откроется сам. Письмо придёт от адреса noreply@podhod-5d27f.firebaseapp.com. Нет пару минут — загляните в «Спам» и «Промоакции».</span></div>
       ${err}<button class="btn btn-primary btn-block" style="margin-top:14px" data-act="accCheck"${busy}>${sh.busy ? 'Проверяем…' : 'Я подтвердил'}</button>
       <button class="btn btn-block" data-act="accResend"${cool || sh.busy ? ' disabled' : ''}>${cool ? 'Письмо отправлено' : 'Отправить письмо ещё раз'}</button>
       <button class="btn btn-ghost btn-block" data-act="accOut2">Другая почта</button></div>`;
