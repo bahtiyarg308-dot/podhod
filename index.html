@@ -1299,7 +1299,7 @@ body.locked #main .ch *,body.locked #main .chest *,body.locked #main .live-dot,b
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.9.0';
+const APP_VERSION = '2.9.1';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -5549,7 +5549,7 @@ const AUTH_ERR = { EMAIL_EXISTS:'Такая почта уже зарегистр
 const authErr = e => AUTH_ERR[(e && e.code) || ''] || 'Не получилось' + (e && e.code ? ` (${e.code})` : '');
 async function idt(method, body, ru) {
   const go = h => fetch(FB.idt + method + '?key=' + FB.key, { method:'POST', headers:Object.assign({ 'Content-Type':'application/json' }, h), body:JSON.stringify(body) });
-  let r; try { r = await go(ru ? { 'X-Firebase-Locale':'ru' } : {}); } catch (e) { if (!ru) throw { code:'net' }; try { r = await go({}); } catch (e2) { throw { code:'net' }; } }
+  let r; try { r = await go({}); } catch (e) { if (!ru) throw { code:'net' }; try { r = await go({}); } catch (e2) { throw { code:'net' }; } }
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw { code:String((j.error && j.error.message) || 'HTTP_' + r.status).split(/[ :]/)[0] };
   return j;
