@@ -32,3 +32,4 @@
 .aw-h{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .aw-all{gap:8px}
 
+.medal-row{content-visibility:auto;contain-intrinsic-size:auto 80px}

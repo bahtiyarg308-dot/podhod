@@ -13,7 +13,7 @@ const gate = 'const gateOk = () => Object.values(accs()).some(verOk);';
 let html = fs.readFileSync(path.join(SITE, 'index.html'), 'utf8'); if (!html.includes(gate)) { console.error('gate line not found'); process.exit(1); }
 fs.writeFileSync(path.join(SITE, 'index.html'), html.replace(gate, 'const gateOk = () => true;'));
 for (const d of ['shots', 'shots28', 'shots271']) fs.mkdirSync(path.join(__dirname, 'scenarios', d), { recursive: true });
-const QUICK = ['smoke22', 'smoke22b', 'smoke22c', 'smoke23', 'smoke24', 'smoke25', 'smoke26', 'smoke27', 'acc29', 'lens29', 'safe30'];
+const QUICK = ['smoke22', 'smoke22b', 'smoke22c', 'smoke23', 'smoke24', 'smoke25', 'smoke26', 'smoke27', 'acc29', 'lens29', 'safe30', 'presets30'];
 const FULL = ['audit-320-dark', 'audit-375-light', 'audit-432-dark'];
 const KNOWN = { smoke24: [/dbgDay/] };                              // a known quirk of that script's view, not an app error
 const want = process.argv.slice(2).filter(a => !a.startsWith('--'));

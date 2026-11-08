@@ -5,12 +5,18 @@ function chart(type, id, data, opts = {}) {
   CH[id] = { type, data, opts };
   return `<div class="chart" id="${id}" data-sig="${sig}" style="min-height:${opts.h || 200}px"></div>`;
 }
+/* charts far below the screen are drawn only when they come near — the first paint of a long screen stays quick */
+let CHO = null;
+function drawOne(id, el, anim) { const c = CH[id]; if (!c) return; ({ line:drawLine, bar:drawBar, heat:drawHeat })[c.type](el, c.data, c.opts, anim); DRAWN[id] = el.dataset.sig; }
 function drawCharts(force) {
   for (const id in CH) {
     const el = document.getElementById(id); if (!el) continue;
     if (!force && el.childElementCount && DRAWN[id] === el.dataset.sig) continue;
-    const c = CH[id]; ({ line:drawLine, bar:drawBar, heat:drawHeat })[c.type](el, c.data, c.opts, !force && !RM);
-    DRAWN[id] = el.dataset.sig;
+    if (!force && 'IntersectionObserver' in window && el.getBoundingClientRect().top > innerHeight * 1.6) {
+      if (!CHO) CHO = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; CHO.unobserve(e.target); const t = e.target; if (t.isConnected && (!t.childElementCount || DRAWN[t.id] !== t.dataset.sig)) drawOne(t.id, t, !RM); }), { rootMargin:'500px 0px' });
+      CHO.observe(el); continue;
+    }
+    drawOne(id, el, !force && !RM);
   }
 }
 function niceTicks(min, max, n = 4) {

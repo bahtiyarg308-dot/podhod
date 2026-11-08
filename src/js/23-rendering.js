@@ -141,13 +141,13 @@ function viewToday() {
     <section class="week" aria-label="Эта неделя">${days}</section>
     <p class="week-sum">${sum}</p>
     ${planTodayHTML()}<button class="btn btn-primary btn-lg btn-block start" data-act="startEmpty">${icon('play', 'ic-f')} Начать тренировку</button>
-    ${reportBanner()}${bannersHTML()}
+    ${reportBanner()}${weekBanner()}${bannersHTML()}
     ${supCardHTML()}
     ${recCardHTML()}
     ${questsHTML()}
     ${pairCard()}
     <section class="sec"><div class="sec-head"><h2 class="h2">Программы</h2>${S.profile.templates.length ? `<button class="btn btn-sm btn-ghost" data-act="planOpen">${icon('today')} План недели</button>` : ''}</div>
-      <div class="progs">${tpls.map(progCard).join('')}<button class="prog prog-new" data-act="tplNew">${icon('plus')}<span>Новая программа</span><small>Набор упражнений с подходами, чтобы начинать тренировку в одно касание</small></button></div>
+      <div class="progs">${tpls.map(progCard).join('')}<button class="prog prog-new" data-act="tplNew">${icon('plus')}<span>Новая программа</span><small>Набор упражнений с подходами, чтобы начинать тренировку в одно касание</small></button><button class="prog prog-new" data-act="presetsOpen">${icon('log')}<span>Готовые программы</span><small>Фулбоди, верх/низ, тяни-толкай, дома</small></button></div>
     </section>
     ${last ? `<section class="sec"><div class="sec-head"><h2 class="h2">Последняя тренировка</h2><button class="btn btn-sm btn-ghost" data-act="nav" data-v="log">Весь журнал ${icon('chevron')}</button></div><ul>${jrow(last, 0)}</ul></section>` : firstRun()}`;
 }
@@ -410,6 +410,7 @@ function viewProgress() {
     ${recoveryHTML()}
     <div class="ptools" style="margin-top:26px">${seg}</div>
     <div class="kpis">${kpis.map(([l, x, y, f]) => `<div class="kpi"><div class="kpi-l">${l}</div><div class="kpi-v" ${cnt(x, f)}>${FMT[f](x)}</div><div class="kpi-d">${delta(x, y)}</div></div>`).join('')}</div>
+    <button class="btn btn-block rep-btn" data-act="weekOpen">${icon('today')} Итоги недели</button>
     <button class="btn btn-block rep-btn" data-act="repOpen">${icon('progress')} Отчёт за месяц</button>
     <section class="sec"><div class="sec-head"><h2 class="h2">Регулярность</h2></div><div class="panel">
       <div class="streak"><div><b ${cnt(streak, 'int')}>${streak}</b><span>${plural(streak, ['неделя','недели','недель'])} подряд</span></div><div><b>${nf(a.n / Math.max(1, weeksSpan), 1)}</b><span>тренировки в неделю · ${per.l.toLowerCase()}</span></div></div>

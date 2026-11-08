@@ -36,6 +36,7 @@
  "css/33-2-9-4-the-first.css",
  "css/34-2-10-dark-quiet-minimal.css",
  "css/35-noir-details.css",
+ "css/36-presets.css",
  "body.html",
  "js/00-start.js",
  "js/01-helpers.js",
@@ -81,6 +82,7 @@
  "js/41-2-9-swipes-like-on.js",
  "js/42-2-9-4-glass-tab.js",
  "js/43-data-safety-daily-copies-on.js",
+ "js/45-presets-and-week.js",
  "js/44-events.js",
  "tail.html"
 ]

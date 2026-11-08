@@ -1187,6 +1187,7 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 .aw-h{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .aw-all{gap:8px}
 
+.medal-row{content-visibility:auto;contain-intrinsic-size:auto 80px}
 /* ---------- long lists: the phone lays out only what is on screen ---------- */
 .month{content-visibility:auto;contain-intrinsic-size:auto 520px}
 .month:first-of-type{content-visibility:visible}
@@ -1398,11 +1399,21 @@ html[data-look="noir"] .ch .g-gem{stroke:#6B5A33}
 html[data-look="noir"] .ch .g-leaf{fill:#7C9578}
 html[data-look="noir"] .ch .g-silver{fill:#C9C8C4}
 html[data-look="noir"] .ch .g-silver2{fill:#9B9A96}
-html[data-look="noir"] .chest,html[data-look="noir"] .rk{filter:saturate(.45)}
+html[data-look="noir"] .chest{filter:saturate(.45)}
 html[data-look="noir"] .empty{border-width:1px;background:transparent}
 html[data-look="noir"] .empty h3{font-weight:500;letter-spacing:.06em}
 /* pure black for OLED screens */
 html[data-oled="1"][data-look="noir"]:not([data-theme="light"]){--bg:#000;--surface:#09090A;--surface-2:#101012;--line:#1B1B1E}
+/* ================= 3.0: ready-made programs ================= */
+.preset{border:1px solid var(--line);border-radius:var(--r);margin-bottom:8px;overflow:hidden;background:var(--surface)}
+.preset-h{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:14px;text-align:left}
+.preset-h small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px;font-weight:500}
+.preset-h .ic{flex:none;color:var(--muted);transition:transform .25s var(--spring)}
+.preset.open .preset-h .ic{transform:rotate(90deg)}
+.preset-b{padding:0 14px 14px;display:grid;gap:14px}
+.preset-d b{display:block;margin-bottom:4px;font-size:14px}
+.preset-d ol{margin:0;padding-left:20px;color:var(--ink-2);font-size:14px;line-height:1.6}
+.preset-d li span{color:var(--muted);font:11.5px var(--f-mono);margin-left:4px;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -1424,7 +1435,7 @@ html[data-oled="1"][data-look="noir"]:not([data-theme="light"]){--bg:#000;--surf
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.12.0';
+const APP_VERSION = '3.0.0';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -3095,12 +3106,18 @@ function chart(type, id, data, opts = {}) {
   CH[id] = { type, data, opts };
   return `<div class="chart" id="${id}" data-sig="${sig}" style="min-height:${opts.h || 200}px"></div>`;
 }
+/* charts far below the screen are drawn only when they come near — the first paint of a long screen stays quick */
+let CHO = null;
+function drawOne(id, el, anim) { const c = CH[id]; if (!c) return; ({ line:drawLine, bar:drawBar, heat:drawHeat })[c.type](el, c.data, c.opts, anim); DRAWN[id] = el.dataset.sig; }
 function drawCharts(force) {
   for (const id in CH) {
     const el = document.getElementById(id); if (!el) continue;
     if (!force && el.childElementCount && DRAWN[id] === el.dataset.sig) continue;
-    const c = CH[id]; ({ line:drawLine, bar:drawBar, heat:drawHeat })[c.type](el, c.data, c.opts, !force && !RM);
-    DRAWN[id] = el.dataset.sig;
+    if (!force && 'IntersectionObserver' in window && el.getBoundingClientRect().top > innerHeight * 1.6) {
+      if (!CHO) CHO = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; CHO.unobserve(e.target); const t = e.target; if (t.isConnected && (!t.childElementCount || DRAWN[t.id] !== t.dataset.sig)) drawOne(t.id, t, !RM); }), { rootMargin:'500px 0px' });
+      CHO.observe(el); continue;
+    }
+    drawOne(id, el, !force && !RM);
   }
 }
 function niceTicks(min, max, n = 4) {
@@ -3342,13 +3359,13 @@ function viewToday() {
     <section class="week" aria-label="Эта неделя">${days}</section>
     <p class="week-sum">${sum}</p>
     ${planTodayHTML()}<button class="btn btn-primary btn-lg btn-block start" data-act="startEmpty">${icon('play', 'ic-f')} Начать тренировку</button>
-    ${reportBanner()}${bannersHTML()}
+    ${reportBanner()}${weekBanner()}${bannersHTML()}
     ${supCardHTML()}
     ${recCardHTML()}
     ${questsHTML()}
     ${pairCard()}
     <section class="sec"><div class="sec-head"><h2 class="h2">Программы</h2>${S.profile.templates.length ? `<button class="btn btn-sm btn-ghost" data-act="planOpen">${icon('today')} План недели</button>` : ''}</div>
-      <div class="progs">${tpls.map(progCard).join('')}<button class="prog prog-new" data-act="tplNew">${icon('plus')}<span>Новая программа</span><small>Набор упражнений с подходами, чтобы начинать тренировку в одно касание</small></button></div>
+      <div class="progs">${tpls.map(progCard).join('')}<button class="prog prog-new" data-act="tplNew">${icon('plus')}<span>Новая программа</span><small>Набор упражнений с подходами, чтобы начинать тренировку в одно касание</small></button><button class="prog prog-new" data-act="presetsOpen">${icon('log')}<span>Готовые программы</span><small>Фулбоди, верх/низ, тяни-толкай, дома</small></button></div>
     </section>
     ${last ? `<section class="sec"><div class="sec-head"><h2 class="h2">Последняя тренировка</h2><button class="btn btn-sm btn-ghost" data-act="nav" data-v="log">Весь журнал ${icon('chevron')}</button></div><ul>${jrow(last, 0)}</ul></section>` : firstRun()}`;
 }
@@ -3611,6 +3628,7 @@ function viewProgress() {
     ${recoveryHTML()}
     <div class="ptools" style="margin-top:26px">${seg}</div>
     <div class="kpis">${kpis.map(([l, x, y, f]) => `<div class="kpi"><div class="kpi-l">${l}</div><div class="kpi-v" ${cnt(x, f)}>${FMT[f](x)}</div><div class="kpi-d">${delta(x, y)}</div></div>`).join('')}</div>
+    <button class="btn btn-block rep-btn" data-act="weekOpen">${icon('today')} Итоги недели</button>
     <button class="btn btn-block rep-btn" data-act="repOpen">${icon('progress')} Отчёт за месяц</button>
     <section class="sec"><div class="sec-head"><h2 class="h2">Регулярность</h2></div><div class="panel">
       <div class="streak"><div><b ${cnt(streak, 'int')}>${streak}</b><span>${plural(streak, ['неделя','недели','недель'])} подряд</span></div><div><b>${nf(a.n / Math.max(1, weeksSpan), 1)}</b><span>тренировки в неделю · ${per.l.toLowerCase()}</span></div></div>
@@ -6433,6 +6451,77 @@ Object.assign(A, {
   errClear: () => { ERRLOG.length = 0; KV.set('errlog', ERRLOG); S.errToast = false; toast('Журнал очищен'); render(); },
 });
 
+/* ================= 3.0: ready-made programs and the weekly summary ================= */
+const PRESETS = [
+  { id:'full', name:'Фулбоди', sub:'2 тренировки, чередуются · 3 раза в неделю', lvl:'новичок', days:[
+    ['Фулбоди А', [['squat', 3, '6-8'], ['bench', 3, '6-8'], ['row', 3, '8-10'], ['ohp', 2, '8-10'], ['plank', 3, '']]],
+    ['Фулбоди Б', [['deadlift', 3, '5'], ['incline-db', 3, '8-10'], ['lat-pulldown', 3, '8-10'], ['lunge', 3, '10'], ['db-curl', 2, '10-12'], ['triceps-push', 2, '10-12']]]] },
+  { id:'ul', name:'Верх / Низ', sub:'4 тренировки · 4 раза в неделю', lvl:'средний', days:[
+    ['Верх А', [['bench', 4, '6-8'], ['row', 4, '8'], ['ohp', 3, '8-10'], ['lat-pulldown', 3, '10'], ['db-curl', 3, '10-12'], ['triceps-push', 3, '10-12']]],
+    ['Низ А', [['squat', 4, '6-8'], ['rdl', 3, '8-10'], ['leg-press', 3, '10-12'], ['leg-curl', 3, '10-12'], ['calf', 4, '12-15'], ['plank', 3, '']]],
+    ['Верх Б', [['incline-db', 4, '8-10'], ['pullup', 4, '6-10'], ['db-press', 3, '10'], ['cable-row', 3, '10-12'], ['lateral', 3, '12-15'], ['hammer', 3, '10-12']]],
+    ['Низ Б', [['deadlift', 3, '5'], ['bulgarian', 3, '8-10'], ['hip-thrust', 3, '8-10'], ['leg-ext', 3, '12'], ['seated-calf', 4, '12-15'], ['cable-crunch', 3, '12']]]] },
+  { id:'ppl', name:'Тяни-толкай-ноги', sub:'3 тренировки · 3 или 6 раз в неделю', lvl:'средний', days:[
+    ['Толкай', [['bench', 4, '6-8'], ['ohp', 3, '8-10'], ['incline-db', 3, '8-10'], ['lateral', 4, '12-15'], ['triceps-push', 3, '10-12'], ['overhead-ext', 3, '10-12']]],
+    ['Тяни', [['row', 4, '8'], ['lat-pulldown', 4, '8-10'], ['cable-row', 3, '10-12'], ['face-pull', 3, '12-15'], ['db-curl', 3, '10-12'], ['hammer', 3, '10-12']]],
+    ['Ноги', [['squat', 4, '6-8'], ['rdl', 3, '8-10'], ['leg-press', 3, '10-12'], ['leg-curl', 3, '10-12'], ['calf', 4, '12-15'], ['plank', 3, '']]]] },
+  { id:'glutes', name:'Ягодицы и ноги', sub:'2 тренировки · акцент на ягодицы', lvl:'любой', days:[
+    ['Ягодицы А', [['hip-thrust', 4, '8-12'], ['rdl', 3, '10'], ['bulgarian', 3, '10'], ['hip-abd', 3, '15'], ['calf', 3, '15']]],
+    ['Ягодицы Б', [['squat', 3, '8-10'], ['step-up', 3, '10'], ['machine-thrust', 3, '12'], ['leg-curl', 3, '12'], ['cable-abd', 3, '15']]]] },
+  { id:'home', name:'Дома без снаряжения', sub:'1 тренировка · 3 раза в неделю', lvl:'новичок', days:[
+    ['Дома', [['pushup', 4, '8-15'], ['split-squat', 3, '10-12'], ['glute-bridge', 3, '15'], ['pike-pushup', 3, '8-10'], ['dead-bug', 3, '10'], ['plank', 3, '']]]] },
+];
+SHEETS.presets = sh => `${sheetHead('Готовые программы', 'Одним нажатием')}<div class="sheet-body">
+  <p class="fine" style="margin-top:0">Выберите набор: он появится в ваших программах. Подходы, повторы и упражнения потом меняются как обычно.</p>
+  <div class="preset-list">${PRESETS.map(p => { const open = sh.o === p.id;
+    return `<div class="preset${open ? ' open' : ''}"><button class="preset-h" data-act="presetToggle" data-id="${p.id}" aria-expanded="${open}"><span><b>${esc(p.name)}</b><small>${esc(p.sub)} · ${esc(p.lvl)}</small></span>${icon('chevron')}</button>${open ? `<div class="preset-b">${p.days.map(([n, items]) => `<div class="preset-d"><b>${esc(n)}</b><ol>${items.map(([id, s, r]) => `<li>${esc(exById(id).name)} <span>${r ? s + '×' + r : s + ' ' + plural(s, ['подход', 'подхода', 'подходов'])}</span></li>`).join('')}</ol></div>`).join('')}<button class="btn btn-primary btn-block" data-act="presetAdd" data-id="${p.id}">Добавить в мои программы</button></div>` : ''}</div>`; }).join('')}</div></div>`;
+/* weekly summary */
+function weekStats(ws) {
+  const we = addDays(ws, 7), list = S.workouts.filter(w => w.start >= ws && w.start < we), st = agg(list), prs = D.prEvents.filter(p => p.start >= ws && p.start < we), exs = {}, mus = {};
+  list.forEach(w => workSets(w, (e, s, x) => { exs[x.ex] = (exs[x.ex] || 0) + 1; mus[e.muscle] = (mus[e.muscle] || 0) + 1; }));
+  const top = o => Object.entries(o).sort((a, b) => b[1] - a[1])[0];
+  return { ws, we, list, st, prs, topEx:top(exs), topM:top(mus), goal:S.profile.goal || 3 };
+}
+SHEETS.weekrep = sh => {
+  const w = weekStats(sh.w), p = weekStats(addDays(sh.w, -7)), first = S.workouts.length ? weekStart(S.workouts[S.workouts.length - 1].start) : sh.w, live = sh.w >= weekStart(Date.now());
+  const d1 = new Date(sh.w), d2 = new Date(addDays(sh.w, 6)), lbl = `${d1.getDate()}${d1.getMonth() !== d2.getMonth() ? ' ' + MON_GEN[d1.getMonth()] : ''} – ${d2.getDate()} ${MON_GEN[d2.getMonth()]}`;
+  const dl = (x, y) => !y ? '' : `<small class="${x >= y ? 'up' : 'down'}">${x >= y ? '+' : '−'}${Math.abs(Math.round((x - y) / y * 100))}%</small>`;
+  const kpi = (l, v, f, pv) => `<div><b>${f(v)}</b><span>${l}</span>${pv != null && !live ? dl(v, pv) : ''}</div>`;
+  const nav = `<div class="sup-day" style="margin:0 0 12px"><button class="icon-btn" data-act="weekShift" data-d="-1" aria-label="Предыдущая неделя"${sh.w <= first ? ' disabled' : ''}>${icon('back')}</button><b>${lbl}</b><button class="icon-btn" data-act="weekShift" data-d="1" aria-label="Следующая неделя"${live ? ' disabled' : ''}>${icon('chevron')}</button></div>`;
+  if (!w.list.length) return `${sheetHead('Итоги недели')}<div class="sheet-body">${nav}<div class="empty"><h3>На этой неделе тренировок нет</h3><p>Итоги появятся после первой тренировки недели.</p></div></div>`;
+  const met = w.list.length >= w.goal, lag = lagMuscles()[0];
+  return `${sheetHead('Итоги недели', esc(pname(curProf())))}<div class="sheet-body">${nav}
+    <div class="kv k4 rep">${kpi('тренировок', w.list.length, v => nf(v, 0), p.list.length)}${kpi('тоннаж', w.st.vol, ton, p.st.vol)}${kpi('подходов', w.st.sets, v => nf(v, 0), p.st.sets)}${kpi('рекордов', w.prs.length, v => nf(v, 0), null)}</div>
+    ${live ? '<p class="fine" style="margin:8px 0 0">Неделя ещё идёт — сравнение с прошлой появится, когда она закончится.</p>' : ''}
+    <ul class="pr-list news" style="margin-top:14px">
+      <li>${icon(met ? 'check' : 'target')}<span><b>${met ? 'Цель недели выполнена' : `До цели ${w.goal - w.list.length} ${plural(w.goal - w.list.length, ['тренировка', 'тренировки', 'тренировок'])}`}</b> · ${w.list.length} из ${w.goal}</span></li>
+      ${w.topEx ? `<li>${icon('repeat')}<span><b>Главное упражнение:</b> ${esc(exById(w.topEx[0]).name)} — ${w.topEx[1]} ${plural(w.topEx[1], ['подход', 'подхода', 'подходов'])}</span></li>` : ''}
+      ${w.topM ? `<li>${icon('flame')}<span><b>Больше всего:</b> ${MUSCLES[w.topM[0]] || w.topM[0]}</span></li>` : ''}
+      ${lag ? `<li>${icon('up')}<span><b>Чего не хватило:</b> ${MUS[lag[0]][0].toLowerCase()} — ${nf(lag[1], 1)} подх. в неделю в среднем за месяц</span></li>` : ''}
+    </ul>
+    ${w.prs.length ? `<div class="sblock" style="border:0;padding-bottom:0"><b>Рекорды недели</b><ul class="prs">${w.prs.slice(0, 6).map(x => { const e = exById(x.ex); return `<li><span class="d">${dShort(x.start)}</span><span class="nv"><span class="n">${esc(e.name)}</span><span class="v">${esc(setLong(x.set, e.kind))}</span></span></li>`; }).join('')}</ul></div>` : ''}
+  </div>`;
+};
+function weekBanner() {
+  const dow = new Date(Date.now()).getDay(); if (dow !== 1 && dow !== 2) return '';
+  const pw = addDays(weekStart(Date.now()), -7), k = dayKey(pw), m = S.meta || {};
+  if (m.wkSeen === k || !S.workouts.some(w => w.start >= pw && w.start < weekStart(Date.now()))) return '';
+  const st = weekStats(pw);
+  return `<div class="banner"><div class="banner-t">${icon('progress')}<span><b>Итоги прошлой недели.</b> ${st.list.length} ${plural(st.list.length, ['тренировка', 'тренировки', 'тренировок'])}, ${ton(st.st.vol)}${st.prs.length ? `, рекордов: ${st.prs.length}` : ''}</span></div><div class="banner-a"><button class="btn btn-sm btn-primary" data-act="weekOpen" data-w="${pw}">Открыть</button><button class="btn btn-sm btn-ghost" data-act="weekHide" data-w="${pw}" aria-label="Скрыть">${icon('x')}</button></div></div>`;
+}
+Object.assign(A, {
+  presetsOpen: () => openSheet({ type:'presets', o:null }),
+  presetToggle: el => { const sh = top(); sh.o = sh.o === el.dataset.id ? null : el.dataset.id; render(); },
+  presetAdd: el => {
+    const p = PRESETS.find(x => x.id === el.dataset.id); if (!p) return;
+    const have = new Set(S.profile.templates.map(t => t.name)), uniq = n => { let r = n, i = 2; while (have.has(r)) r = n + ' ' + i++; have.add(r); return r; };
+    p.days.forEach(([n, items]) => S.profile.templates.push({ id:uid(), name:uniq(n), items:items.map(([ex, sets, reps]) => ({ ex, sets, reps })) }));
+    saveProfile(); S.sheets = []; sfx('goal'); toast(`Добавлено программ: ${p.days.length}`); render();
+  },
+  weekOpen: el => { const w = el && el.dataset && el.dataset.w ? +el.dataset.w : weekStart(Date.now()); if (el && el.dataset && el.dataset.w) { ensureMeta().wkSeen = dayKey(w); saveMeta(); } openSheet({ type:'weekrep', w }); },
+  weekHide: el => { ensureMeta().wkSeen = dayKey(+el.dataset.w); saveMeta(); render(); },
+  weekShift: el => { const sh = top(); sh.w = addDays(sh.w, 7 * +el.dataset.d); render(); },
+});
 /* ================= events ================= */
 document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const fn = A[el.dataset.act]; if (fn) { e.preventDefault(); SFXN.n = 0; fn(el, e); if (!SFXN.n) sfx(el.dataset.act === 'nav' ? 'tab' : el.dataset.act === 'closeSheet' ? 'close' : el.getAttribute('role') === 'switch' ? 'toggle' : 'tap'); } });
 document.addEventListener('input', e => { const el = e.target; if (el.dataset && el.dataset.in && IN[el.dataset.in]) IN[el.dataset.in](el, e); });
@@ -6466,6 +6555,8 @@ let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTime
 try { matchMedia('(prefers-color-scheme: light)').addEventListener('change', applyTheme); } catch (e) { /* old browser */ }
 
 const h0 = location.hash.slice(1); if (VIEWS.includes(h0)) S.view = h0;
+/* the sound engine wakes up on the very first touch, so the first sound later does not stutter the screen */
+document.addEventListener('pointerdown', () => { try { if (sndCfg().on) unlockAudio(); } catch (e) { /* audio unavailable */ } }, { once:true, passive:true, capture:true });
 boot();
 })();
 </script>

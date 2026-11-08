@@ -10,7 +10,7 @@ const NG = process.env.SITE, SEED = require('path').join(__dirname, '..', 'fixtu
   const p = await ctx.newPage(); p.on('pageerror', e => { if (!/test boom/.test(e.message)) errs.push(e.message); });
   const idb = (fn, arg) => p.evaluate(async ([fn, arg]) => { const db = await new Promise(res => { const r = indexedDB.open('podhod', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); }); const st = (m) => db.transaction('kv', m).objectStore('kv'); const f = { get: k => new Promise(r => { const q = st('readonly').get(k); q.onsuccess = () => r(q.result); }), put: ([k, v]) => new Promise(r => { const t = db.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = r; }) }[fn]; return f(arg); }, [fn, arg]);
   const tap = async (sel, w = 500) => { const el = await p.$(sel); if (!el) { errs.push('NO ' + sel); return false; } await el.click(); await p.waitForTimeout(w); return true; };
-  await p.goto('http://127.0.0.1:8819/');
+  await p.goto('http://127.0.0.1:8819/'); await p.waitForTimeout(1500); // let the very first launch finish before seeding
   await idb('put', ['meta', { profiles: [{ id: 'main', name: 'Дима', color: 'lime', char: 'owl' }], cur: 'main', mode: 'solo', lastVer: '2.0.0', v2seen: true, v22seen: true, v23seen: true, v24seen: true, v25seen: true, v26seen: true, v27seen: true, v271seen: true, v28seen: true, chatSeen: Date.now() }]);
   await idb('put', ['p:main', { profile: seed.profile, workouts: seed.workouts, active: null }]);
   await p.reload(); await p.waitForTimeout(1800);

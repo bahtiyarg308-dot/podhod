@@ -31,5 +31,7 @@ let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTime
 try { matchMedia('(prefers-color-scheme: light)').addEventListener('change', applyTheme); } catch (e) { /* old browser */ }
 
 const h0 = location.hash.slice(1); if (VIEWS.includes(h0)) S.view = h0;
+/* the sound engine wakes up on the very first touch, so the first sound later does not stutter the screen */
+document.addEventListener('pointerdown', () => { try { if (sndCfg().on) unlockAudio(); } catch (e) { /* audio unavailable */ } }, { once:true, passive:true, capture:true });
 boot();
 })();

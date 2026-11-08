@@ -10,7 +10,7 @@ const ST = __dirname, NG = process.env.SITE, SEED = require('path').join(__dirna
   for (const scheme of ['dark', 'light']) {
     const ctx = await b.newContext({ viewport: { width: 390, height: 780 }, colorScheme: scheme, isMobile: true, hasTouch: true, serviceWorkers: 'block', deviceScaleFactor: 2 }), p = await ctx.newPage(), cdp = await ctx.newCDPSession(p);
     p.on('pageerror', e => errs.push(e.message));
-    await p.goto('http://127.0.0.1:8898/');
+    await p.goto('http://127.0.0.1:8898/'); await p.waitForTimeout(1500); // let the very first launch finish before seeding
     await p.evaluate(async seed => { const db = await new Promise(res => { const r = indexedDB.open('podhod', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); }); const put = (k, v) => new Promise(res => { const tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, k); tx.oncomplete = res; });
       await put('meta', { profiles: [{ id: 'main', name: 'Дима', color: 'lime', char: 'owl' }], cur: 'main', mode: 'pair', v2seen: true, v22seen: true, v23seen: true, v24seen: true, v25seen: true, v26seen: true, v27seen: true, v271seen: true, v28seen: true, chatSeen: Date.now() }); await put('p:main', { profile: seed.profile, workouts: seed.workouts, active: null }); }, seed);
     await p.reload(); await p.waitForTimeout(1600);
