@@ -1140,6 +1140,65 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 .pick-info{color:var(--muted)}
 .pick-h{font:500 10px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:12px 2px 6px}
 .pick-tools .chips+.chips{margin-top:6px}
+/* ---------- 2.7.1: tab bar — even columns, a pill behind the active icon, placed without measuring the page ---------- */
+.tabbar{--n:6;--ti:0;grid-template-columns:repeat(var(--n),minmax(0,1fr));padding:5px 4px}
+.tab{gap:4px;padding:8px 0 6px;font-size:10.5px;font-weight:600;letter-spacing:0;color:var(--muted);-webkit-tap-highlight-color:transparent}
+.tab span{display:block;max-width:calc(100% - 4px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.15}
+.tab[aria-current="page"]{color:var(--ink)}
+.tab[aria-current="page"] .ic{color:var(--accent-ink)}
+.tab-ind{top:5px;left:4px;bottom:5px;height:auto;width:calc((100% - 8px) / var(--n));border-radius:0;background:none;transform:translateX(calc(var(--ti) * 100%));pointer-events:none}
+.tab-ind::before{content:"";position:absolute;left:50%;top:4px;width:min(54px,calc(100% - 10px));height:30px;transform:translateX(-50%);border-radius:15px;background:var(--accent);transition:background-color .6s}
+.tab-ind.ready{opacity:1;transition:transform .45s var(--spring)}
+.tab .badge{top:4px;right:calc(50% - 22px)}
+@media (max-width:360px){.tab{font-size:9.5px;letter-spacing:-.02em}.tab .ic{width:21px;height:21px}.tab-ind::before{height:29px}}
+@media (prefers-reduced-motion:reduce){.tab-ind.ready{transition:none}}
+
+/* ---------- achievements ---------- */
+.medal-list{display:grid;gap:8px}
+.medal-row{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px 10px 10px;border-radius:16px;background:var(--surface-2)}
+.medal-row>.medal-c{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;font:600 14px/1 var(--f-display);letter-spacing:-.01em;white-space:nowrap;overflow:hidden}
+.medal-row>.medal-c .ic{width:22px;height:22px}
+.medal-row.got>.medal-c{background:linear-gradient(150deg,color-mix(in oklab,var(--accent) 88%,#fff) 0%,var(--accent) 55%,color-mix(in oklab,var(--accent) 86%,#000) 100%);color:var(--accent-ink);box-shadow:0 6px 16px -8px var(--accent),inset 0 1px 0 rgba(255,255,255,.35)}
+.medal-row.locked>.medal-c{background:var(--surface);color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--line)}
+.medal-row .mr-t{display:grid;gap:2px;min-width:0}
+.medal-row .mr-t b{display:block;font-weight:700;font-size:14.5px;line-height:1.25;color:var(--ink);overflow-wrap:anywhere}
+.medal-row.locked .mr-t b{color:var(--ink-2)}
+.medal-row .mr-t small{display:block;font-size:12.5px;line-height:1.3;color:var(--muted)}
+.medal-row .mr-p{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;margin-top:5px}
+.medal-row .mr-bar{display:block;height:6px;border-radius:3px;background:var(--surface);overflow:hidden}
+.medal-row .mr-bar i{display:block;height:100%;border-radius:3px;background:var(--accent)}
+.medal-row .mr-p em{font:600 11px/1 var(--f-mono);font-style:normal;color:var(--ink-2);white-space:nowrap}
+.medal-row .mr-s{display:grid;place-items:center;min-width:30px;font:600 12px/1 var(--f-mono);color:var(--muted)}
+.medal-row .mr-s .ic{width:20px;height:20px}
+.medal-row.got .mr-s{color:var(--good)}
+.medal-row.new{animation:pop-in .5s var(--spring) both}
+.medal-row.new>.medal-c{animation:medal-shine 1.6s ease-out .3s both}
+@keyframes medal-shine{0%{box-shadow:0 0 0 0 color-mix(in oklab,var(--accent) 70%,transparent)}100%{box-shadow:0 0 0 14px transparent}}
+.aw-seg{display:flex;width:100%;margin:14px 0 2px}
+.aw-seg button{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aw-seg small{font:inherit;opacity:.75}
+@media (max-width:380px){.aw-seg small{display:none}}
+.aw-strip{display:flex;gap:8px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;margin:0 -2px;padding:2px}
+.aw-strip::-webkit-scrollbar{display:none}
+.aw-m{flex:none}
+.aw-m .medal-c{width:44px;height:44px;border-radius:13px;font-size:13.5px;white-space:nowrap}
+.aw-m .medal-c .ic{width:20px;height:20px}
+.aw-near{display:grid;gap:8px}
+.aw-h{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.aw-all{gap:8px}
+
+/* ---------- long lists: the phone lays out only what is on screen ---------- */
+.month{content-visibility:auto;contain-intrinsic-size:auto 520px}
+.month:first-of-type{content-visibility:visible}
+.log-more{margin-top:18px}
+
+/* ---------- narrow phones ---------- */
+.str li{grid-template-columns:minmax(0,1fr) auto 52px;gap:10px}
+.str .n{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.25;overflow-wrap:anywhere}
+@media (max-width:380px){
+  .ph-l{display:none}
+  .seg button{padding:7px 9px;font-size:12.5px}
+}
 /* iPhone zooms the page into any field with text smaller than 16px — keep fields at 16px on touch screens */
 @media (pointer:coarse){input.field,select.field,textarea.field,.set-in,.composer textarea,input[type="search"]{font-size:16px}}
 @keyframes sh{to{background-position:-200% 0}}
@@ -1200,7 +1259,7 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.7.0';
+const APP_VERSION = '2.7.1';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -1213,7 +1272,7 @@ const RM = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').
 const DAY = 864e5;
 const num = v => (v === null || v === undefined || v === '' || Number.isNaN(Number(v))) ? null : Number(v);
 const parseNum = str => { const s = String(str).replace(',', '.').replace(/[^\d.]/g, ''); if (!s) return null; const v = parseFloat(s); return Number.isFinite(v) ? Math.min(v, 9999) : null; };
-const nf = (x, d = 1) => (Math.round(x * 10 ** d) / 10 ** d).toLocaleString('ru-RU', { maximumFractionDigits: d });
+const NFC = {}; const nf = (x, d = 1) => (NFC[d] || (NFC[d] = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: d }))).format(Math.round(x * 10 ** d) / 10 ** d);
 const ton = x => x >= 10000 ? nf(x / 1000, 1) + ' т' : nf(Math.round(x), 0) + ' кг';
 const plural = (n, f) => { const a = Math.abs(Math.round(n)) % 100, b = a % 10; if (a > 10 && a < 20) return f[2]; if (b > 1 && b < 5) return f[1]; if (b === 1) return f[0]; return f[2]; };
 const pad = n => String(n).padStart(2, '0');
@@ -1991,6 +2050,8 @@ const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.
 
 function normP(d) {
   const p = Object.assign(clone(DEFAULT_PROFILE), d ? clone(d) : {});
+  if (typeof p.body === 'string') { if (!p.sex && (p.body === 'f' || p.body === 'm')) p.sex = p.body; p.bodyLost = 1; }
+  if (p.sex !== 'f' && p.sex !== 'm') delete p.sex;
   ['templates','custom','body','meas','deleted','freeze','supps','sfull'].forEach(k => { if (!Array.isArray(p[k])) p[k] = []; });
   ['kudos','gear','slog','plan','rx'].forEach(k => { if (!p[k] || typeof p[k] !== 'object' || Array.isArray(p[k])) p[k] = {}; });
   p.supps = p.supps.filter(x => x && x.id && typeof x.name === 'string');
@@ -2265,7 +2326,7 @@ function totalXP(st = gameStats(), c = ctxLocal()) { return c.workouts.reduce((a
 function medalHTML(b, i, unlocked, isNew, row) {
   const g = b[3].startsWith('@') ? icon(b[3].slice(1)) : esc(b[3]);
   const circ = `<span class="medal-c">${unlocked ? g : (b[3].startsWith('@') ? icon(b[3].slice(1)) : esc(b[3]))}</span>`;
-  if (row) return `<div class="medal-row${unlocked ? '' : ' locked'}">${circ}<span><b>${esc(b[1])}</b><span>${esc(b[2])}</span></span></div>`;
+  if (row) return medalRow(b, unlocked, null, isNew);
   return `<button class="medal${unlocked ? '' : ' locked'}${isNew ? ' new' : ''}" style="--i:${i}" data-act="awards" aria-label="${esc(b[1])}${unlocked ? '' : ', ещё не получено'}">${circ}<span>${esc(b[1])}</span></button>`;
 }
 function moodNow() {
@@ -2370,6 +2431,7 @@ function validMember(m) {
   m.profile = m.profile && typeof m.profile === 'object' && !Array.isArray(m.profile) ? m.profile : {};
   { const pf = m.profile;
     if (!pf.gear || typeof pf.gear !== 'object' || Array.isArray(pf.gear)) pf.gear = {};
+    if (!Array.isArray(pf.body)) pf.body = []; if (!Array.isArray(pf.meas)) pf.meas = [];
     pf.freeze = Array.isArray(pf.freeze) ? pf.freeze.filter(f => f && Number.isFinite(f.from) && Number.isFinite(f.to)).slice(-24) : [];
     if (!pf.chest || typeof pf.chest !== 'object' || !pf.chest.op || typeof pf.chest.op !== 'object' || Array.isArray(pf.chest.op)) delete pf.chest;
     else { if (!Array.isArray(pf.chest.st)) pf.chest.st = []; pf.chest.st = pf.chest.st.filter(x => typeof x === 'string'); pf.chest.buy = Array.isArray(pf.chest.buy) ? pf.chest.buy.filter(b => b && typeof b.id === 'string' && Number.isFinite(b.at)) : []; }
@@ -2715,7 +2777,7 @@ function confetti(x, y, n = 70) {
     requestAnimationFrame(f);
   } catch (e) { /* canvas unavailable */ }
 }
-function startRest(sec) { const s = sec || S.profile.rest || 90; S.rest = { end:Date.now() + s * 1000, total:s * 1000, alerted:false }; renderRest(); if (!ringLoop.on) { ringLoop.on = true; requestAnimationFrame(ringLoop); } }
+function startRest(sec) { const s = sec || S.profile.rest || 90; S.rest = { end:Date.now() + s * 1000, total:s * 1000, alerted:false }; if (s >= 20) sfx('rest'); renderRest(); if (!ringLoop.on) { ringLoop.on = true; requestAnimationFrame(ringLoop); } }
 function ringLoop() {
   if (!S.rest.end) { ringLoop.on = false; return; }
   const fg = document.getElementById('ring-fg'); if (fg) fg.setAttribute('stroke-dashoffset', String(Math.max(0, Math.min(100, 100 * (1 - (S.rest.end - Date.now()) / S.rest.total)))));
@@ -2728,6 +2790,7 @@ setInterval(() => {
     const left = Math.max(0, Math.ceil((S.rest.end - now) / 1000));
     const t = document.getElementById('rest-time'); if (t) t.textContent = fmtClock(left);
     if (left > 0 && left <= 3 && S.rest.cd !== left) { S.rest.cd = left; sfx('count'); }
+    if (left === 10 && S.rest.total >= 25000 && !S.rest.ten) { S.rest.ten = true; sfx('ten'); }
     if (left === 0 && !S.rest.alerted) { S.rest.alerted = true; beep(); renderRest(); }
     if (S.rest.alerted && now - S.rest.end > 7000) { S.rest = { end:0, total:0, alerted:false }; renderRest(); }
   }
@@ -2962,33 +3025,34 @@ function render() {
   try { if (fid && typeof ae.selectionStart === 'number') sel = [ae.selectionStart, ae.selectionEnd]; } catch (e) { sel = null; }
   CH = {};
   if (!S.welcomed && S.metaLoaded && !S.meta && ready() && !S.sheets.length) { S.welcomed = true; S.sheets.push({ type:'welcome', name:'', color:'lime', char:'cat', key:uid() }); applyAccent('lime'); }
-  if (S.metaLoaded && S.meta && !S.meta.v22seen && ready() && !S.sheets.length && !S.active) { S.meta.v22seen = true; S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v23seen && ready() && !S.sheets.length && !S.active) { S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; saveMeta(); S.sheets.push({ type:'news23', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v24seen && ready() && !S.sheets.length && !S.active) { S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; saveMeta(); S.sheets.push({ type:'news24', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v25seen && ready() && !S.sheets.length && !S.active) { S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; saveMeta(); S.sheets.push({ type:'news25', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v26seen && ready() && !S.sheets.length && !S.active) { S.meta.v26seen = true; S.meta.v27seen = true; saveMeta(); S.sheets.push({ type:'news26', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v27seen && ready() && !S.sheets.length && !S.active) { S.meta.v27seen = true; saveMeta(); S.sheets.push({ type:'news27', key:uid() }); }
+  if (S.metaLoaded && S.meta && !S.meta.v22seen && ready() && !S.sheets.length && !S.active) { S.meta.v22seen = true; S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v23seen && ready() && !S.sheets.length && !S.active) { S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; saveMeta(); S.sheets.push({ type:'news23', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v24seen && ready() && !S.sheets.length && !S.active) { S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; saveMeta(); S.sheets.push({ type:'news24', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v25seen && ready() && !S.sheets.length && !S.active) { S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; saveMeta(); S.sheets.push({ type:'news25', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v26seen && ready() && !S.sheets.length && !S.active) { S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; saveMeta(); S.sheets.push({ type:'news26', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v27seen && ready() && !S.sheets.length && !S.active) { S.meta.v27seen = true; S.meta.v271seen = true; saveMeta(); S.sheets.push({ type:'news27', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v271seen && ready() && !S.sheets.length && !S.active) { S.meta.v271seen = true; saveMeta(); S.sheets.push({ type:'news271', key:uid() }); }
   if (S.view === 'chat' && S.metaLoaded && !pairOn()) S.view = 'today';
   const main = $('#main');
   const vk = [S.view, S.pid, S.view === 'today' && S.active ? 'live:' + S.active.id : '', S.view === 'editor' && S.editing ? S.editing.id : '', ready() ? 'r' : 'l'].join('|');
   const html = `<div class="view">${viewHTML()}</div>`;
   if (main.dataset.vk !== vk) {
     main.innerHTML = html; main.dataset.vk = vk;
-    main.classList.remove('enter'); void main.offsetWidth; main.classList.add('enter');
+    main.classList.add('enter'); S.chartsLater = true;
     clearTimeout(enterT); enterT = setTimeout(() => main.classList.remove('enter'), 1200);
     S.countUp = true;
   } else {
     const tmp = document.createElement('div'); tmp.innerHTML = html; morphChildren(main, tmp);
   }
   renderNav(); renderSheet(); renderRest();
-  drawCharts();
+  if (S.chartsLater) { S.chartsLater = false; requestAnimationFrame(() => setTimeout(() => drawCharts(), 0)); } else drawCharts();
   if (S.view === 'chat' && S.chatScroll) { S.chatScroll = false; requestAnimationFrame(() => window.scrollTo(0, document.documentElement.scrollHeight)); }
   if (S.countUp) { S.countUp = false; countUp(main); }
   S.justKey = null;
   if (fid) { const el = document.getElementById(fid); if (el && el !== document.activeElement) { el.focus({ preventScroll:true }); if (sel) try { el.setSelectionRange(sel[0], sel[1]); } catch (e) { /* not a text field */ } } }
 }
 function buildNav() {
-  const tabs = tabsNow(), tb = $('#tabbar'); tb.dataset.sig = tabs.map(t => t[0]).join(); tb.style.gridTemplateColumns = `repeat(${tabs.length},minmax(0,1fr))`;
+  const tabs = tabsNow(), tb = $('#tabbar'); tb.dataset.sig = tabs.map(t => t[0]).join(); tb.style.setProperty('--n', tabs.length);
   const b = (cls, [v, l, ic]) => `<button class="${cls}" data-act="nav" data-v="${v}">${icon(ic)}<span>${l}</span><i class="badge" hidden aria-label="идёт тренировка"></i>${v === 'chat' ? '<i class="cnt" hidden></i>' : ''}</button>`;
   tb.innerHTML = '<span class="tab-ind" aria-hidden="true"></span>' + tabs.map(t => b('tab', t)).join('');
   $('#rail-links').innerHTML = '<span class="rail-ind" aria-hidden="true"></span>' + tabs.map(t => b('rlink', t)).join('');
@@ -3006,9 +3070,11 @@ function renderNav() {
   const rp = $('#rail-prof'), html = `<button class="rail-prof" data-act="profiles">${ava(p)}<span>${esc(pname(p))}<small>${profiles().length > 1 ? 'Сменить профиль' : 'Профиль'}</small></span></button>`;
   if (rp.dataset.h !== html) { rp.innerHTML = html; rp.dataset.h = html; }
 }
+const WIDE = matchMedia('(min-width:960px)');
 function moveInd() {
-  const t = $('.tab[aria-current]'), ti = $('.tab-ind');
-  if (t && ti && t.offsetWidth) { ti.style.width = t.offsetWidth + 'px'; ti.style.transform = `translateX(${t.offsetLeft - 6}px)`; requestAnimationFrame(() => ti.classList.add('ready')); }
+  const tb = $('#tabbar'), ti = tb && tb.querySelector('.tab-ind');
+  if (ti) { const i = [...tb.querySelectorAll('.tab')].findIndex(t => t.hasAttribute('aria-current')); ti.hidden = i < 0; if (i >= 0) { tb.style.setProperty('--ti', i); if (!ti.classList.contains('ready')) requestAnimationFrame(() => ti.classList.add('ready')); } }
+  if (!WIDE.matches) return; // the side rail is shown only on wide screens
   const r = $('.rlink[aria-current]'), ri = $('.rail-ind');
   if (r && ri && r.offsetHeight) { ri.style.transform = `translateY(${r.offsetTop}px)`; requestAnimationFrame(() => ri.classList.add('ready')); }
 }
@@ -3050,7 +3116,7 @@ function heroHTML() {
   const fr = S.profile.freeze, fz = frozenNow(fr), sat = satietyOf(S.workouts, fr), mt = mateOf(S.profile, S.workouts), nx = STAGES[mt.stage.k + 1], cs = chestState();
   const bk = bubbleKey(m);
   if (!S.bubble || S.bubble.mood !== bk || S.bubble.pid !== S.pid || S.bubble.n !== m.n) S.bubble = { mood:bk, pid:S.pid, n:m.n, text:bubbleText(m) };
-  if (S.ateAt && !S.sheets.length) { S.eatUntil = Date.now() + 2600; S.ateAt = 0; setTimeout(() => sfx('nom'), 300); }
+  if (S.ateAt && !S.sheets.length) { S.eatUntil = Date.now() + 2600; S.ateAt = 0; const fd = S.wasHungry; S.wasHungry = false; setTimeout(() => sfx(fd ? 'fed' : 'nom'), 300); }
   const eat = !RM && S.eatUntil > Date.now();
   const streakSub = gs.curMet ? 'серия недель' : gs.frozen ? 'серия · заморожена' : gs.n ? `серия · ещё ${gs.left} за ${gs.daysLeft} ${plural(gs.daysLeft, ['день','дня','дней'])}` : 'серия недель';
   const gold = cs.closed.some(c => c.gold);
@@ -3270,17 +3336,17 @@ function jrow(w, i = 0) {
   return `<li data-key="j-${esc(w.id)}"><button class="jrow" style="--i:${Math.min(i, 12)}" data-act="openWorkout" data-id="${esc(w.id)}"><span class="jdate"><b>${d.getDate()}</b><span>${WD[d.getDay()]}</span></span><span class="jmain"><span class="jtitle">${esc(w.title || 'Тренировка')}${pr ? `<span class="pr-chip">${icon('star', 'ic-f')}${pr} PR</span>` : ''}${kg.length ? `<span class="kd-got" aria-label="Реакции: ${kg.length}">${kg.map(k => icon(k.t, k.t === 'flame' ? '' : 'ic-f')).join('')}</span>` : ''}</span><span class="jex">${exLine(w)}</span></span><span class="jnums"><b>${st.vol ? ton(st.vol) : st.sets + ' подх.'}</b><span>${fmtDur(st.dur)}</span></span></button></li>`;
 }
 function viewLog() {
-  const add = `<button class="btn btn-sm" data-act="addPast">${icon('plus')} Прошедшая</button>`;
+  const add = `<button class="btn btn-sm" data-act="addPast" aria-label="Записать прошедшую тренировку">${icon('plus')}<span class="ph-l">Прошедшая</span></button>`;
   const head = headHTML('Журнал', S.workouts.length ? `${S.workouts.length} ${plural(S.workouts.length, ['тренировка','тренировки','тренировок'])}` : 'Все тренировки', add);
   if (!ready()) return head + loadingHTML();
   if (!S.workouts.length) return `${head}<div class="empty"><h3>Здесь появятся ваши тренировки</h3><p>Начните тренировку на вкладке «Сегодня» или запишите ту, что уже прошла.</p><button class="btn btn-primary" data-act="nav" data-v="today">${icon('play', 'ic-f')} К тренировке</button></div>`;
   const q = normQ(S.logQ).trim(), words = q.split(/\s+/).filter(Boolean), list = words.length ? S.workouts.filter(w => logMatch(w, words)) : S.workouts;
   const search = `<div class="log-search">${icon('search')}<input class="field" type="search" id="log-q" data-in="logQ" value="${esc(S.logQ || '')}" placeholder="Поиск: жим, «Верх», заметка" autocomplete="off" aria-label="Поиск по журналу">${S.logQ ? `<button class="icon-btn" data-act="logClear" aria-label="Очистить поиск">${icon('x')}</button>` : ''}</div>${words.length ? `<p class="log-found">Найдено: ${list.length} ${plural(list.length, ['тренировка','тренировки','тренировок'])}</p>` : ''}`;
   if (words.length && !list.length) return `${head}${search}<div class="empty"><h3>Ничего не нашлось</h3><p>Попробуйте часть слова: «жим», «прис», «тяг».</p></div>`;
-  const groups = []; let cur = null;
-  list.forEach(w => { const d = new Date(w.start), key = d.getFullYear() * 12 + d.getMonth(); if (!cur || cur.key !== key) { cur = { key, y:d.getFullYear(), m:d.getMonth(), list:[] }; groups.push(cur); } cur.list.push(w); });
+  const groups = []; let cur = null; const lim = words.length ? 1e9 : (S.logN || 40);
+  list.slice(0, lim).forEach(w => { const d = new Date(w.start), key = d.getFullYear() * 12 + d.getMonth(); if (!cur || cur.key !== key) { cur = { key, y:d.getFullYear(), m:d.getMonth(), list:[] }; groups.push(cur); } cur.list.push(w); });
   const thisY = new Date().getFullYear(); let idx = 0;
-  return `${head}${search}${groups.map(g => { const a = agg(g.list); return `<section class="month" data-key="m-${g.key}"><div class="month-head"><h2>${MON_NOM[g.m]}${g.y !== thisY ? ' ' + g.y : ''}</h2><span>${a.n} ${plural(a.n, ['трен.','трен.','трен.'])} · ${ton(a.vol)}</span></div><ul>${g.list.map(w => jrow(w, idx++)).join('')}</ul></section>`; }).join('')}`;
+  return `${head}${search}${groups.map(g => { const a = agg(g.list); return `<section class="month" data-key="m-${g.key}"><div class="month-head"><h2>${MON_NOM[g.m]}${g.y !== thisY ? ' ' + g.y : ''}</h2><span>${a.n} ${plural(a.n, ['трен.','трен.','трен.'])} · ${ton(a.vol)}</span></div><ul>${g.list.map(w => jrow(w, idx++)).join('')}</ul></section>`; }).join('')}${list.length > lim ? `<button class="btn btn-block log-more" data-act="logMore">Показать ещё · ${list.length - lim}</button>` : ''}`;
 }
 
 /* ---------- progress ---------- */
@@ -3290,7 +3356,7 @@ const METRICS = {
   time:[['maxT','Лучшее время', v => fmtClock(v)]],
   cardio:[['maxD','Дистанция', v => nf(v, 2) + ' км'], ['pace','Темп', v => fmtClock(v * 60) + '/км']],
 };
-function awardsPanel() {
+function awardsPanel0() {
   const st = gameStats(), L = levelOf(totalXP(st)), un = new Set(unlockedBadges(st));
   return `<section class="panel lvl-card" aria-label="Уровень и достижения">
     <button class="lvl" style="margin-top:0" data-act="awards">${rankBadge(L.k)}<span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></button>
@@ -3394,7 +3460,8 @@ function viewBody() {
   if (!ready()) return head + loadingHTML();
   const t = S.bodyTab || 'w';
   const tabs = `<div class="seg body-tabs" role="group" aria-label="Раздел">${[['w', 'Вес'], ['m', 'Замеры'], ['p', 'Фото']].map(([k, l]) => `<button data-act="bodyTab" data-t="${k}" aria-pressed="${t === k}">${l}</button>`).join('')}</div>`;
-  return head + tabs + (t === 'm' ? measHTML() : t === 'p' ? photosHTML() : weightHTML());
+  const lost = S.profile.bodyLost && t === 'w' ? `<div class="banner warn" role="status" style="margin:0 0 14px"><span class="banner-t">${icon('help')}<span><b>Пропали записи веса?</b> В версии 2.7.0 выбор тела на карте мышц мог стереть журнал веса. Ошибка исправлена. Если у вас есть резервная копия, восстановите её: Настройки → «Восстановить из файла» — записи вернутся.</span></span><span class="banner-a"><button class="btn btn-sm" data-act="bodyLostOk">Понятно</button></span></div>` : '';
+  return head + tabs + lost + (t === 'm' ? measHTML() : t === 'p' ? photosHTML() : weightHTML());
 }
 function weightHTML() {
   const list = [...S.profile.body].sort((a, b) => b.d - a.d);
@@ -3928,11 +3995,14 @@ function mergeInto(pid, src) {
 }
 
 function commitWorkout(w) {
+  const hungry0 = satietyOf(S.workouts, S.profile.freeze).v < 60, goal0 = goalStreak().curMet;
   const st0 = gameStats(), xp0 = totalXP(st0), b0 = new Set(unlockedBadges(st0)), l0 = levelOf(xp0).k, q0 = new Set(questsFor(ctxLocal(), weekStart(w.start)).filter(x => x.done).map(x => x.id)), g0 = stageOf(S.workouts.length).k;
   saveWorkout(w);
   const st1 = gameStats(), xp1 = totalXP(st1), newBadges = unlockedBadges(st1).filter(id => !b0.has(id)), l1 = levelOf(xp1).k, g1 = stageOf(S.workouts.length).k;
   S.sheets = []; S.bubble = null; S.ateAt = Date.now(); buzz([30, 60, 30]); sfx(l1 > l0 ? 'level' : 'finish');
   const newQuests = questsFor(ctxLocal(), weekStart(w.start)).filter(x => x.done && !q0.has(x.id)).map(x => x.t);
+  S.wasHungry = hungry0;
+  if (g1 <= g0) { const extra = newBadges.length ? 'badge' : !goal0 && goalStreak().curMet ? 'goal' : newQuests.length ? 'quest' : null; if (extra) setTimeout(() => sfx(extra), l1 > l0 ? 1700 : 1150); }
   go('log'); openSheet({ type:'done', id:w.id, prs:D.prCount[w.id] || 0, xpGain:xp1 - xp0, xpAfter:xp1, lvlUp:l1 > l0, newBadges, newQuests });
   const nr = rankSync(); if (nr != null) setTimeout(() => { openSheet({ type:'rankup', r:nr }); sfx('rank'); confetti(innerWidth / 2, innerHeight * .35, 110); }, g1 > g0 ? 2200 : 1200);
   if (g1 > g0) { openSheet({ type:'grow', k:g1 }); setTimeout(() => confetti(innerWidth / 2, innerHeight * .35, 110), RM ? 0 : 350); setTimeout(() => sfx('grow'), 900); }
@@ -4085,7 +4155,7 @@ const A = {
   wlColor: el => { top().color = el.dataset.c; applyAccent(el.dataset.c); render(); },
   welcomeSave: () => {
     const sh = top(), name = (sh.name || '').trim();
-    S.meta = { profiles:[{ id:'main', name, color:sh.color || 'lime', char:sh.char || 'cat' }], cur:'main', theme:'auto', mode:sh.mode === 'pair' ? 'pair' : 'solo', v2seen:true, v22seen:true, v23seen:true, v24seen:true, v25seen:true, v26seen:true, v27seen:true, chatSeen:Date.now() }; saveMeta(); applyAccent();
+    S.meta = { profiles:[{ id:'main', name, color:sh.color || 'lime', char:sh.char || 'cat' }], cur:'main', theme:'auto', mode:sh.mode === 'pair' ? 'pair' : 'solo', v2seen:true, v22seen:true, v23seen:true, v24seen:true, v25seen:true, v26seen:true, v27seen:true, v271seen:true, chatSeen:Date.now() }; saveMeta(); applyAccent();
     S.sheets = []; S.bubble = null; render(); buzz([10, 40, 10]); toast(name ? `Привет, ${name}! Поехали` : 'Поехали!');
   },
   startEmpty: () => startWorkout(null),
@@ -5182,7 +5252,7 @@ function anatInject() {
   });
   document.body.insertAdjacentHTML('afterbegin', `<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>${defs}</defs></svg>`);
 }
-const bodySex = (p = S.profile) => (p && p.body === 'f') ? 'f' : 'm';
+const bodySex = (p = S.profile) => (p && (p.sex || (typeof p.body === 'string' ? p.body : ''))) === 'f' ? 'f' : 'm';
 /* cls(m) → css class of a muscle, tip(m) → text shown when a muscle is tapped */
 function anatSVG(cls, tip, o = {}) {
   anatInject();
@@ -5302,10 +5372,99 @@ SHEETS.news27 = () => `${sheetHead('Что нового', 'Версия ' + APP_
 </div><footer class="sheet-foot"><button class="btn btn-primary btn-block" data-act="closeSheet">Готово</button></footer>`;
 const bodySeg = () => `<div class="seg" role="group" aria-label="Тело на карте мышц">${[['m', 'Мужское'], ['f', 'Женское']].map(([k, l]) => `<button data-act="setBody" data-v="${k}" aria-pressed="${bodySex() === k}">${l}</button>`).join('')}</div>`;
 Object.assign(A, {
-  musTap: el => { const t = el.getAttribute('data-t'); if (t) { toast(t); buzz(6); } },
-  setBody: el => { S.profile.body = el.dataset.v; saveProfile(); render(); },
+  musTap: el => { const t = el.getAttribute('data-t'); if (t) { toast(t); buzz(6); sfx('mus'); } },
+  setBody: el => { if (!Array.isArray(S.profile.body)) S.profile.body = []; S.profile.sex = el.dataset.v === 'f' ? 'f' : 'm'; saveProfile(); render(); },
+  bodyLostOk: () => { delete S.profile.bodyLost; saveProfile(); render(); },
   pickE: el => { top().e = el.dataset.e; render(); },
 });
+
+
+/* ================= 2.7.1: achievements with progress, new sounds ================= */
+ICONS.lock = '<rect x="5.5" y="10.5" width="13" height="9.5" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>';
+/* how far each badge is: [stat, target, unit] */
+const BPROG = { w10:['n', 10], w25:['n', 25], w50:['n', 50], w100:['n', 100], w250:['n', 250], st3:['bestStreak', 3, 'нед.'], st8:['bestStreak', 8, 'нед.'], st26:['bestStreak', 26, 'нед.'],
+  q25:['quests', 25], pr10:['prs', 10], pr50:['prs', 50], bench60:['bench', 60, 'кг'], bench100:['bench', 100, 'кг'], squat100:['squat', 100, 'кг'], dead140:['dead', 140, 'кг'], hip100:['hip', 100, 'кг'],
+  pull10:['pull', 10, 'повт.'], t1:['tonTotal', 1e3, 'т'], t10:['tonTotal', 1e4, 'т'], t100:['tonTotal', 1e5, 'т'], t1000:['tonTotal', 1e6, 'т'], body:['bodyN', 5], coll30:['uniq', 30], coll75:['uniq', 75],
+  collAll:['uniq', () => ITEMS.length], sup7:['supBest', 7, 'дн.'], sup30:['supBest', 30, 'дн.'], gift7:['gifts', 7] };
+function badgeProg(b, st) {
+  const d = BPROG[b[0]]; if (!d || !st) return null;
+  const T = typeof d[1] === 'function' ? d[1]() : d[1], cur = Math.max(0, +st[d[0]] || 0), u = d[2] || '';
+  const f = u === 'т' ? v => nf(v / 1000, v >= 1e4 ? 0 : 1) : v => nf(v, u === 'кг' ? 1 : 0);
+  return { pct:Math.min(1, cur / T), txt:`${f(Math.min(cur, T))} из ${f(T)}${u ? ' ' + u : ''}` };
+}
+const badgeGlyph = b => b[3].startsWith('@') ? icon(b[3].slice(1)) : esc(b[3]);
+const badgeList = un => BADGES.filter(b => b[0] !== 'pair' || pairOn() || un.has('pair'));
+function medalRow(b, got, st, isNew) {
+  const pr = got ? null : badgeProg(b, st);
+  return `<div class="medal-row ${got ? 'got' : 'locked'}${isNew ? ' new' : ''}"><span class="medal-c" aria-hidden="true">${badgeGlyph(b)}</span><span class="mr-t"><b>${esc(b[1])}</b><small>${esc(b[2])}</small>${pr ? `<span class="mr-p"><span class="mr-bar" aria-hidden="true"><i style="width:${Math.max(3, pr.pct * 100).toFixed(1)}%"></i></span><em>${esc(pr.txt)}</em></span>` : ''}</span><span class="mr-s" aria-label="${got ? 'получено' : 'ещё не получено'}">${got ? icon('check') : pr ? Math.floor(pr.pct * 100) + '%' : icon('lock')}</span></div>`;
+}
+function awardsPanel() {
+  const st = gameStats(), L = levelOf(totalXP(st)), un = new Set(unlockedBadges(st)), list = badgeList(un);
+  const got = list.filter(b => un.has(b[0])).reverse();
+  const near = list.filter(b => !un.has(b[0])).map(b => [b, badgeProg(b, st)]).filter(x => x[1]).sort((a, b) => b[1].pct - a[1].pct).slice(0, 2);
+  return `<section class="panel lvl-card" aria-label="Уровень и достижения">
+    <button class="lvl" style="margin-top:0" data-act="awards">${rankBadge(L.k)}<span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></button>
+    ${got.length ? `<div class="aw-strip" role="list" aria-label="Полученные достижения">${got.map((b, i) => `<button class="aw-m medal" role="listitem" style="--i:${Math.min(i, 12)}" data-act="awards" aria-label="${esc(b[1])}"><span class="medal-c">${badgeGlyph(b)}</span></button>`).join('')}</div>` : ''}
+    ${near.length ? `<div class="aw-near"><b class="aw-h">Ближе всего</b><div class="medal-list">${near.map(([b]) => medalRow(b, false, st)).join('')}</div></div>` : ''}
+    <button class="btn btn-block aw-all" data-act="awards">${icon('trophy')} Все достижения · ${got.length} из ${list.length}</button>
+  </section>`;
+}
+SHEETS.awards = sh => {
+  const st = gameStats(), xp = totalXP(st), L = levelOf(xp), un = new Set(unlockedBadges(st)), tab = sh.tab || 'b', list = badgeList(un);
+  const got = list.filter(b => un.has(b[0])).reverse();
+  const next = list.filter(b => !un.has(b[0])).map(b => [b, badgeProg(b, st)]).sort((a, b) => (b[1] ? b[1].pct : -1) - (a[1] ? a[1].pct : -1));
+  const near = next.filter(x => x[1]).slice(0, 3), rest = next.filter(x => !near.includes(x));
+  const seg = `<div class="seg aw-seg" role="group" aria-label="Раздел">${[['b', 'Достижения', `${got.length}/${list.length}`], ['r', 'Ранги', `${rankIdx(L.k) + 1}/${Math.max(RANKS.length, rankIdx(L.k) + 1)}`]].map(([k, l, n]) => `<button data-act="awTab" data-t="${k}" aria-pressed="${tab === k}">${l}<small> · ${n}</small></button>`).join('')}</div>`;
+  const grp = (t, rows) => rows ? `<div class="sblock"><b>${t}</b><div class="medal-list">${rows}</div></div>` : '';
+  const body = tab === 'r'
+    ? `<p class="fine" style="margin:0">Опыт: 40 за тренировку, по 2 за рабочий подход (до 40), 15 за рекорд, 60 за неделю с выполненной целью, ${QXP} за задание недели (+${QBONUS} за все три), 30 за каждое достижение и 10 за день, когда все добавки приняты по плану.</p>${rankLadder(L.k, xp)}`
+    : grp('Ближе всего', near.map(([b]) => medalRow(b, false, st)).join('')) + grp(`Получено · ${got.length}`, got.map(b => medalRow(b, true)).join('')) + grp(`Ещё впереди · ${rest.length}`, rest.map(([b]) => medalRow(b, false, st)).join(''));
+  return `${sheetHead('Уровень и достижения', `${xp} XP всего`)}<div class="sheet-body">
+    <div class="lvl" style="margin-top:0">${rankBadge(L.k)}<span class="lvl-main"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">ещё ${L.need - L.cur} XP</span></div>
+    ${seg}${body}
+  </div>`;
+};
+
+/* ---- new sounds ---- */
+Object.assign(SFX_CAT, { quest:'game', badge:'game', goal:'game', fed:'game', mus:'ui', rest:'train', ten:'train' });
+Object.assign(SFX, {
+  /* daily gift: paper rustle, ribbon pop and a sparkle */
+  gift:o => { hiss(o, 0, .22, .12, 900, 3800, 1.2); tone(o, 740, .16, .05, .16, 'triangle', 1100); arp(o, [1319, 1760, 2093], .07, .22, .13, 'triangle', .24); [2637, 3136, 3951].forEach((f, i) => tone(o, f, .46 + i * .05, .2, .045)); },
+  /* weekly quest done: two bright bells */
+  quest:o => { tone(o, 1047, 0, .28, .17, 'triangle'); tone(o, 1568, .11, .4, .17, 'triangle'); tone(o, 3136, .11, .3, .05); },
+  /* new badge: a metal medal clinks, then shines */
+  badge:o => { [1210, 2780, 4410].forEach((f, i) => tone(o, f, 0, .5 - i * .12, .13 / (i + 1), 'sine')); tone(o, 1210, .14, .4, .08, 'sine'); arp(o, [1568, 2093, 2637], .06, .28, .1, 'triangle', .28); },
+  /* weekly goal reached: short brass-like fanfare */
+  goal:o => { [523, 659, 784].forEach(f => tone(o, f, 0, .16, .12, 'sawtooth')); [659, 784, 1047].forEach(f => tone(o, f, .19, .6, .1, 'sawtooth', null, .02)); tone(o, 2093, .2, .55, .06); hiss(o, .19, .3, .03, 5000, null, 1, 'highpass'); },
+  /* the companion eats: two munches and a happy «м-м» */
+  nom:o => { [0, .17].forEach((t, i) => { hiss(o, t, .07, .2, 700, 300, 1, 'lowpass'); tone(o, 340 - i * 30, t, .07, .2, 'sine', 210); }); const os = tone(o, 520, .38, .32, .16, 'sine', null, .04); const T = actx.currentTime + .38; os.frequency.setValueAtTime(520, T); os.frequency.linearRampToValueAtTime(760, T + .16); os.frequency.linearRampToValueAtTime(640, T + .34); },
+  /* hungry companion is fed again: munches, then a rising «ура» */
+  fed:o => { SFX.nom(o); arp(o, [784, 988, 1175, 1568], .07, .2, .12, 'triangle', .78); },
+  /* tapping a muscle on the map */
+  mus:o => { tone(o, 210, 0, .06, .2, 'sine', 140); hiss(o, 0, .02, .05, 2400, null, 2); },
+  /* rest starts: a soft breath out */
+  rest:o => { hiss(o, .16, .32, .05, 2400, 500, .8); tone(o, 587, .16, .22, .05, 'sine', 440, .03); },
+  /* 10 seconds of rest left */
+  ten:o => { tone(o, 988, 0, .05, .13, 'triangle'); tone(o, 988, .15, .05, .13, 'triangle'); },
+});
+Object.assign(A, {
+  awTab: el => { const t = top(); if (!t) return; t.tab = el.dataset.t; sfx('tab'); render(); const b = $('#sheet-root .sheet-body'); if (b) b.scrollTop = 0; },
+  logMore: () => { S.logN = (S.logN || 40) + 60; render(); },
+});
+
+SHEETS.news271 = () => `${sheetHead('Что нового', 'Версия ' + APP_VERSION)}<div class="sheet-body">
+  <ul class="pr-list news">
+    <li>${icon('body')}<span><b>Вкладка «Тело» снова открывается.</b> Выбор мужского или женского тела теперь хранится отдельно и не трогает журнал веса</span></li>
+    <li>${icon('trophy')}<span><b>Достижения</b> — ровные значки, прогресс до каждого («7 из 10») и отдельные разделы «Достижения» и «Ранги»</span></li>
+    <li>${icon('today')}<span><b>Нижняя панель</b> — шесть ровных вкладок, подсветка под иконкой</span></li>
+    <li>${icon('flame')}<span><b>Быстрее</b> — вкладки переключаются без задержки, длинный журнал открывается сразу</span></li>
+    <li>${icon('sound')}<span><b>Новые звуки</b> — подарок дня, задание недели, новое достижение, цель недели, сытый напарник, нажатие на мышцу, начало отдыха и «осталось 10 секунд»</span></li>
+  </ul>
+</div><footer class="sheet-foot"><button class="btn" data-act="sndDemo271">${icon('sound')} Послушать</button><button class="btn btn-primary" data-act="closeSheet">Готово</button></footer>`;
+A.sndDemo271 = () => {
+  const m = ensureMeta(); if (!sndCfg().on) { m.snd = Object.assign(sndCfg(), { on:true }); saveMeta(); render(); }
+  ['gift', 'quest', 'badge', 'goal', 'fed', 'ten'].forEach((n, i) => setTimeout(() => sfx(n), i * 1300));
+};
 
 /* ================= events ================= */
 document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const fn = A[el.dataset.act]; if (fn) { e.preventDefault(); SFXN.n = 0; fn(el, e); if (!SFXN.n) sfx(el.dataset.act === 'nav' ? 'tab' : el.dataset.act === 'closeSheet' ? 'close' : el.getAttribute('role') === 'switch' ? 'toggle' : 'tap'); } });
