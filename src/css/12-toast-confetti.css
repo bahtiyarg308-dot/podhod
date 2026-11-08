@@ -1,0 +1,8 @@
+/* ---------- toast & confetti ---------- */
+.toast{position:fixed;z-index:60;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--bg);padding:10px 12px 10px 16px;border-radius:16px;font-weight:600;font-size:14px;box-shadow:var(--shadow);max-width:calc(100vw - 24px);width:max-content;transform:translateX(-50%);animation:toast-in .45s var(--spring) both}
+.toast.out{animation:toast-out .2s ease-in both}
+.toast.pr{background:var(--gold-fill);color:var(--on-gold)}
+.toast .ic{width:16px;height:16px}
+.toast .btn{min-height:32px;background:var(--accent);color:var(--accent-ink);box-shadow:none}
+.confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:70}
+

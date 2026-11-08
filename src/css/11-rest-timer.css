@@ -1,0 +1,16 @@
+/* ---------- rest timer ---------- */
+.restbar{position:fixed;z-index:25;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:6px;padding:8px 8px 8px 10px;background:var(--ink);color:var(--bg);border-radius:20px;box-shadow:var(--shadow);width:min(440px,calc(100vw - 20px));transform:translateX(-50%);animation:bar-in .45s var(--spring) both;transition:background-color .35s,color .35s}
+.restbar.out{animation:bar-out .22s ease-in both}
+.restbar .ring{width:40px;height:40px;flex:none;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--inv-2);stroke-width:3.5}
+.ring-fg{fill:none;stroke:var(--ring);stroke-width:3.5;stroke-linecap:round}
+.rest-txt{display:flex;flex-direction:column;line-height:1.15;margin:0 auto 0 4px;min-width:0}
+.rest-lbl{font:500 9.5px var(--f-mono);text-transform:uppercase;opacity:.7}
+.rest-time{font:600 21px var(--f-display)}
+.restbar .btn{background:var(--inv-2);color:var(--bg);min-height:36px;padding:0 10px;box-shadow:none}
+.restbar .icon-btn{color:var(--bg);width:36px;height:36px}
+.restbar .icon-btn:hover{background:var(--inv-2)}
+.restbar.over{background:var(--good);color:var(--on-good);animation:ding .7s var(--spring) both}
+.restbar.over .btn,.restbar.over .icon-btn{color:var(--on-good);background:transparent}
+@media (min-width:960px){.restbar{bottom:24px;left:calc(50% + 120px)}}
+

@@ -1,0 +1,54 @@
+/* ---------- 2.6: supersets, plan, technique, animations ---------- */
+.xcard.ss{border-left:3px solid var(--accent)}
+.xcard.ss:not(.ss-last){margin-bottom:4px;border-bottom-left-radius:8px;border-bottom-right-radius:8px}
+.xcard.ss:not(.ss-first){border-top-left-radius:8px;border-top-right-radius:8px}
+.ss-tag{display:inline-flex;align-items:center;gap:5px;font:600 10px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:3px}
+.ss-tag .ic{width:12px;height:12px}
+.x-rest{color:var(--ink-2)}
+.x-rest .ic{width:15px;height:15px}
+.plan-today{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;margin:0 0 10px;border-radius:16px;background:var(--accent-soft);border:1px solid color-mix(in oklab, var(--accent) 35%, transparent)}
+.plan-today span{display:grid;gap:2px;min-width:0}
+.plan-today small{font:500 10px var(--f-mono);text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2)}
+.plan-today b{font:600 18px var(--f-display);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plan-today.done>.ic{color:var(--good);width:26px;height:26px;flex:none}
+.wd.plan::after{content:"";display:block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin:4px auto 0}
+.wd.plan.on::after{background:var(--good)}
+.plan-row{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.plan-row b{font-weight:600;font-size:14px}
+.tech{display:grid;gap:12px;padding-left:22px;list-style:decimal;margin:0 0 16px}
+.tech li{font-size:15px;line-height:1.45;color:var(--ink);padding-left:4px}
+.seg.wrap{flex-wrap:wrap}
+.log-search{position:relative;margin:0 0 14px}
+.log-search .field{padding-left:40px}
+.log-search>.ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);width:18px;height:18px;pointer-events:none}
+.log-search .icon-btn{position:absolute;right:4px;top:50%;transform:translateY(-50%)}
+.log-found{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:-4px 0 12px}
+/* chest: anticipation, light from the seam, flash, the item flying out */
+.chest .k-seam{fill:var(--rc);opacity:0}
+.chest.shake{animation:kshake2 1.35s ease-in both;transform-origin:60px 92px}
+.chest.shake .k-seam{animation:seam 1.35s ease-in both}
+.chest.shake .k-lidc{animation:lidpeek 1.35s ease-in both;transform-origin:60px 53px}
+.chest.open .k-lid{transform-origin:60px 52px;animation:lidpop .55s var(--spring) both}
+.reveal .mate-r{animation:itemrise .8s var(--spring) .1s both}
+.reveal .rch{animation:pop-in .45s .45s var(--spring) both}
+.reveal .big-title{animation:rise-in .5s .55s var(--out) both}
+.reveal>p{animation:fade .5s .7s both}
+.flash{position:fixed;inset:0;z-index:80;pointer-events:none;background:radial-gradient(circle at 50% 42%, color-mix(in oklab, var(--rc) 75%, #fff) 0%, color-mix(in oklab, var(--rc) 35%, transparent) 35%, transparent 70%);animation:flash .75s ease-out both}
+.sheet.jolt{animation:jolt .5s ease-in-out}
+.rank-hero .rk.big{animation:rankin .9s var(--spring) both}
+.rk .rk-shine{fill:#fff;opacity:.5;animation:rkshine 1.5s .7s ease-in-out both}
+.grow-hero .mate{animation:growin 1s var(--spring) both,glowpulse 2.4s 1s ease-in-out infinite}
+.tile{transition:transform .15s,border-color .2s,background-color .2s}
+.tile:active,.giftbtn:active,.chestbtn:active,.sup-chip:active{transform:scale(.96)}
+.giftbtn,.chestbtn{transition:transform .15s}
+@keyframes kshake2{0%{transform:none}10%{transform:rotate(-2deg)}20%{transform:rotate(2deg)}30%{transform:rotate(-3deg) translateY(-1px)}40%{transform:rotate(3.5deg)}50%{transform:rotate(-4.5deg) translateY(-2px)}60%{transform:rotate(5deg)}70%{transform:rotate(-6deg) translateY(-3px)}80%{transform:rotate(6.5deg)}88%{transform:rotate(-7deg) translateY(-4px) scale(1.04)}100%{transform:scale(1.1,.92)}}
+@keyframes seam{0%{opacity:0}60%{opacity:.5}100%{opacity:1}}
+@keyframes lidpeek{0%,60%{transform:none}80%{transform:translateY(-2px)}100%{transform:translateY(-5px)}}
+@keyframes lidpop{0%{transform:translateY(20px) scaleY(.15);opacity:.4}60%{transform:translateY(-6px) scaleY(1.06);opacity:1}100%{transform:none}}
+@keyframes itemrise{0%{opacity:0;transform:translateY(60px) scale(.3)}55%{opacity:1;transform:translateY(-10px) scale(1.07)}75%{transform:translateY(2px) scale(.98)}100%{transform:none}}
+@keyframes flash{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+@keyframes jolt{0%,100%{transform:none}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+@keyframes rankin{0%{opacity:0;transform:scale(.3) rotate(-25deg)}60%{opacity:1;transform:scale(1.12) rotate(4deg)}100%{transform:none}}
+@keyframes rkshine{0%{transform:translateX(0)}100%{transform:translateX(70px)}}
+@keyframes growin{0%{transform:scale(.72);filter:brightness(1.4)}55%{transform:scale(1.08)}100%{transform:none;filter:none}}
+@keyframes glowpulse{50%{box-shadow:0 0 0 3px color-mix(in oklab, var(--accent) 45%, transparent),0 0 30px color-mix(in oklab, var(--accent) 35%, transparent)}}

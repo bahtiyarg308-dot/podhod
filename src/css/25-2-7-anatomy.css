@@ -1,0 +1,30 @@
+/* ---------- 2.7: anatomy ---------- */
+.anat{display:block;width:100%;height:auto}
+.anat use{stroke:var(--surface);stroke-width:3}
+.anat .an{fill:color-mix(in oklab, var(--muted) 22%, var(--surface-2))}
+.anat .am{fill:color-mix(in oklab, var(--muted) 38%, var(--surface-2));cursor:pointer;transition:fill .3s}
+.anat .h1{fill:#F2D27A}
+.anat .h2{fill:#FFB020}
+.anat .h3{fill:#FF4D5E}
+.anat .rg-ok{fill:var(--good)}
+.anat .rg-mid{fill:var(--gold-fill)}
+.anat .rg-low{fill:var(--bad)}
+.anat .rg-idle{fill:color-mix(in oklab, var(--muted) 38%, var(--surface-2))}
+.anat.mini{width:78px;flex:none}
+.anat.mid{width:230px;margin:0 auto 8px}
+.anat.news{width:210px}
+.rec-fig .anat{width:150px}
+@media (max-width:420px){.rec-fig .anat{width:250px}}
+.ex-map{margin-bottom:16px}
+.tech-h{display:block;font-weight:600;margin-bottom:10px}
+.mus-l{display:flex;gap:8px;font-size:13px;line-height:1.4;color:var(--ink-2);margin-top:6px;text-align:left}
+.mus-l b{color:var(--ink);font-weight:600}
+.mus-l i{width:10px;height:10px;border-radius:3px;flex:none;margin-top:4px}
+.mus-l i.h3{background:#FF4D5E}
+.mus-l i.h1{background:#F2D27A}
+.wmap{border:0;padding-bottom:0}
+.wmap-in{margin-top:8px}
+.pick-w{display:grid;grid-template-columns:minmax(0,1fr) 40px;align-items:center;gap:2px}
+.pick-info{color:var(--muted)}
+.pick-h{font:500 10px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:12px 2px 6px}
+.pick-tools .chips+.chips{margin-top:6px}

@@ -1,0 +1,5 @@
+/* ---------- long lists: the phone lays out only what is on screen ---------- */
+.month{content-visibility:auto;contain-intrinsic-size:auto 520px}
+.month:first-of-type{content-visibility:visible}
+.log-more{margin-top:18px}
+

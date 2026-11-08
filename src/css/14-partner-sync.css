@@ -1,0 +1,31 @@
+/* ---------- partner sync ---------- */
+.feed{display:grid;gap:2px;margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+.feed-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 0}
+.feed-main{display:flex;align-items:center;gap:10px;min-width:0;text-align:left;width:100%}
+.feed-main>span:not(.ava){min-width:0;display:block}
+.feed-t{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed-t b{font-weight:700}
+.feed-main small{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kudos{display:flex;gap:4px}
+.kd{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);color:var(--muted);transition:background-color .2s,color .2s,transform .3s var(--spring)}
+.kd .ic{width:17px;height:17px}
+.kd:active{transform:scale(.85)}
+.kd.on{background:var(--accent);color:var(--accent-ink);animation:pop .45s var(--spring)}
+.kd-got{display:inline-flex;gap:1px;color:var(--accent)}
+.kd-got .ic{width:14px;height:14px}
+.live-txt{color:var(--good);font-weight:600}
+.sync-note{font:500 10px var(--f-mono);color:var(--muted);text-align:right;margin-top:6px}
+.choice{display:grid;gap:10px}
+.choice button{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;text-align:left;padding:16px;border-radius:18px;background:var(--bg);border:2px solid var(--line);width:100%;transition:border-color .2s,transform .25s var(--spring)}
+.choice button:active{transform:scale(.98)}
+.choice button:hover{border-color:var(--accent)}
+.choice b{display:block;font-weight:700;font-size:15px}
+.choice small{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.choice .ic{width:28px;height:28px;color:var(--accent)}
+.choice button.pri{border-color:var(--accent);background:var(--accent-soft)}
+a.btn{text-decoration:none}
+.err{color:var(--bad);font-size:13px;margin-top:10px}
+.fr-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.fr-head b{display:block;font:600 20px/1.2 var(--f-display)}
+.fr-head small{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+

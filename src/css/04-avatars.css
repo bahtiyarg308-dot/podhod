@@ -1,0 +1,7 @@
+/* ---------- avatars ---------- */
+.ava{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--pc,#E0283F);color:var(--pci,#fff);font:600 14px/1 var(--f-display);flex:none;transition:background-color .4s}
+.ava.lg{width:46px;height:46px;font-size:18px}
+.ava-btn{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;transition:transform .3s var(--spring)}
+.ava-btn:active{transform:scale(.9)}
+.ava-btn .ava{box-shadow:0 0 0 2px var(--bg),0 0 0 4px color-mix(in oklab, var(--pc) 45%, transparent)}
+

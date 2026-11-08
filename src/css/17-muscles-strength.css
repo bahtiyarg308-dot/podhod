@@ -1,0 +1,15 @@
+/* ---------- muscles & strength ---------- */
+.mload{display:grid;gap:12px}
+.ml{display:grid;grid-template-columns:72px minmax(0,1fr) 46px;gap:12px;align-items:center;font-size:13px}
+.ml-t{position:relative;height:16px;border-radius:5px;background:var(--surface-2);overflow:hidden}
+.ml-zone{position:absolute;top:0;bottom:0;background:color-mix(in oklab, var(--good) 14%, transparent)}
+.ml-t i{position:absolute;left:0;top:4px;bottom:4px;border-radius:3px;background:var(--accent);transform-origin:left;animation:barx .8s var(--out) both;animation-delay:calc(var(--i) * 50ms)}
+.ml-prev{position:absolute;top:1px;bottom:1px;width:2px;border-radius:1px;background:var(--ink-2)}
+.ml-v{text-align:right;font:600 12px var(--f-mono)}
+.ml-legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:14px;font-size:12px;color:var(--muted)}
+.ml-legend i{display:inline-block;width:12px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.str li{display:grid;grid-template-columns:minmax(0,1fr) auto 64px;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+.str li:last-child{border-bottom:0}
+.str .n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.str .v{font:600 13px var(--f-mono);white-space:nowrap}
+.str .d{font:600 12px var(--f-mono);text-align:right;white-space:nowrap}

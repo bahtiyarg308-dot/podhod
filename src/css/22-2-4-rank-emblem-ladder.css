@@ -1,0 +1,28 @@
+/* ---------- 2.4: rank emblem, ladder, daily gift, pets and auras ---------- */
+.rk{width:36px;height:42px;flex:none;display:block}
+.rk .rk-n{font:700 15px var(--f-display);fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.35);stroke-width:2.4px}
+.rk.big{width:92px;height:106px;margin:0 auto}
+.lvl .rk{margin:-6px 0}
+@media (max-width:380px){.lvl-main b{white-space:normal;line-height:1.15}.lvl{gap:10px}}
+.rank-hero .rk{margin-bottom:8px;animation:pop-in .5s var(--spring) both}
+.ranks{display:grid;gap:4px;margin-top:10px}
+.rkrow{display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;align-items:center;padding:6px 8px;border-radius:12px;opacity:.55}
+.rkrow .rk{width:30px;height:35px;filter:grayscale(1)}
+.rkrow.on{opacity:1}
+.rkrow.on .rk{filter:none}
+.rkrow.cur{background:var(--accent-soft)}
+.rkrow b{display:block;font-weight:600;font-size:14px}
+.rkrow small{font-size:12px;color:var(--muted)}
+.giftbtn{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:16px;background:color-mix(in oklab, var(--gold-fill) 14%, var(--surface));border:1px solid color-mix(in oklab, var(--gold-fill) 40%, transparent);text-align:left;color:var(--ink);font-weight:600}
+.giftbtn>.ic:first-child{width:28px;height:28px;color:var(--gold);animation:kbob 2.6s ease-in-out infinite}
+.giftbtn span{flex:1;min-width:0;display:grid;gap:2px}
+.giftbtn small{font-size:12px;font-weight:400;color:var(--ink-2)}
+.giftbtn>.ic:last-child{color:var(--muted)}
+.ch .g-pt{animation:ptf 3.2s ease-in-out infinite}
+.ch .g-pet{animation:petbob 2.4s ease-in-out infinite}
+.reveal.rr-e .mate{box-shadow:0 0 0 2px #B67CFF,0 0 26px rgba(182,124,255,.35)}
+.news-top{display:grid;grid-template-columns:92px minmax(0,1fr);gap:14px;align-items:center;margin-bottom:14px}
+.news-top .rk.big{width:80px;height:92px}
+.news-rank{display:block;font:600 22px/1.15 var(--f-display);text-transform:uppercase;margin:2px 0 4px}
+@keyframes ptf{0%,100%{transform:translateY(0);opacity:.95}50%{transform:translateY(-3px);opacity:.5}}
+@keyframes petbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}

@@ -1,0 +1,107 @@
+/* ---------- 2.1: warm-up, reserve, body tabs, photos, fixes ---------- */
+.x-btns{display:flex;flex-wrap:wrap;gap:6px}
+.set-check{position:relative}
+.set-check .rv{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--ink);color:var(--bg);font:600 10px/17px var(--f-mono);text-align:center}
+.rir-ask{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) 32px;align-items:center;gap:6px;margin:2px 4px 6px;padding:8px 10px;border-radius:12px;background:var(--surface-2);font-size:13px;color:var(--ink-2);animation:row-in .3s var(--out) both}
+.rir-ask span{grid-column:1/-1}
+.rir-ask .chip{min-width:0;text-align:center;background:var(--bg)}
+.rir-ask .chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.rir-ask .icon-btn{width:32px;height:32px}
+.body-tabs{margin-bottom:14px}
+.mform{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:end}
+@media (min-width:600px){.mform{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.mform .lbl,.mform .field{min-width:0}
+.mform .btn{grid-column:1/-1;height:46px}
+.kv.k5{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:600px){.kv.k5{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.kv.k5 span{display:block}
+.kv .kd2{display:block;font-size:11.5px;color:var(--ink-2);margin-top:2px}
+@media (max-width:599px){.kv.k5>div:last-child{grid-column:1/-1}}
+body.resting .main{padding-bottom:calc(200px + env(safe-area-inset-bottom,0px))}
+/* very narrow phones (iPhone SE 1st gen and similar): give the "previous" column room, keep tab labels inside */
+@media (max-width:359px){
+  .set-row{grid-template-columns:26px minmax(0,1fr) 56px 46px 36px 18px;gap:4px}
+  .set-check{width:36px;height:36px}
+  .set-in{height:38px}
+  .set-prev{font-size:10px}
+  .tab{font-size:10px;letter-spacing:-.01em}
+  .xcard{padding-inline:8px}
+}
+.mlist li{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.mlist li:last-child{border-bottom:0}
+.mlist b{font-weight:700;margin-right:6px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cmp figure{margin:0;display:grid;gap:6px;min-width:0}
+.cmp img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:14px;background:var(--surface-2)}
+.cmp figcaption{font-size:12px;color:var(--muted)}
+.cmp b{color:var(--ink)}
+.phs{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.ph{position:relative;display:block;border-radius:12px;overflow:hidden;background:var(--surface-2)}
+.ph img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover}
+.ph span{position:absolute;left:6px;bottom:6px;padding:2px 6px;border-radius:6px;background:rgba(0,0,0,.62);color:#fff;font:500 10px var(--f-mono)}
+.ph-big{display:block;width:100%;max-height:62vh;object-fit:contain;border-radius:14px;background:var(--bg)}
+label.btn{cursor:pointer}
+body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
+@media (min-width:960px){body.resting .composer{bottom:92px}}
+/* gear & stages: items use tones of the profile colour, so they read on a body of the same colour */
+.ch,.thumb{--ca:color-mix(in oklab, var(--cm, var(--accent)) 58%, #101114);--cb:color-mix(in oklab, var(--cm, var(--accent)) 34%, #000)}
+.ch .g-a{fill:var(--ca)}
+.ch .g-b{fill:var(--cb)}
+.ch .g-w{fill:#FFFFFF}
+.ch .g-k{fill:#1C1D21}
+.ch .g-cy{fill:#2EF2E6}
+.ch .g-y{fill:#FFD23F}
+.ch .g-gold{fill:#F2C230}
+.ch .g-gold2{fill:#C8940C}
+.ch .g-gem{fill:var(--cm);stroke:#8A6206;stroke-width:.8}
+.ch .g-silver{fill:#D3D8DF}
+.ch .g-silver2{fill:#AEB5C0}
+.ch .g-lens{fill:#121317;opacity:.9}
+.ch .g-glass{fill:#DDF3FF;opacity:.28}
+.ch .g-leaf{fill:#4FA35B}
+.ch .g-hl{fill:none;stroke:#fff;stroke-width:1.3;stroke-linecap:round;opacity:.75}
+.ch .g-sd{fill:none;stroke:var(--cb);stroke-linecap:round;stroke-linejoin:round}
+.ch .g-sm{fill:none;stroke:var(--ca);stroke-linecap:round;stroke-linejoin:round}
+.ch .g-belt{fill:#1C1D21}
+.ch .g-paw{fill:var(--cm);stroke:var(--cd);stroke-width:1.2}
+.ch .g-abs{fill:none;stroke:var(--cd);stroke-width:1.9;stroke-linecap:round}
+.ch .g-aura{opacity:.9}
+.ch.st-4 .g-aura{animation:aura 3.2s ease-in-out infinite}
+@keyframes aura{50%{opacity:.55}}
+.chbg{position:absolute;inset:0;width:100%;height:100%;display:block;--cm:var(--accent)}
+.chbg .b-0{fill:var(--cm);opacity:.14}
+.chbg .b-1{fill:var(--cm);opacity:.3}
+.chbg .b-2{fill:color-mix(in oklab, var(--cm) 42%, #121318)}
+.chbg .b-3{fill:color-mix(in oklab, var(--cm) 30%, #0C0D10)}
+.chbg .b-snow{fill:#fff;opacity:.7}
+.chbg .b-dark{fill:#0B0B14}
+.chbg .b-y{fill:#FFD23F;opacity:.85}
+.chbg .b-lane{fill:none;stroke:var(--cm);stroke-width:1;opacity:.55}
+.chbg .b-neon{fill:none;stroke:var(--cm);stroke-width:1.6}
+.chbg .b-neon.w{stroke-width:.8;opacity:.6}
+.chbg .b-neon.g{stroke-width:7;opacity:.25}
+.chbg .b-star{fill:#F2C230}
+.sil *{fill:var(--line)!important;stroke:var(--line)!important;opacity:1!important}
+.sil .g-halo,.sil .g-aura,.thumb .g-paw{display:none}
+.mate{position:relative;display:grid;place-items:center;overflow:hidden;background:var(--surface-2)}
+.mate>.ch{position:relative}
+/* chest */
+.chest{width:100%;height:auto;display:block;overflow:visible}
+.chest .k-body{fill:#3A3D45}
+.chest .k-band{fill:var(--accent)}
+.chest .k-gold{fill:#F2C230}
+.chest .k-gold2{fill:#C8940C}
+.chest .k-inner{fill:#121316}
+.chest .k-dark{fill:#000}
+.chest .k-lock{fill:#E3E6EB}
+.chest .k-key{fill:#3A3D45}
+.chest .k-shadow{fill:#000;opacity:.25}
+.chest .k-glow{fill:var(--rc);opacity:.2}
+.chest .k-light{fill:var(--rc);opacity:.9}
+.chest .k-rays path{fill:var(--rc);opacity:.2}
+.chest .k-rays{transform-origin:60px 40px;animation:spin 14s linear infinite}
+.chest.open .k-burst{animation:burst .5s var(--out) both}
+.chest.shake{animation:kshake .45s ease-in-out 3;transform-origin:60px 90px}
+@keyframes kshake{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+@keyframes burst{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}

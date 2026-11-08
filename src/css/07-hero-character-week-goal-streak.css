@@ -1,0 +1,80 @@
+/* ---------- hero: character, week goal, streak, level ---------- */
+.hero{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px 14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;position:relative;overflow:hidden}
+.ch-btn{display:grid;place-items:center;width:96px;height:96px;border-radius:22px;background:var(--surface-2)}
+.hero-main{min-width:0;display:grid;gap:10px;justify-items:start}
+.hero-stats{display:flex;gap:20px;flex-wrap:wrap}
+.hs b{display:flex;align-items:baseline;gap:4px;font:600 26px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.hs b small{font-size:16px;color:var(--muted);font-weight:500}
+.hs b .ic{width:18px;height:18px;color:var(--accent);align-self:center}
+.hs span{display:block;font:500 10px/1.3 var(--f-mono);text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:5px}
+.hs.warn span{color:var(--gold)}
+/* characters: flat shapes in the profile colour (--cm), animated by mood */
+.ch{--cm:var(--accent);--cd:color-mix(in oklab, var(--cm) 66%, #000);--cl:#F6F0E6;--ci:#17171B;width:88px;height:88px;overflow:visible;display:block;flex:none}
+.ch .c-main{fill:var(--cm);transition:fill .6s}
+.ch .c-dark{fill:var(--cd)}
+.ch .c-light{fill:var(--cl)}
+.ch .c-ink{fill:var(--ci)}
+.ch .c-stroke{fill:none;stroke:var(--cm);stroke-linecap:round;transition:stroke .6s}
+.ch .c-line{fill:none;stroke:var(--ci);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.ch .c-wh{fill:none;stroke:var(--ci);stroke-width:1.3;stroke-linecap:round;opacity:.45}
+.ch .c-shine{fill:#fff}
+.ch .c-tongue{fill:#FF8FA3}
+.ch .c-blush{fill:#FF8FA8;opacity:.5}
+.ch .c-beak{fill:#F2B23A}
+.ch .c-hop{animation:none}
+.ch .c-all{transform-origin:50px 96px;animation:breathe 3.6s ease-in-out infinite}
+.ch .c-eyes{transform-box:fill-box;transform-origin:center;animation:blink 4.6s infinite}
+.ch .c-tail{animation:wag 2.6s ease-in-out infinite}
+.ch .c-ear{animation:twitch 7s ease-in-out infinite}
+.ch .c-ear.r{animation-name:twitch-r;animation-delay:2.4s}
+.ch.m-happy .c-hop{animation:hop 6s 1.5s ease-in-out infinite}
+.ch.m-happy .c-tail{animation-duration:1.1s}
+.ch.m-fire .c-hop{animation:hop 2.2s ease-in-out infinite}
+.ch.m-fire .c-tail{animation-duration:.7s}
+.ch.m-sleepy .c-all{animation-duration:5.5s}
+.ch.m-sleepy .c-tail,.ch.m-sleepy .c-ear{animation:none}
+.ch.poke .c-hop{animation:jump .7s var(--out)}
+.ch .c-z{font:600 15px var(--f-display);fill:var(--muted);animation:zz 2.4s ease-in-out infinite}
+.ch .c-z2{animation-delay:1.2s;font-size:11px}
+.ch .c-spark{fill:var(--gold-fill);transform-box:fill-box;transform-origin:center;animation:twinkle 1.8s ease-in-out infinite}
+.ch.still *{animation:none!important}
+.chars{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px}
+.chp{display:grid;justify-items:center;gap:6px;padding:10px 6px;border-radius:16px;background:var(--bg);border:2px solid var(--line);font-size:13px;font-weight:600;color:var(--ink-2);transition:border-color .2s,background-color .2s}
+.chp .ch{width:64px;height:64px}
+.chp[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+/* weekly quests */
+.quests{padding:4px 14px}
+.q{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.q:last-of-type{border-bottom:0}
+.q-ic{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--surface-2);color:var(--ink-2)}
+.q-ic .ic{width:18px;height:18px}
+.q.done .q-ic{background:var(--accent);color:var(--accent-ink)}
+.q-t{min-width:0}
+.q-t b{display:block;font-weight:600;font-size:14px}
+.q-bar{display:block;height:6px;border-radius:3px;background:var(--surface-2);margin-top:7px;overflow:hidden}
+.q-bar i{display:block;height:100%;background:var(--accent);border-radius:3px;transform-origin:left;animation:barx .8s var(--out) both}
+.q-v{font:600 12px var(--f-mono);color:var(--muted);text-align:right;white-space:nowrap}
+.q-v small{display:block;font-weight:500;font-size:10px;margin-top:3px}
+.q.done .q-v{color:var(--accent)}
+.q-foot{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);padding:10px 0 8px;border-top:1px solid var(--line)}
+.q-foot b{color:var(--ink);font-weight:600}
+/* progress hint inside an exercise */
+.x-hint{display:flex;align-items:center;gap:10px;width:calc(100% - 8px);margin:10px 4px 0;padding:9px 12px;border-radius:12px;background:var(--accent-soft);color:var(--ink);font-size:13px;text-align:left}
+.x-hint>.ic{width:18px;height:18px;color:var(--accent)}
+.x-hint b{font-family:var(--f-mono);font-weight:600}
+.x-hint small{display:block;color:var(--ink-2);font-size:12px;margin-top:1px}
+.x-hint .go{margin-left:auto;font-weight:600;font-size:12px;color:var(--accent);white-space:nowrap}
+.bubble{position:relative;display:inline-block;background:var(--surface-2);border-radius:14px 14px 14px 4px;padding:9px 12px;font-size:13.5px;line-height:1.35;color:var(--ink-2);animation:fade .4s ease both}
+.goal{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:12.5px;color:var(--ink-2);flex-wrap:wrap}
+.goal-dots{display:flex;gap:5px}
+.goal-dots i{width:14px;height:14px;border-radius:50%;background:var(--surface-2);box-shadow:inset 0 0 0 2px var(--line);transition:background-color .4s,transform .4s var(--spring)}
+.goal-dots i.on{background:var(--accent);box-shadow:none}
+.lvl{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;margin-top:12px;padding:10px 12px;border-radius:14px;background:var(--bg);text-align:left;width:100%;transition:transform .25s var(--spring)}
+.lvl:active{transform:scale(.98)}
+.lvl-n{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--accent);color:var(--accent-ink);font:600 18px/1 var(--f-display)}
+.lvl-main{min-width:0}
+.lvl-main b{display:block;font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lvl-bar{display:block;height:8px;border-radius:4px;background:var(--surface-2);margin-top:6px;overflow:hidden}
+.lvl-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),color-mix(in oklab, var(--accent) 60%, var(--gold-fill)));transform-origin:left;transition:width .9s var(--out);animation:barx 1s var(--out) both}
+.lvl-xp{font:500 10.5px var(--f-mono);color:var(--muted);white-space:nowrap}
+

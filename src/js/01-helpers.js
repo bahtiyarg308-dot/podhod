@@ -1,0 +1,37 @@
+/* ================= helpers ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const clone = o => JSON.parse(JSON.stringify(o ?? null));
+const clean = o => JSON.parse(JSON.stringify(o));
+const RM = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
+const DAY = 864e5;
+const num = v => (v === null || v === undefined || v === '' || Number.isNaN(Number(v))) ? null : Number(v);
+const parseNum = str => { const s = String(str).replace(',', '.').replace(/[^\d.]/g, ''); if (!s) return null; const v = parseFloat(s); return Number.isFinite(v) ? Math.min(v, 9999) : null; };
+const NFC = {}; const nf = (x, d = 1) => (NFC[d] || (NFC[d] = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: d }))).format(Math.round(x * 10 ** d) / 10 ** d);
+const ton = x => x >= 10000 ? nf(x / 1000, 1) + ' т' : nf(Math.round(x), 0) + ' кг';
+const plural = (n, f) => { const a = Math.abs(Math.round(n)) % 100, b = a % 10; if (a > 10 && a < 20) return f[2]; if (b > 1 && b < 5) return f[1]; if (b === 1) return f[0]; return f[2]; };
+const pad = n => String(n).padStart(2, '0');
+const fmtClock = sec => { sec = Math.max(0, Math.round(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60; return h ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`; };
+const fmtDur = ms => { const min = Math.max(0, Math.round(ms / 60000)); const h = Math.floor(min / 60); return h ? `${h} ч ${pad(min % 60)} мин` : `${min} мин`; };
+const MON_GEN = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const MON_S = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+const MON_SN = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+const MON_NOM = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const WD = ['вс','пн','вт','ср','чт','пт','сб'];
+const WD_FULL = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+const dayMonth = ms => { const d = new Date(ms); return `${d.getDate()} ${MON_GEN[d.getMonth()]}`; };
+const dShort = ms => { const d = new Date(ms); return `${d.getDate()} ${MON_S[d.getMonth()]}`; };
+const hm = ms => { const d = new Date(ms); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const dayKey = ms => { const d = new Date(ms); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+const startOfDay = ms => { const d = new Date(ms); d.setHours(0, 0, 0, 0); return d.getTime(); };
+const weekStart = ms => { const d = new Date(ms); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return d.getTime(); };
+const addDays = (ms, n) => { const d = new Date(ms); d.setDate(d.getDate() + n); return d.getTime(); };
+const toLocalInput = ms => { const d = new Date(ms); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const relDays = ms => { const n = Math.round((startOfDay(Date.now()) - startOfDay(ms)) / DAY); if (n <= 0) return 'сегодня'; if (n === 1) return 'вчера'; return `${n} ${plural(n, ['день','дня','дней'])} назад`; };
+const fmtIn = v => v === null || v === undefined ? '' : String(Math.round(v * 100) / 100).replace('.', ',');
+const hash = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = (h * 33 ^ s.charCodeAt(i)) >>> 0; return h.toString(36); };
+const buzz = p => { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* no vibration */ } };
+const pick = a => a[Math.floor(Math.random() * a.length)];
+

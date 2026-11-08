@@ -1,0 +1,13 @@
+/* ---------- motion: view entrance ---------- */
+#main.enter .view>*,#main.enter .editor>*{animation:rise-in .55s var(--out) both}
+#main.enter .view>*:nth-child(2),#main.enter .editor>*:nth-child(2){animation-delay:.05s}
+#main.enter .view>*:nth-child(3),#main.enter .editor>*:nth-child(3){animation-delay:.1s}
+#main.enter .view>*:nth-child(4),#main.enter .editor>*:nth-child(4){animation-delay:.15s}
+#main.enter .view>*:nth-child(5),#main.enter .editor>*:nth-child(5){animation-delay:.2s}
+#main.enter .view>*:nth-child(6),#main.enter .editor>*:nth-child(6){animation-delay:.25s}
+#main.enter .view>*:nth-child(7),#main.enter .editor>*:nth-child(7){animation-delay:.3s}
+#main.enter .view>*:nth-child(n+8),#main.enter .editor>*:nth-child(n+8){animation-delay:.35s}
+#main.enter .wd b{animation:pop-in .5s var(--spring) both;animation-delay:calc(.12s + var(--i) * 45ms)}
+#main.enter .jrow{animation:rise-in .5s var(--out) both;animation-delay:calc(.1s + var(--i) * 30ms)}
+#main.enter .medal{animation:pop-in .5s var(--spring) both;animation-delay:calc(.15s + var(--i) * 35ms)}
+

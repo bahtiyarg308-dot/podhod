@@ -1,0 +1,10 @@
+/* ---------- body ---------- */
+.bform{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:end}
+.bform .lbl,.bform .field{min-width:0}
+.bform .btn{height:46px;grid-column:1/-1}
+@media (min-width:560px){.bform{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}.bform .btn{grid-column:auto}}
+.blist li{display:grid;grid-template-columns:minmax(0,1fr) auto auto 34px;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.blist li:last-child{border-bottom:0}
+.blist .w{font:600 13px var(--f-mono)}
+.blist .dl{font:500 11px var(--f-mono);min-width:48px;text-align:right}
+

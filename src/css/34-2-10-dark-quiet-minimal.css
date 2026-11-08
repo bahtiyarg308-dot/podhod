@@ -1,0 +1,85 @@
+/* ================= 2.10: «Мрак» — dark, quiet, minimal ================= */
+html[data-look="noir"]{--bg:#070708;--surface:#0E0E10;--surface-2:#151517;--line:#232326;--ink:#E9E7E2;--ink-2:#A5A39E;--muted:#6B6A66;--r:10px;--r-lg:12px;
+  --gold:#B79F6B;--gold-fill:#B79F6B;--gold-soft:#241F14;--on-gold:#14110A;--good:#86A683;--good-soft:#121A12;--on-good:#08100A;--bad:#B8514B;--bad-soft:#241211;--on-bad:#140808;
+  --shadow:0 14px 36px rgba(0,0,0,.65);--scrim:rgba(0,0,0,.74);--h0:#1A1A1C}
+html[data-look="noir"][data-theme="light"]{--bg:#E8E7E3;--surface:#F2F1ED;--surface-2:#DEDDD8;--line:#CBCAC4;--ink:#0F0F10;--ink-2:#38373A;--muted:#6A6A6C;
+  --gold:#80693A;--gold-fill:#B79F6B;--gold-soft:#EDE6D3;--good:#4C6E49;--good-soft:#E0E8DD;--on-good:#FFFFFF;--bad:#9C3C37;--bad-soft:#F0DEDC;--on-bad:#FFFFFF;--shadow:0 14px 34px rgba(20,20,20,.12);--scrim:rgba(10,10,10,.5);--h0:#DAD9D4}
+html[data-look="noir"] .btn,html[data-look="noir"] .btn-lg{border-radius:10px}
+html[data-look="noir"] .btn-lg{font-weight:500;letter-spacing:.14em}
+html[data-look="noir"] .btn-primary{box-shadow:none}
+html[data-look="noir"] .field{border-radius:10px;border-width:1px}
+html[data-look="noir"] .seg{border-radius:11px}
+html[data-look="noir"] .seg button{border-radius:8px}
+html[data-look="noir"] .chip{border-radius:8px}
+html[data-look="noir"] .panel,html[data-look="noir"] .xcard{box-shadow:none}
+html[data-look="noir"] .h1,html[data-look="noir"] .big-title,html[data-look="noir"] .sheet-head h2{font-weight:500;letter-spacing:.07em}
+html[data-look="noir"] .h1{font-size:28px}
+html[data-look="noir"] .tabbar{border-radius:16px;box-shadow:none;background:color-mix(in oklab,var(--surface) 96%,transparent)}
+html[data-look="noir"] .tab-ind::before{border-radius:12px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
+html[data-look="noir"] .tab[aria-current="page"] .ic{color:var(--ink)}
+html[data-look="noir"] .sheet{border-radius:18px 18px 0 0}
+html[data-look="noir"] .scrim{background:var(--scrim)}
+
+/* the first screen: a mark, a name, three lines, two buttons */
+.gate-mark{width:58px;height:58px;color:var(--ink);animation:rise-in .8s var(--out) both}
+.gate-mark svg{width:100%;height:100%;display:block}
+.gate-wrap.compact .gate-mark{width:34px;height:34px}
+.gate-hero{gap:16px}
+.gate-bg{background:radial-gradient(ellipse 80% 45% at 50% -5%,color-mix(in oklab,var(--ink) 9%,transparent),transparent 70%)}
+.gate-bg i{display:none}
+.gate-title{font:500 22px/1 var(--f-display);letter-spacing:.46em;text-indent:.46em;text-transform:uppercase}
+.gate-title.sm{font-size:13px;letter-spacing:.4em;text-indent:.4em;color:var(--muted)}
+.gate-sub{font:400 11.5px/1.8 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);max-width:30ch}
+.gate-h h2{font:500 22px/1.1 var(--f-display);letter-spacing:.08em}
+.gate-feats{gap:0;margin:6px 0 14px;border-bottom:1px solid var(--line)}
+.gate-feats li{grid-template-columns:34px minmax(0,1fr);padding:15px 0;border-top:1px solid var(--line);font-size:14.5px;color:var(--ink-2)}
+.gate-feats .num{font:400 11px var(--f-mono);letter-spacing:.1em;color:var(--muted)}
+.btn-g{background:transparent;box-shadow:inset 0 0 0 1px var(--line);color:var(--ink)}
+.gate-back{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
+.gate-wrap .sheet-body{gap:10px}
+.gate-intro{font-size:13.5px;color:var(--muted)}
+.gate-wrap .sheet-body{align-content:start;grid-auto-rows:auto}
+.snap-list li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.sn-w{display:grid;gap:2px;min-width:0}
+.sn-w small{color:var(--muted);font-size:12.5px}
+.errpre{white-space:pre-wrap;word-break:break-word;font:11.5px/1.5 var(--f-mono);background:var(--surface-2);border-radius:var(--r);padding:12px;max-height:46vh;overflow:auto;margin:0;color:var(--ink-2)}
+.srow .row.tight{display:flex;gap:6px;flex-wrap:nowrap}
+/* iPhone zooms the page into any field with text smaller than 16px — keep fields at 16px on touch screens */
+@media (pointer:coarse){input.field,select.field,textarea.field,.set-in,.composer textarea,input[type="search"]{font-size:16px}}
+@keyframes sh{to{background-position:-200% 0}}
+@keyframes pulse{50%{box-shadow:0 0 0 7px transparent}}
+@keyframes rise-in{from{opacity:0;transform:translateY(14px)}}
+@keyframes card-in{from{opacity:0;transform:translateY(16px) scale(.98)}}
+@keyframes row-in{from{opacity:0;transform:translateY(-6px)}}
+@keyframes pop-in{0%{opacity:0;transform:scale(.4)}100%{opacity:1;transform:scale(1)}}
+@keyframes pop{0%{transform:scale(1)}35%{transform:scale(.8)}70%{transform:scale(1.14)}100%{transform:scale(1)}}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes spin-in{from{transform:rotate(-140deg) scale(.3)}}
+@keyframes draw{from{stroke-dashoffset:22}to{stroke-dashoffset:0}}
+@keyframes dash-to{to{stroke-dashoffset:0}}
+@keyframes plate-in{from{opacity:0;transform:translateX(-8px) scaleY(.6)}}
+@keyframes sheet-up{from{transform:translateY(100%)}}
+@keyframes sheet-down{to{transform:translateY(100%)}}
+@keyframes pop-sheet{from{opacity:0;transform:translate(-50%,-46%) scale(.96)}}
+@keyframes pop-sheet-out{to{opacity:0;transform:translate(-50%,-48%) scale(.97)}}
+@keyframes fade{from{opacity:0}}
+@keyframes fade-out{to{opacity:0}}
+@keyframes toast-in{from{opacity:0;transform:translate(-50%,-14px) scale(.94)}}
+@keyframes toast-out{to{opacity:0;transform:translate(-50%,-10px) scale(.96)}}
+@keyframes bar-in{from{opacity:0;transform:translate(-50%,20px) scale(.96)}}
+@keyframes bar-out{to{opacity:0;transform:translate(-50%,16px) scale(.97)}}
+@keyframes ding{0%{transform:translateX(-50%) scale(1)}30%{transform:translateX(-50%) scale(1.05)}60%{transform:translateX(-50%) scale(.98)}100%{transform:translateX(-50%) scale(1)}}
+@keyframes grow{from{transform:scaleY(0)}}
+@keyframes barx{from{transform:scaleX(0)}}
+@keyframes ring{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(3)}}
+@keyframes ring-pulse{0%{opacity:.9;transform:scale(.95)}100%{opacity:0;transform:scale(1.25)}}
+@keyframes breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.025,.975)}}
+@keyframes hop{0%,78%,100%{transform:translateY(0)}84%{transform:translateY(-8px)}90%{transform:translateY(0) scale(1.04,.96)}95%{transform:translateY(0) scale(.99,1.01)}}
+@keyframes wag{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(9deg)}}
+@keyframes twitch{0%,88%,100%{transform:rotate(0)}92%{transform:rotate(-12deg)}96%{transform:rotate(5deg)}}
+@keyframes twitch-r{0%,88%,100%{transform:rotate(0)}92%{transform:rotate(12deg)}96%{transform:rotate(-5deg)}}
+@keyframes jump{0%{transform:translateY(0) scale(1)}25%{transform:translateY(4px) scale(1.08,.9)}55%{transform:translateY(-14px) scale(.95,1.06) rotate(-6deg)}80%{transform:translateY(0) scale(1.04,.96)}100%{transform:none}}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}
+@keyframes zz{0%{opacity:0;transform:translate(0,4px)}40%{opacity:1}100%{opacity:0;transform:translate(6px,-8px)}}
+@keyframes twinkle{0%,100%{transform:scale(.6);opacity:.5}50%{transform:scale(1.1);opacity:1}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.chart svg.anim .line{stroke-dasharray:none}}

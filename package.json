@@ -1,0 +1,12 @@
+{
+  "name": "podhod",
+  "private": true,
+  "description": "Подход — дневник тренировок (офлайн-PWA)",
+  "scripts": {
+    "build": "node tools/build.js",
+    "check": "node tools/build.js --check",
+    "test": "node tests/run.js",
+    "test:full": "node tests/run.js --full"
+  },
+  "devDependencies": { "playwright": "^1.50.0" }
+}
