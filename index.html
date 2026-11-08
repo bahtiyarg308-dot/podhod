@@ -1347,7 +1347,7 @@ body.gated #main,body.gated .tabbar,body.gated .rail,body.gated #rest-root,body.
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.9.4';
+const APP_VERSION = '2.9.5';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -2788,11 +2788,13 @@ setInterval(() => { if (document.visibilityState === 'visible') { syncNow(); clo
 setInterval(() => { if (S.view === 'chat' && document.visibilityState === 'visible') { syncNow(); cloudSync(); } }, 15000);
 
 /* ================= PWA: service worker, install ================= */
+/* a downloaded update installs itself when it cannot disturb anything: at launch and when the app comes back to the screen, with no workout running */
+function autoUpdate() { const w = S.updateReady; if (!w || S.active || (S.sheets.length && !gateSheet())) return; flush(); w.postMessage('skip'); }
 function registerSW() {
   if (!('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol)) return;
   navigator.serviceWorker.register('./sw.js').then(reg => {
     const watch = w => { if (!w) return; w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) { S.updateReady = w; toast('Вышло обновление приложения', '', { label:'Обновить', act:'applyUpdate' }); render(); } }); };
-    if (reg.waiting && navigator.serviceWorker.controller) { S.updateReady = reg.waiting; render(); }
+    if (reg.waiting && navigator.serviceWorker.controller) { S.updateReady = reg.waiting; render(); autoUpdate(); }
     reg.addEventListener('updatefound', () => watch(reg.installing));
     setInterval(() => { reg.update().catch(() => {}); }, 3600000);
   }).catch(() => {});
@@ -2853,7 +2855,7 @@ async function keepAwake(on) {
     else if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
   } catch (e) { wakeLock = null; }
 }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { flush(); if (SY.pushT) { clearTimeout(SY.pushT); SY.pushT = null; syncNow(); } if (CL.t) { clearTimeout(CL.t); CL.t = null; cloudSync(); } } else { if (S.active) keepAwake(true); syncNow(); cloudSync({ links:true }); verifyTick(); } });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { flush(); if (SY.pushT) { clearTimeout(SY.pushT); SY.pushT = null; syncNow(); } if (CL.t) { clearTimeout(CL.t); CL.t = null; cloudSync(); } } else { if (S.active) keepAwake(true); syncNow(); cloudSync({ links:true }); verifyTick(); autoUpdate(); } });
 window.addEventListener('pagehide', flush);
 function confetti(x, y, n = 70) {
   if (RM) return;
