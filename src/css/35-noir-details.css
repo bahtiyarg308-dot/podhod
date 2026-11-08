@@ -1,0 +1,31 @@
+/* ================= 3.0: «Мрак» — details: line-art companion, thin icons, quiet rewards, OLED black ================= */
+html[data-look="noir"] .ic{stroke-width:1.6}
+html[data-look="noir"] .tab .ic,html[data-look="noir"] .medal-c .ic{stroke-width:1.6}
+html[data-look="noir"] .ch .c-main{fill:var(--surface-2);stroke:var(--cm);stroke-width:1.7;stroke-linejoin:round}
+html[data-look="noir"] .ch .c-dark{fill:var(--bg);stroke:var(--cm);stroke-width:1.2;stroke-linejoin:round}
+html[data-look="noir"] .ch .c-light{fill:color-mix(in oklab,var(--cm) 10%,var(--surface))}
+html[data-look="noir"] .ch .c-ink{fill:var(--cm)}
+html[data-look="noir"] .ch .c-line,html[data-look="noir"] .ch .c-wh{stroke:var(--cm)}
+html[data-look="noir"] .ch .c-blush{display:none}
+html[data-look="noir"] .ch .c-tongue,html[data-look="noir"] .ch .c-beak{fill:var(--cm)}
+html[data-look="noir"] .ch .c-shine{fill:var(--bg)}
+html[data-look="noir"][data-theme="light"] .ch .c-main{fill:var(--surface)}
+/* gear and rewards lose their toy colours */
+html[data-look="noir"] .ch .g-a{fill:color-mix(in oklab,var(--ca) 40%,#7b7a77)}
+html[data-look="noir"] .ch .g-b{fill:color-mix(in oklab,var(--cb) 40%,#7b7a77)}
+html[data-look="noir"] .ch .g-sd{stroke:color-mix(in oklab,var(--cb) 40%,#7b7a77)}
+html[data-look="noir"] .ch .g-sm{stroke:color-mix(in oklab,var(--ca) 40%,#7b7a77)}
+html[data-look="noir"] .ch .g-w{fill:#E6E4DF}
+html[data-look="noir"] .ch .g-cy{fill:#9DB3B0}
+html[data-look="noir"] .ch .g-y{fill:#CDBB86}
+html[data-look="noir"] .ch .g-gold{fill:#B79F6B}
+html[data-look="noir"] .ch .g-gold2{fill:#7E6B3F}
+html[data-look="noir"] .ch .g-gem{stroke:#6B5A33}
+html[data-look="noir"] .ch .g-leaf{fill:#7C9578}
+html[data-look="noir"] .ch .g-silver{fill:#C9C8C4}
+html[data-look="noir"] .ch .g-silver2{fill:#9B9A96}
+html[data-look="noir"] .chest,html[data-look="noir"] .rk{filter:saturate(.45)}
+html[data-look="noir"] .empty{border-width:1px;background:transparent}
+html[data-look="noir"] .empty h3{font-weight:500;letter-spacing:.06em}
+/* pure black for OLED screens */
+html[data-oled="1"][data-look="noir"]:not([data-theme="light"]){--bg:#000;--surface:#09090A;--surface-2:#101012;--line:#1B1B1E}

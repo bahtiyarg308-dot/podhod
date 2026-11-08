@@ -260,6 +260,7 @@ const A = {
   toggleSound: () => { S.profile.sound = !S.profile.sound; saveProfile(); unlockAudio(); buzz(8); render(); },
   setBar: el => { S.profile.bar = +el.dataset.v; saveProfile(); render(); },
   setTheme: el => { ensureMeta().theme = el.dataset.v; saveMeta(); applyTheme(); render(); },
+  toggleOled: () => { const m = ensureMeta(); m.oled = !m.oled; saveMeta(); applyTheme(); render(); },
   setNoirAcc: el => { ensureMeta().noirAcc = NOIR_ACC[el.dataset.c] ? el.dataset.c : 'bone'; saveMeta(); applyAccent(); render(); },
   setLook: el => { ensureMeta().look = el.dataset.v === 'color' ? 'color' : 'noir'; saveMeta(); applyTheme(); applyAccent(); render(); },
   customDel: el => { const id = el.dataset.id; if (D.usage[id]) { toast('Это упражнение уже есть в журнале, поэтому его нельзя удалить'); return; } S.profile.custom = S.profile.custom.filter(e => e.id !== id); saveProfile(); render(); },

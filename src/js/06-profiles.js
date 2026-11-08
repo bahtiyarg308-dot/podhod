@@ -33,6 +33,7 @@ const nextColor = () => { const used = new Set(profiles().map(p => p.color)); re
 function applyTheme() {
   const t0 = (S.meta && S.meta.theme) || 'auto', t = t0 === 'auto' && lookOf() === 'noir' ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : t0, r = document.documentElement;
   r.setAttribute('data-look', lookOf());
+  if (S.meta && S.meta.oled) r.setAttribute('data-oled', '1'); else r.removeAttribute('data-oled');
   if (t === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', t);
   requestAnimationFrame(() => { const bg = getComputedStyle(r).getPropertyValue('--bg').trim(); const m = $('meta[name="theme-color"]'); if (m && bg) m.setAttribute('content', bg); });
 }

@@ -1372,6 +1372,37 @@ html[data-look="noir"] .scrim{background:var(--scrim)}
 @keyframes zz{0%{opacity:0;transform:translate(0,4px)}40%{opacity:1}100%{opacity:0;transform:translate(6px,-8px)}}
 @keyframes twinkle{0%,100%{transform:scale(.6);opacity:.5}50%{transform:scale(1.1);opacity:1}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.chart svg.anim .line{stroke-dasharray:none}}
+/* ================= 3.0: «Мрак» — details: line-art companion, thin icons, quiet rewards, OLED black ================= */
+html[data-look="noir"] .ic{stroke-width:1.6}
+html[data-look="noir"] .tab .ic,html[data-look="noir"] .medal-c .ic{stroke-width:1.6}
+html[data-look="noir"] .ch .c-main{fill:var(--surface-2);stroke:var(--cm);stroke-width:1.7;stroke-linejoin:round}
+html[data-look="noir"] .ch .c-dark{fill:var(--bg);stroke:var(--cm);stroke-width:1.2;stroke-linejoin:round}
+html[data-look="noir"] .ch .c-light{fill:color-mix(in oklab,var(--cm) 10%,var(--surface))}
+html[data-look="noir"] .ch .c-ink{fill:var(--cm)}
+html[data-look="noir"] .ch .c-line,html[data-look="noir"] .ch .c-wh{stroke:var(--cm)}
+html[data-look="noir"] .ch .c-blush{display:none}
+html[data-look="noir"] .ch .c-tongue,html[data-look="noir"] .ch .c-beak{fill:var(--cm)}
+html[data-look="noir"] .ch .c-shine{fill:var(--bg)}
+html[data-look="noir"][data-theme="light"] .ch .c-main{fill:var(--surface)}
+/* gear and rewards lose their toy colours */
+html[data-look="noir"] .ch .g-a{fill:color-mix(in oklab,var(--ca) 40%,#7b7a77)}
+html[data-look="noir"] .ch .g-b{fill:color-mix(in oklab,var(--cb) 40%,#7b7a77)}
+html[data-look="noir"] .ch .g-sd{stroke:color-mix(in oklab,var(--cb) 40%,#7b7a77)}
+html[data-look="noir"] .ch .g-sm{stroke:color-mix(in oklab,var(--ca) 40%,#7b7a77)}
+html[data-look="noir"] .ch .g-w{fill:#E6E4DF}
+html[data-look="noir"] .ch .g-cy{fill:#9DB3B0}
+html[data-look="noir"] .ch .g-y{fill:#CDBB86}
+html[data-look="noir"] .ch .g-gold{fill:#B79F6B}
+html[data-look="noir"] .ch .g-gold2{fill:#7E6B3F}
+html[data-look="noir"] .ch .g-gem{stroke:#6B5A33}
+html[data-look="noir"] .ch .g-leaf{fill:#7C9578}
+html[data-look="noir"] .ch .g-silver{fill:#C9C8C4}
+html[data-look="noir"] .ch .g-silver2{fill:#9B9A96}
+html[data-look="noir"] .chest,html[data-look="noir"] .rk{filter:saturate(.45)}
+html[data-look="noir"] .empty{border-width:1px;background:transparent}
+html[data-look="noir"] .empty h3{font-weight:500;letter-spacing:.06em}
+/* pure black for OLED screens */
+html[data-oled="1"][data-look="noir"]:not([data-theme="light"]){--bg:#000;--surface:#09090A;--surface-2:#101012;--line:#1B1B1E}
 </style>
 </head>
 <body>
@@ -1393,7 +1424,7 @@ html[data-look="noir"] .scrim{background:var(--scrim)}
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.11.0';
+const APP_VERSION = '2.12.0';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -1902,6 +1933,7 @@ const nextColor = () => { const used = new Set(profiles().map(p => p.color)); re
 function applyTheme() {
   const t0 = (S.meta && S.meta.theme) || 'auto', t = t0 === 'auto' && lookOf() === 'noir' ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : t0, r = document.documentElement;
   r.setAttribute('data-look', lookOf());
+  if (S.meta && S.meta.oled) r.setAttribute('data-oled', '1'); else r.removeAttribute('data-oled');
   if (t === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', t);
   requestAnimationFrame(() => { const bg = getComputedStyle(r).getPropertyValue('--bg').trim(); const m = $('meta[name="theme-color"]'); if (m && bg) m.setAttribute('content', bg); });
 }
@@ -4032,6 +4064,7 @@ SHEETS.set = () => {
     ${accountRowHTML()}
     <div class="sblock"><b>Оформление</b><div class="seg" role="group" aria-label="Оформление">${[['noir', 'Мрак'], ['color', 'Цветное']].map(([k, l]) => `<button data-act="setLook" data-v="${k}" aria-pressed="${lookOf() === k}">${l}</button>`).join('')}</div>
       ${lookOf() === 'noir' ? `<div class="lbl" style="margin-top:12px">Акцент${`<div class="cdots" role="group" aria-label="Акцент">${Object.entries(NOIR_ACC).map(([k, c]) => `<button class="cdot" style="--c:${c[isLight() ? 0 : 1]}" title="${c[4]}" data-act="setNoirAcc" data-c="${k}" aria-pressed="${((S.meta && S.meta.noirAcc) || 'bone') === k}" aria-label="${c[4]}"></button>`).join('')}</div>`}</div>` : `<div class="lbl" style="margin-top:12px">Цвет${colorDots(curProf().color, 'cpColor')}</div>`}
+      ${lookOf() === 'noir' ? `<div class="srow" style="border:0;padding:12px 0 0"><div class="srow-t"><b>Чисто чёрный фон</b><span>Для OLED-экранов: фон ровно чёрный, экономит заряд. Только в тёмной теме</span></div><button class="switch" role="switch" aria-checked="${!!(S.meta && S.meta.oled)}" aria-label="Чисто чёрный фон" data-act="toggleOled"></button></div>` : ''}
       <div class="lbl" style="margin-top:12px">Тема${`<div class="seg" role="group" aria-label="Тема">${[['auto', 'Как в системе'], ['dark', 'Тёмная'], ['light', 'Светлая']].map(([k, l]) => `<button data-act="setTheme" data-v="${k}" aria-pressed="${((S.meta && S.meta.theme) || 'auto') === k}">${l}</button>`).join('')}</div>`}</div></div>
     <div class="sblock"><b>Как тренируетесь</b>${modeSeg('setMode')}<p class="fine" style="margin-top:8px">${syncCfg() ? 'Синхронизация включена, поэтому режим «С партнёром». Чтобы тренироваться одному, отключите её ниже.' : pairOn() ? 'Видны чат, «Неделя вместе» и подключение партнёра.' : 'Всё для одного: без чата и предложений подключить партнёра. Переключить можно в любой момент.'}</p></div>
     <div class="sblock"${pairOn() ? '' : ' style="display:none"'}><b>Синхронизация с партнёром</b>${syncCfg() ? `
@@ -4430,6 +4463,7 @@ const A = {
   toggleSound: () => { S.profile.sound = !S.profile.sound; saveProfile(); unlockAudio(); buzz(8); render(); },
   setBar: el => { S.profile.bar = +el.dataset.v; saveProfile(); render(); },
   setTheme: el => { ensureMeta().theme = el.dataset.v; saveMeta(); applyTheme(); render(); },
+  toggleOled: () => { const m = ensureMeta(); m.oled = !m.oled; saveMeta(); applyTheme(); render(); },
   setNoirAcc: el => { ensureMeta().noirAcc = NOIR_ACC[el.dataset.c] ? el.dataset.c : 'bone'; saveMeta(); applyAccent(); render(); },
   setLook: el => { ensureMeta().look = el.dataset.v === 'color' ? 'color' : 'noir'; saveMeta(); applyTheme(); applyAccent(); render(); },
   customDel: el => { const id = el.dataset.id; if (D.usage[id]) { toast('Это упражнение уже есть в журнале, поэтому его нельзя удалить'); return; } S.profile.custom = S.profile.custom.filter(e => e.id !== id); saveProfile(); render(); },
