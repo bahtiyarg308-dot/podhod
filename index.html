@@ -1199,6 +1199,40 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
   .ph-l{display:none}
   .seg button{padding:7px 9px;font-size:12.5px}
 }
+/* ---------- 2.8: account ---------- */
+.glogo{width:20px;height:20px;flex:none}
+.btn-g{gap:10px;background:var(--surface-2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.or{display:flex;align-items:center;gap:12px;margin:16px 0 4px;color:var(--muted);font-size:12.5px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.acc-form{display:grid;gap:12px;margin:0}
+.acc-form .btn-block{margin-top:2px}
+.pw-wrap{position:relative;display:block}
+.pw-wrap .field{width:100%}
+.pw-wrap .pw-eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:40px}
+.pw-wrap:has(.pw-eye) .field{padding-right:48px}
+.acc-err{margin:0;padding:10px 12px;border-radius:12px;background:color-mix(in oklab,var(--bad) 14%,transparent);color:var(--ink);font-size:13.5px;line-height:1.35;border:1px solid color-mix(in oklab,var(--bad) 40%,transparent)}
+.acc-links{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 16px;margin:14px 2px 4px}
+.link{padding:6px 0;font-size:14px;font-weight:600;color:var(--accent-text,var(--accent));text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.acc-card{display:flex;align-items:center;gap:14px;padding:14px;border-radius:16px;background:var(--surface-2)}
+.acc-ava{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);flex:none}
+.acc-ava .glogo,.acc-ava .ic{width:24px;height:24px}
+.acc-id{display:grid;gap:2px;min-width:0}
+.acc-id b{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc-id small{font-size:12.5px;color:var(--muted)}
+.acc-st{display:flex;align-items:center;gap:8px;margin:12px 2px;font-size:13.5px;color:var(--ink-2)}
+.acc-st .ic{width:18px;height:18px;color:var(--good)}
+.acc-st.bad,.acc-st.bad .ic{color:var(--bad)}
+.acc-row .srow-t b{display:flex;align-items:center;gap:6px}
+.acc-row .srow-t b .ic{width:18px;height:18px;color:var(--accent)}
+.acc-row .srow-t span{overflow-wrap:anywhere}
+.code-big{margin:6px auto 12px;padding:16px 10px;border-radius:18px;background:var(--surface-2);text-align:center;font:600 clamp(22px,7.4vw,30px)/1 var(--f-mono);letter-spacing:.06em;color:var(--ink);user-select:all;-webkit-user-select:all;box-shadow:inset 0 0 0 1.5px color-mix(in oklab,var(--accent) 45%,transparent)}
+.code-in{font-family:var(--f-mono);letter-spacing:.08em;text-transform:uppercase}
+.cp-list li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.cp-who{display:grid;gap:2px;min-width:0}
+.cp-who b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cp-who small{font-size:12.5px;color:var(--muted)}
+.wl-login{margin:-4px auto 16px;display:flex}
+.hint span,.hint b{overflow-wrap:anywhere}
 /* iPhone zooms the page into any field with text smaller than 16px — keep fields at 16px on touch screens */
 @media (pointer:coarse){input.field,select.field,textarea.field,.set-in,.composer textarea,input[type="search"]{font-size:16px}}
 @keyframes sh{to{background-position:-200% 0}}
@@ -1259,7 +1293,7 @@ body.resting .composer{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '2.7.1';
+const APP_VERSION = '2.8.0';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -2402,7 +2436,7 @@ const ghHeaders = (token, json) => Object.assign({ 'Authorization':'Bearer ' + t
 const SY = { busy:false, again:false, pushT:null };
 function rebuildCustom() { RCUSTOM = {}; Object.values(S.remote).forEach(m => ((m.profile && m.profile.custom) || []).forEach(e => { if (e && e.id) RCUSTOM[e.id] = e; })); }
 function ensureSids() { let ch = false; ensureMeta().profiles.forEach(p => { if (!p.sid) { p.sid = uid() + uid().slice(-4); ch = true; } }); if (ch) saveMeta(); }
-function schedulePush() { if (!syncCfg()) return; clearTimeout(SY.pushT); SY.pushT = setTimeout(() => syncNow(), 2500); }
+function schedulePush() { cloudSoon(); if (!syncCfg()) return; clearTimeout(SY.pushT); SY.pushT = setTimeout(() => syncNow(), 2500); }
 /* Each install has its own device id. It lets a phone notice that another phone writes into the same member file —
    that happens when a partner picked «это я» instead of «я новый участник», and then neither sees the other. */
 const devId = () => { const m = ensureMeta(); if (!m.dev) { m.dev = uid() + uid().slice(-4); saveMeta(); } return m.dev; };
@@ -2418,8 +2452,8 @@ function writtenByMe(p, m) { return m.dev ? m.dev === devId() : lc(m.name) === l
 function payload(pid) {
   const p = profiles().find(x => x.id === pid) || {};
   const d = pid === S.pid ? { profile:S.profile, workouts:S.workouts, active:S.active } : (S.store[pid] || {});
-  const prof = normP(d.profile), share = !!(S.meta.sync && S.meta.sync.shareBody);
-  return { v:1, id:p.sid, dev:devId(), name:p.name || '', color:p.color || 'red', char:charOf(p),
+  const prof = normP(d.profile), share = shareBodyOn();
+  return { v:1, id:p.sid, acc:(accOf(pid) || {}).uid, dev:devId(), name:p.name || '', color:p.color || 'red', char:charOf(p),
     profile:{ goal:prof.goal, custom:prof.custom, body: share ? prof.body : [], meas: share ? prof.meas : [], gear:prof.gear, freeze:prof.freeze.slice(-24),
       chest: prof.chest ? { v:1, at:prof.chest.at, st:prof.chest.st, op:prof.chest.op, buy:prof.chest.buy, old:prof.chest.old || 0, rk:prof.chest.rk, gift:prof.chest.gift } : undefined, sx:supShared(prof) },
     workouts:(d.workouts || []).map(w => clean(w)), deleted:prof.deleted.slice(-800), kudos:prof.kudos,
@@ -2512,7 +2546,7 @@ function viewChat() {
   const names = Object.values(S.remote).map(m => m.name || 'Партнёр');
   const head = headHTML('Чат', names.length ? 'С вами: ' + esc(names.join(', ')) : 'Переписка с партнёром');
   if (!ready()) return head + loadingHTML();
-  if (!syncCfg()) return `${head}<div class="empty"><h3>Чат появится после подключения партнёра</h3><p>Подключите синхронизацию — и переписывайтесь прямо в «Подходе», рядом с тренировками.</p><button class="btn btn-primary" data-act="syncSetup">${icon('users')} Подключить</button></div>`;
+  if (!syncCfg() && !cloudPartnersN()) return `${head}<div class="empty"><h3>Чат появится после подключения партнёра</h3><p>Подключите партнёра — и переписывайтесь прямо в «Подходе», рядом с тренировками.</p><button class="btn btn-primary" data-act="pairConnect">${icon('users')} Подключить</button></div>`;
   const list = chatList(); if (document.visibilityState === 'visible') markChatSeen();
   let day = '', html = '';
   list.forEach(x => {
@@ -2593,7 +2627,7 @@ async function syncNow(force) {
         if (found[p.id] || (!moved && Date.now() - x.at < 7 * DAY)) next[p.id] = x;
       }
       c.clash = Object.keys(next).length ? next : undefined;
-      S.remote = rem; S.rd = {}; rebuildCustom(); KV.set('remote', rem);
+      S.remote = Object.assign(rem, S.cremote || {}); S.rd = {}; rebuildCustom(); KV.set('remote', S.remote);
       S.sync.files = new Set(Object.keys(files));
       if (localChanged) loadProfileData();
     }
@@ -2677,6 +2711,7 @@ async function boot() {
   await KV.open();
   S.meta = await KV.get('meta'); if (S.meta && S.meta.chatSeen == null) S.meta.chatSeen = Date.now();
   S.remote = (await KV.get('remote')) || {}; Object.values(S.remote).forEach(validMember); rebuildCustom();
+  S.cremote = Object.fromEntries(Object.entries(S.remote).filter(([, m]) => m && m.cloud));
   S.chatMine = (await KV.get('chat-mine')) || {}; S.chatAll = (await KV.get('chat-all')) || [];
   const ids = profiles().map(p => p.id);
   for (const id of ids) S.store[id] = (await KV.get('p:' + id)) || {};
@@ -2689,10 +2724,12 @@ async function boot() {
   render();
   registerSW();
   if (syncCfg()) syncNow(true);
+  joinFromHash(); await googleFinish();
+  if (cloudOn()) cloudSync({ links:true });
 }
-window.addEventListener('online', () => syncNow());
-setInterval(() => { if (document.visibilityState === 'visible') syncNow(); }, 90000);
-setInterval(() => { if (S.view === 'chat' && document.visibilityState === 'visible') syncNow(); }, 15000);
+window.addEventListener('online', () => { syncNow(); cloudSync(); });
+setInterval(() => { if (document.visibilityState === 'visible') { syncNow(); cloudSync(); } }, 90000);
+setInterval(() => { if (S.view === 'chat' && document.visibilityState === 'visible') { syncNow(); cloudSync(); } }, 15000);
 
 /* ================= PWA: service worker, install ================= */
 function registerSW() {
@@ -2760,7 +2797,7 @@ async function keepAwake(on) {
     else if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
   } catch (e) { wakeLock = null; }
 }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { flush(); if (SY.pushT) { clearTimeout(SY.pushT); SY.pushT = null; syncNow(); } } else { if (S.active) keepAwake(true); syncNow(); } });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { flush(); if (SY.pushT) { clearTimeout(SY.pushT); SY.pushT = null; syncNow(); } if (CL.t) { clearTimeout(CL.t); CL.t = null; cloudSync(); } } else { if (S.active) keepAwake(true); syncNow(); cloudSync({ links:true }); } });
 window.addEventListener('pagehide', flush);
 function confetti(x, y, n = 70) {
   if (RM) return;
@@ -2878,9 +2915,9 @@ function sfx(name) {
 }
 
 /* ================= training alone or with a partner ================= */
-const pairOn = () => !!syncCfg() || (S.meta && S.meta.mode ? S.meta.mode === 'pair' : profiles().length > 1);
+const pairOn = () => !!syncCfg() || cloudPartnersN() > 0 || (S.meta && S.meta.mode ? S.meta.mode === 'pair' : profiles().length > 1);
 const tabsNow = () => TABS.filter(t => t[0] !== 'chat' || pairOn());
-const modeSeg = act => `<div class="seg" role="group" aria-label="Как тренируетесь">${[['solo', 'Один', 'user'], ['pair', 'С партнёром', 'users']].map(([k, l, ic]) => `<button data-act="${act}" data-v="${k}" aria-pressed="${(act === 'wlMode' ? (top() && top().mode) || 'solo' : pairOn() ? 'pair' : 'solo') === k}"${act !== 'wlMode' && k === 'solo' && syncCfg() ? ' disabled' : ''}>${icon(ic)} ${l}</button>`).join('')}</div>`;
+const modeSeg = act => `<div class="seg" role="group" aria-label="Как тренируетесь">${[['solo', 'Один', 'user'], ['pair', 'С партнёром', 'users']].map(([k, l, ic]) => `<button data-act="${act}" data-v="${k}" aria-pressed="${(act === 'wlMode' ? (top() && top().mode) || 'solo' : pairOn() ? 'pair' : 'solo') === k}"${act !== 'wlMode' && k === 'solo' && (syncCfg() || cloudPartnersN()) ? ' disabled' : ''}>${icon(ic)} ${l}</button>`).join('')}</div>`;
 
 
 /* ================= toast ================= */
@@ -3025,13 +3062,14 @@ function render() {
   try { if (fid && typeof ae.selectionStart === 'number') sel = [ae.selectionStart, ae.selectionEnd]; } catch (e) { sel = null; }
   CH = {};
   if (!S.welcomed && S.metaLoaded && !S.meta && ready() && !S.sheets.length) { S.welcomed = true; S.sheets.push({ type:'welcome', name:'', color:'lime', char:'cat', key:uid() }); applyAccent('lime'); }
-  if (S.metaLoaded && S.meta && !S.meta.v22seen && ready() && !S.sheets.length && !S.active) { S.meta.v22seen = true; S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v23seen && ready() && !S.sheets.length && !S.active) { S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; saveMeta(); S.sheets.push({ type:'news23', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v24seen && ready() && !S.sheets.length && !S.active) { S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; saveMeta(); S.sheets.push({ type:'news24', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v25seen && ready() && !S.sheets.length && !S.active) { S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; saveMeta(); S.sheets.push({ type:'news25', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v26seen && ready() && !S.sheets.length && !S.active) { S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; saveMeta(); S.sheets.push({ type:'news26', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v27seen && ready() && !S.sheets.length && !S.active) { S.meta.v27seen = true; S.meta.v271seen = true; saveMeta(); S.sheets.push({ type:'news27', key:uid() }); }
-  else if (S.metaLoaded && S.meta && !S.meta.v271seen && ready() && !S.sheets.length && !S.active) { S.meta.v271seen = true; saveMeta(); S.sheets.push({ type:'news271', key:uid() }); }
+  if (S.metaLoaded && S.meta && !S.meta.v22seen && ready() && !S.sheets.length && !S.active) { S.meta.v22seen = true; S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; S.meta.v28seen = true; S.meta.v2seen = true; saveMeta(); S.sheets.push({ type:'news', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v23seen && ready() && !S.sheets.length && !S.active) { S.meta.v23seen = true; S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; S.meta.v28seen = true; saveMeta(); S.sheets.push({ type:'news23', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v24seen && ready() && !S.sheets.length && !S.active) { S.meta.v24seen = true; S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; S.meta.v28seen = true; saveMeta(); S.sheets.push({ type:'news24', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v25seen && ready() && !S.sheets.length && !S.active) { S.meta.v25seen = true; S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; S.meta.v28seen = true; saveMeta(); S.sheets.push({ type:'news25', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v26seen && ready() && !S.sheets.length && !S.active) { S.meta.v26seen = true; S.meta.v27seen = true; S.meta.v271seen = true; S.meta.v28seen = true; saveMeta(); S.sheets.push({ type:'news26', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v27seen && ready() && !S.sheets.length && !S.active) { S.meta.v27seen = true; S.meta.v271seen = true; S.meta.v28seen = true; saveMeta(); S.sheets.push({ type:'news27', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v271seen && ready() && !S.sheets.length && !S.active) { S.meta.v271seen = true; S.meta.v28seen = true; saveMeta(); S.sheets.push({ type:'news271', key:uid() }); }
+  else if (S.metaLoaded && S.meta && !S.meta.v28seen && ready() && !S.sheets.length && !S.active) { S.meta.v28seen = true; saveMeta(); if (!cloudOn()) S.sheets.push({ type:'news28', key:uid() }); }
   if (S.view === 'chat' && S.metaLoaded && !pairOn()) S.view = 'today';
   const main = $('#main');
   const vk = [S.view, S.pid, S.view === 'today' && S.active ? 'live:' + S.active.id : '', S.view === 'editor' && S.editing ? S.editing.id : '', ready() ? 'r' : 'l'].join('|');
@@ -3098,7 +3136,7 @@ function bannersHTML() {
   const m = S.meta || {};
   h += clashHTML();
   if (S.sync.status === 'error' && syncCfg()) h += `<div class="banner warn"><div class="banner-t">${icon('cloud')}<span><b>Синхронизация остановилась.</b> ${esc(S.sync.msg)}</span></div><div class="banner-a"><button class="btn btn-sm btn-primary" data-act="settings">Настройки</button></div></div>`;
-  if (pairOn() && !syncCfg() && !(m.pairHide > Date.now())) h += `<div class="banner"><div class="banner-t">${icon('users')}<span><b>Тренируетесь вдвоём в разных залах?</b> Подключите партнёра — будете видеть тренировки и рекорды друг друга.</span></div><div class="banner-a"><button class="btn btn-sm btn-primary" data-act="syncSetup">Подключить</button><button class="btn btn-sm btn-ghost" data-act="hidePair" aria-label="Скрыть">${icon('x')}</button></div></div>`;
+  if (pairOn() && !syncCfg() && !cloudPartnersN() && !(m.pairHide > Date.now())) h += `<div class="banner"><div class="banner-t">${icon('users')}<span><b>Тренируетесь вдвоём в разных залах?</b> Подключите партнёра — будете видеть тренировки и рекорды друг друга.</span></div><div class="banner-a"><button class="btn btn-sm btn-primary" data-act="pairConnect">Подключить</button><button class="btn btn-sm btn-ghost" data-act="hidePair" aria-label="Скрыть">${icon('x')}</button></div></div>`;
   if (!isStandalone() && !(m.installHide > Date.now()) && (S.installEvt || isIOS() || /android/i.test(navigator.userAgent))) {
     h += `<div class="banner"><div class="banner-t">${icon('phone')}<span><b>Установите на главный экран</b> — так «Подход» работает без интернета и открывается как обычное приложение.</span></div><div class="banner-a">${S.installEvt ? `<button class="btn btn-sm btn-primary" data-act="install">Установить</button>` : `<button class="btn btn-sm btn-primary" data-act="help">Как</button>`}<button class="btn btn-sm btn-ghost" data-act="hideInstall" aria-label="Скрыть">${icon('x')}</button></div></div>`;
   }
@@ -3189,7 +3227,7 @@ function pairCard() {
     return `<div class="pair-row" data-key="pair-r-${esc(m.id)}"><button class="pair-who" data-act="friend" data-sid="${esc(m.id)}" aria-label="Открыть ${esc(m.name || 'партнёра')}">${charSVG(charOf(m), mateMood(m.workouts, rpf.goal, live, rpf.freeze), { color:pcolor(m), stage:rm.stage.k, gear:rm.gear, still:true })}<span>${esc(m.name || 'Партнёр')}${live ? ' <small class="live-txt">· тренируется</small>' : ''}</span></button><span class="pair-dots" aria-label="${s.n} тренировок на этой неделе">${dotsOf(s, col(m)[0])}</span><span class="pair-n">${s.n}</span></div>`;
   })).join('');
   const recent = rs.flatMap(m => m.workouts.filter(w => Date.now() - w.start < 10 * DAY).slice(0, 3).map(w => [m, w])).sort((a, b) => b[1].start - a[1].start).slice(0, 3);
-  const note = syncCfg() ? `<p class="sync-note">${esc(syncStatusText())}</p>` : '';
+  const note = syncCfg() ? `<p class="sync-note">${esc(syncStatusText())}</p>` : cloudPartnersN() ? `<p class="sync-note">${esc(cloudText())}</p>` : '';
   return `<section class="sec"><div class="sec-head"><h2 class="h2">Неделя вместе</h2><span class="h2">пн — вс</span></div><div class="panel pair">${rows}${recent.length ? `<div class="feed">${recent.map(([m, w]) => feedRow(m, w, true)).join('')}</div>` : ''}</div>${note}</section>`;
 }
 function firstRun() {
@@ -3762,6 +3800,7 @@ SHEETS.prof = sh => {
 const charPicker = (sel, act) => `<div class="chars" role="group" aria-label="Напарник">${CHAR_ORDER.map(k => `<button class="chp" data-act="${act}" data-c="${k}" aria-pressed="${sel === k}">${charSVG(k, sel === k ? 'happy' : 'calm', { still:sel !== k })}<span>${CHARS[k].name}</span></button>`).join('')}</div>`;
 SHEETS.welcome = sh => `${closeOnly()}<div class="sheet-body">
   <div class="welcome-hero">${charSVG(sh.char || 'cat', 'happy')}<h2 id="sheet-title" class="big-title">Добро пожаловать</h2><p>Дневник тренировок: подходы, рекорды, задания недели и прогресс. Всё хранится на этом устройстве и работает без интернета.</p></div>
+  ${accOf() ? '' : `<button class="btn btn-sm btn-g wl-login" data-act="welcomeLogin">${icon('cloud')} Уже есть аккаунт? Войти</button>`}
   <label class="lbl">Как вас зовут?<input class="field" id="wl-name" data-in="wlName" value="${esc(sh.name)}" placeholder="Имя" autocomplete="off" maxlength="24" enterkeyhint="done"></label>
   <div class="lbl" style="margin-top:14px">Напарник${charPicker(sh.char || 'cat', 'wlChar')}</div>
   <div class="lbl" style="margin-top:14px">Цвет${colorDots(sh.color, 'wlColor')}</div>
@@ -3874,12 +3913,13 @@ SHEETS.set = () => {
   const canShare = !!(navigator.canShare && window.File);
   return `${sheetHead('Настройки', esc(pname(curProf())))}<div class="sheet-body">
     <div class="srow"><div class="srow-t"><b>Как пользоваться</b><span>Установка, работа в зале, резервные копии</span></div><button class="btn btn-sm" data-act="help">${icon('help')} Открыть</button></div>
+    ${accountRowHTML()}
     <div class="sblock"><b>Как тренируетесь</b>${modeSeg('setMode')}<p class="fine" style="margin-top:8px">${syncCfg() ? 'Синхронизация включена, поэтому режим «С партнёром». Чтобы тренироваться одному, отключите её ниже.' : pairOn() ? 'Видны чат, «Неделя вместе» и подключение партнёра.' : 'Всё для одного: без чата и предложений подключить партнёра. Переключить можно в любой момент.'}</p></div>
     <div class="sblock"${pairOn() ? '' : ' style="display:none"'}><b>Синхронизация с партнёром</b>${syncCfg() ? `
       ${clashHTML(true)}<p class="fine" style="margin:0 0 10px;${S.sync.status === 'error' ? 'color:var(--bad)' : ''}">${esc(syncStatusText())}${Object.keys(S.remote).length ? ` · с вами: ${Object.values(S.remote).map(r => esc(r.name || 'партнёр')).join(', ')}` : ' · партнёр ещё не подключился'}</p>
       <div class="row"><button class="btn btn-sm btn-primary" data-act="syncInvite">${icon('link')} Код для партнёра</button><button class="btn btn-sm" data-act="syncRefresh">${icon('repeat')} Обновить</button><button class="btn btn-sm btn-danger-soft" data-act="syncOff">${S.syncOffConfirm ? 'Точно отключить?' : 'Отключить'}</button></div>
-      <div class="srow" style="border:0;padding-bottom:0"><div class="srow-t"><b>Показывать вес и замеры</b><span>Партнёр увидит ваш вес тела и замеры. Фото не передаются никогда</span></div><button class="switch" role="switch" aria-checked="${!!S.meta.sync.shareBody}" aria-label="Показывать вес тела партнёру" data-act="toggleShareBody"></button></div>`
-      : `<p class="fine" style="margin:0 0 10px">Ваши телефоны будут видеть тренировки и рекорды друг друга, даже если вы в разных залах. Бесплатно, через ваш GitHub.</p><button class="btn btn-sm btn-primary" data-act="syncSetup">${icon('users')} Настроить</button>`}</div>
+      <div class="srow" style="border:0;padding-bottom:0"><div class="srow-t"><b>Показывать вес и замеры</b><span>Партнёр увидит ваш вес тела и замеры. Фото не передаются никогда</span></div><button class="switch" role="switch" aria-checked="${shareBodyOn()}" aria-label="Показывать вес тела партнёру" data-act="toggleShareBody"></button></div>`
+      : cloudPairHTML()}</div>
     <div class="srow"><div class="srow-t"><b>Профили на этом телефоне</b><span>${profiles().length > 1 ? profiles().map(pname).join(', ') : 'Если тренируетесь вдвоём с одного телефона'}</span></div><button class="btn btn-sm" data-act="profiles">${icon('users')} Открыть</button></div>
     <div class="sblock"><b>Цель на неделю</b><div class="seg" role="group" aria-label="Цель на неделю">${[1, 2, 3, 4, 5, 6].map(v => `<button data-act="setGoal" data-v="${v}" aria-pressed="${p.goal === v}">${v}</button>`).join('')}</div><p class="fine" style="margin-top:8px">Сколько тренировок в неделю вы планируете. За выполненную неделю — +60 XP и ещё одна неделя в серии.</p></div>
     <div class="sblock"><b>Заморозка</b>${(() => { const fz = frozenNow(p.freeze); if (fz) return `<p class="fine" style="margin:0 0 10px">Включена до ${dayMonth(fz.to)}: сытость напарника и серия недель на паузе.</p><button class="btn btn-sm" data-act="freezeOff">${icon('sun')} Я вернулся — снять</button>`;
@@ -3898,7 +3938,7 @@ SHEETS.set = () => {
     <div class="sblock"><b>Резервная копия</b><p class="fine" style="margin:0 0 10px">Последняя: ${lastB}. В файл попадают все профили.</p><div class="row">${canShare ? `<button class="btn btn-sm btn-primary" data-act="backupShare">${icon('share')} Сохранить / отправить</button>` : ''}<button class="btn btn-sm${canShare ? '' : ' btn-primary'}" data-act="backupFile">${icon('download')} Скачать файл</button><label class="btn btn-sm" for="imp-file">${icon('upload')} Восстановить из файла</label><button class="btn btn-sm" data-act="exportCsv">${icon('download')} Таблица CSV</button></div></div>
     <div class="srow"><div class="srow-t"><b>Установка</b><span>${isStandalone() ? 'Приложение установлено на этот телефон' : 'Открыто в браузере. Установите на главный экран — так надёжнее и работает офлайн.'}</span></div>${isStandalone() ? `<span class="tick" style="color:var(--good)">${icon('check')}</span>` : `<button class="btn btn-sm" data-act="${S.installEvt ? 'install' : 'help'}">${S.installEvt ? 'Установить' : 'Как'}</button>`}</div>
     <div class="srow"><div class="srow-t"><b>Защита данных</b><span>${S.persisted ? 'Браузер не будет очищать данные приложения сам' : 'Попросите браузер не очищать данные приложения'}</span></div>${S.persisted ? `<span style="color:var(--good)">${icon('shield')}</span>` : `<button class="btn btn-sm" data-act="persist">Включить</button>`}</div>
-    <p class="fine">«Подход» ${APP_VERSION}. Работает без интернета и без аккаунтов. Все данные — только на этом устройстве.</p>
+    <p class="fine">«Подход» ${APP_VERSION}. ${accOf() ? 'Работает без интернета. Данные — на телефоне и в вашем аккаунте, фото тела — только на телефоне.' : 'Работает без интернета и без аккаунта. Все данные — только на этом устройстве.'}</p>
   </div>`;
 };
 
@@ -4086,10 +4126,10 @@ const A = {
   },
   chatSend: () => {
     const t = (S.chatDraft || '').trim(), p = curProf(); if (!t) return;
-    if (!syncCfg()) { toast('Сначала подключите партнёра'); return; }
+    if (!syncCfg() && !cloudPartnersN()) { toast('Сначала подключите партнёра'); return; }
     ensureSids(); myChat(p.sid).push({ id:uid(), t:Date.now(), x:t.slice(0, 1000), d:devId() }); KV.set('chat-mine', S.chatMine);
     S.chatDraft = ''; const el = $('#chat-in'); if (el) { el.value = ''; el.style.height = ''; }
-    S.chatScroll = true; buzz(8); sfx('send'); render(); clearTimeout(SY.pushT); SY.pushT = setTimeout(() => syncNow(), 300);
+    S.chatScroll = true; buzz(8); sfx('send'); render(); clearTimeout(SY.pushT); SY.pushT = setTimeout(() => syncNow(), 300); cloudSoon(300);
   },
   openChat: () => { S.sheets = []; go('chat'); },
   applyHint: el => {
@@ -4111,9 +4151,9 @@ const A = {
   syncRefresh: () => { S.sync.etag = null; syncNow(true); },
   syncOff: () => {
     if (!S.syncOffConfirm) { S.syncOffConfirm = true; render(); setTimeout(() => { if (S.syncOffConfirm) { S.syncOffConfirm = false; render(); } }, 4000); return; }
-    S.syncOffConfirm = false; S.meta.sync = null; S.remote = {}; S.rd = {}; rebuildCustom(); KV.del('remote'); S.chatAll = []; KV.del('chat-all'); saveMeta(); setSync('off'); toast('Синхронизация отключена'); render();
+    S.syncOffConfirm = false; S.meta.sync = null; S.remote = Object.assign({}, S.cremote || {}); S.rd = {}; rebuildCustom(); KV.del('remote'); S.chatAll = []; KV.del('chat-all'); saveMeta(); setSync('off'); toast('Синхронизация отключена'); render();
   },
-  toggleShareBody: () => { const c = syncCfg(); if (!c) return; c.shareBody = !c.shareBody; saveMeta(); buzz(8); render(); schedulePush(); },
+  toggleShareBody: () => { const m = ensureMeta(), v = !shareBodyOn(); m.shareBody = v; if (m.sync) m.sync.shareBody = v; saveMeta(); buzz(8); render(); schedulePush(); },
   friend: el => openSheet({ type:'friend', sid:el.dataset.sid }),
   rwd: el => openSheet({ type:'wd', id:el.dataset.id, sid:el.dataset.sid }),
   kudo: el => {
@@ -4154,8 +4194,8 @@ const A = {
   },
   wlColor: el => { top().color = el.dataset.c; applyAccent(el.dataset.c); render(); },
   welcomeSave: () => {
-    const sh = top(), name = (sh.name || '').trim();
-    S.meta = { profiles:[{ id:'main', name, color:sh.color || 'lime', char:sh.char || 'cat' }], cur:'main', theme:'auto', mode:sh.mode === 'pair' ? 'pair' : 'solo', v2seen:true, v22seen:true, v23seen:true, v24seen:true, v25seen:true, v26seen:true, v27seen:true, v271seen:true, chatSeen:Date.now() }; saveMeta(); applyAccent();
+    const sh = top(), name = (sh.name || '').trim(), keepAcc = S.meta && S.meta.accs, keepDev = S.meta && S.meta.dev;
+    S.meta = { profiles:[{ id:'main', name, color:sh.color || 'lime', char:sh.char || 'cat' }], cur:'main', theme:'auto', mode:sh.mode === 'pair' ? 'pair' : 'solo', v2seen:true, v22seen:true, v23seen:true, v24seen:true, v25seen:true, v26seen:true, v27seen:true, v271seen:true, v28seen:true, chatSeen:Date.now() }; if (keepAcc) { S.meta.accs = keepAcc; S.meta.dev = keepDev; saveMeta(); cloudSoon(300); } saveMeta(); applyAccent();
     S.sheets = []; S.bubble = null; render(); buzz([10, 40, 10]); toast(name ? `Привет, ${name}! Поехали` : 'Поехали!');
   },
   startEmpty: () => startWorkout(null),
@@ -4827,7 +4867,7 @@ SHEETS.news23 = () => `${sheetHead('Что нового', 'Версия ' + APP_
 </div><footer class="sheet-foot"><button class="btn" data-act="sndDemo">${icon('sound')} Послушать</button><button class="btn btn-primary" data-act="closeSheet">Готово</button></footer>`;
 Object.assign(A, {
   setMode: el => {
-    const v = el.dataset.v; if (v === 'solo' && syncCfg()) { toast('Сначала отключите синхронизацию с партнёром'); return; }
+    const v = el.dataset.v; if (v === 'solo' && (syncCfg() || cloudPartnersN())) { toast('Сначала отключите партнёра в настройках'); return; }
     ensureMeta().mode = v; saveMeta(); if (v === 'solo' && S.view === 'chat') S.view = 'today';
     buzz(8); render(); toast(v === 'pair' ? 'Режим «С партнёром»: подключить можно в настройках' : 'Режим «Один»');
   },
@@ -5465,6 +5505,536 @@ A.sndDemo271 = () => {
   const m = ensureMeta(); if (!sndCfg().on) { m.snd = Object.assign(sndCfg(), { on:true }); saveMeta(); render(); }
   ['gift', 'quest', 'badge', 'goal', 'fed', 'ten'].forEach((n, i) => setTimeout(() => sfx(n), i * 1300));
 };
+
+
+/* ================= 2.8: accounts and cloud — Firebase over plain HTTPS, no SDK, no CDN =================
+   Auth: Identity Toolkit REST (email + password, Google via createAuthUri → redirect → signInWithIdp).
+   Data: Firestore REST, database «default». Layout per account:
+     users/{uid}/pv/profile   private: the whole profile (programs, supplements, weight, settings, chests)
+     users/{uid}/pb/main      for me and connected partners: card + month index + chat hash
+     users/{uid}/pb/chat      my chat messages
+     users/{uid}/w/{YYYYMM}   workouts of one month
+     invites/{code}, links/{owner}_{reader} — partner connection
+   Body photos never leave the phone. Without an account everything works as before. */
+const FB = { key:'AIzaSyCsPQssm8V6RvmOOtPSySJKczQ5LqaBWws', idt:'https://identitytoolkit.googleapis.com/v1/accounts:', stk:'https://securetoken.googleapis.com/v1/token', fs:'https://firestore.googleapis.com/v1/', db:'projects/podhod-5d27f/databases/default/documents' };
+const CL = { busy:false, again:false, t:null, status:'', msg:'', last:0, st:{}, parts:{} };
+const accs = () => (S.meta && S.meta.accs) || {};
+const accOf = (pid = S.pid) => accs()[pid] || null;
+const cloudOn = () => Object.keys(accs()).length > 0;
+const cmembers = () => S.cremote || (S.cremote = {});
+const cloudPartnersN = () => Object.keys(cmembers()).length;
+const appUrl = () => location.origin + location.pathname;
+const sjson = (s, d) => { try { const v = JSON.parse(s); return v == null ? d : v; } catch (e) { return d; } };
+const hash2 = s => hash(s) + s.length.toString(36);
+const shareBodyOn = () => !!((S.meta && S.meta.shareBody) || (S.meta && S.meta.sync && S.meta.sync.shareBody));
+
+/* ---------- auth ---------- */
+const AUTH_ERR = { EMAIL_EXISTS:'Такая почта уже зарегистрирована. Войдите или восстановите пароль', EMAIL_NOT_FOUND:'Аккаунта с такой почтой нет', INVALID_PASSWORD:'Неверный пароль',
+  INVALID_LOGIN_CREDENTIALS:'Неверная почта или пароль', INVALID_EMAIL:'Проверьте адрес почты', MISSING_EMAIL:'Введите почту', MISSING_PASSWORD:'Введите пароль',
+  WEAK_PASSWORD:'Слишком короткий пароль — нужно хотя бы 6 символов', TOO_MANY_ATTEMPTS_TRY_LATER:'Слишком много попыток. Подождите пару минут', USER_DISABLED:'Аккаунт отключён',
+  CREDENTIAL_TOO_OLD_LOGIN_AGAIN:'Для этого действия войдите в аккаунт заново', OPERATION_NOT_ALLOWED:'Этот способ входа выключен', net:'Нет связи с интернетом. Попробуйте ещё раз',
+  relogin:'Вход устарел — войдите в аккаунт заново', denied:'Облако не пускает: проверьте правила доступа в Firebase', badcode:'Код не найден или устарел. Попросите новый', own:'Это ваш собственный код',
+  nomatch:'Пароли не совпадают', short:'Пароль — хотя бы 6 символов', cancel:'Вход отменён', google:'Google не вернул вход. Попробуйте ещё раз или войдите по почте' };
+const authErr = e => AUTH_ERR[(e && e.code) || ''] || 'Не получилось' + (e && e.code ? ` (${e.code})` : '');
+async function idt(method, body) {
+  let r; try { r = await fetch(FB.idt + method + '?key=' + FB.key, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(body) }); } catch (e) { throw { code:'net' }; }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw { code:String((j.error && j.error.message) || 'HTTP_' + r.status).split(/[ :]/)[0] };
+  return j;
+}
+async function accToken(acc, force) {
+  if (!force && acc.it && acc.exp > Date.now() + 60000) return acc.it;
+  let r; try { r = await fetch(FB.stk + '?key=' + FB.key, { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body:'grant_type=refresh_token&refresh_token=' + encodeURIComponent(acc.rt || '') }); } catch (e) { throw { code:'net' }; }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) { const m = String((j.error && j.error.message) || ''); throw { code:/TOKEN_EXPIRED|USER_DISABLED|USER_NOT_FOUND|INVALID_REFRESH_TOKEN|INVALID_GRANT|MISSING_REFRESH_TOKEN|PROJECT_NUMBER_MISMATCH/.test(m) ? 'relogin' : r.status >= 500 ? 'net' : 'relogin' }; }
+  acc.it = j.id_token; acc.rt = j.refresh_token || acc.rt; acc.exp = Date.now() + (+j.expires_in || 3600) * 1000; saveMeta();
+  return acc.it;
+}
+
+/* ---------- firestore ---------- */
+const fsName = p => FB.db + '/' + p;
+const fsv = v => typeof v === 'number' ? { integerValue:String(Math.round(v)) } : { stringValue:String(v) };
+const fsDoc = (p, o) => ({ name:fsName(p), fields:Object.fromEntries(Object.entries(o).filter(([, v]) => v != null).map(([k, v]) => [k, fsv(v)])) });
+const fsDec = d => { if (!d || !d.fields) return null; const o = { _n:d.name }; for (const [k, v] of Object.entries(d.fields)) o[k] = 'integerValue' in v ? +v.integerValue : 'stringValue' in v ? v.stringValue : 'booleanValue' in v ? v.booleanValue : null; return o; };
+async function fsReq(acc, method, path, body) {
+  const go = async force => { const tok = await accToken(acc, force); try { return await fetch(FB.fs + path, { method, cache:'no-store', headers:Object.assign({ 'Authorization':'Bearer ' + tok }, body ? { 'Content-Type':'application/json' } : {}), body:body ? JSON.stringify(body) : undefined }); } catch (e) { throw { code:'net' }; } };
+  let r = await go(false); if (r.status === 401) r = await go(true);
+  if (r.status === 404 && method === 'GET') return null;
+  const j = await r.json().catch(() => null);
+  if (r.status === 401) throw { code:'relogin' };
+  if (r.status === 403) throw { code:'denied', msg:j && j.error && j.error.message };
+  if (!r.ok) throw { code:'http', status:r.status, msg:j && j.error && j.error.message };
+  return j;
+}
+const fsGet = async (acc, p) => fsDec(await fsReq(acc, 'GET', fsName(p)));
+async function fsBatchGet(acc, paths) {
+  const out = {};
+  for (let i = 0; i < paths.length; i += 100) {
+    const j = await fsReq(acc, 'POST', FB.db + ':batchGet', { documents:paths.slice(i, i + 100).map(fsName) });
+    (j || []).forEach(x => { if (x.found) out[x.found.name.slice(FB.db.length + 1)] = fsDec(x.found); });
+  }
+  return out;
+}
+async function fsCommit(acc, writes) { for (let i = 0; i < writes.length; i += 400) await fsReq(acc, 'POST', FB.db + ':commit', { writes:writes.slice(i, i + 400) }); }
+async function fsQuery(acc, coll, field, val) {
+  const j = await fsReq(acc, 'POST', FB.db + ':runQuery', { structuredQuery:{ from:[{ collectionId:coll }], where:{ fieldFilter:{ field:{ fieldPath:field }, op:'EQUAL', value:{ stringValue:val } } }, limit:50 } });
+  return (j || []).filter(x => x && x.document).map(x => fsDec(x.document));
+}
+
+/* ---------- what is stored ---------- */
+const monthKey = t => { const d = new Date(t); return String(d.getFullYear() * 100 + d.getMonth() + 1); };
+function monthsOf(ws) { const m = {}; (ws || []).forEach(w => { const k = monthKey(w.start); (m[k] || (m[k] = [])).push(w); }); return m; }
+const monthJSON = list => JSON.stringify(list.slice().sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0).map(w => { const c = clean(w); delete c.isNew; return c; }));
+const cardOf = p => ({ name:(p && p.name) || '', color:(p && p.color) || 'lime', char:charOf(p), sid:(p && p.sid) || '' });
+const profJSON = prof => { const c = clean(prof); delete c.bodyLost; return JSON.stringify(c); };
+const profHash = (prof, p) => hash2(profJSON(prof) + JSON.stringify(cardOf(p)));
+function chestUnion(lc, rc) { // the same person on two phones: opened chests and purchases add up, the closed list comes from the older history
+  let ch = false; if (!lc || !rc) return false;
+  Object.entries(rc.op || {}).forEach(([k, v]) => { if (!lc.op[k] && ITEM[v]) { lc.op[k] = v; ch = true; } });
+  (rc.buy || []).forEach(b => { if (b && ITEM[b.id] && !lc.buy.some(x => x.at === b.at && x.id === b.id)) { lc.buy.push({ id:b.id, at:b.at, c:+b.c || 0 }); ch = true; } });
+  if (Number.isFinite(rc.rk) && !(lc.rk >= rc.rk)) { lc.rk = rc.rk; ch = true; }
+  if (rc.gift && +rc.gift.n > (+(lc.gift || {}).n || 0)) { lc.gift = { d:String(rc.gift.d || ''), n:+rc.gift.n, s:+rc.gift.s || 0 }; ch = true; }
+  if (rc.at && Array.isArray(rc.st) && (!lc.at || rc.at < lc.at)) { lc.st = rc.st.slice(0, 12); lc.at = rc.at; lc.old = Math.max(+lc.old || 0, +rc.old || 0); ch = true; }
+  return ch;
+}
+function mergeCloudProfile(local, remote, dirty) {
+  const r = normP(remote);
+  if (!dirty) { if (local.chest && r.chest) chestUnion(r.chest, local.chest); else if (local.chest && !r.chest) r.chest = local.chest; return r; }
+  const l = normP(local); // both phones changed something: keep this phone's settings, add everything the other phone has
+  ['templates', 'custom', 'body', 'meas', 'supps'].forEach(k => { const have = new Set(l[k].map(o => o && o.id)); r[k].forEach(o => { if (o && o.id && !have.has(o.id)) l[k].push(o); }); });
+  Object.entries(r.slog || {}).forEach(([k, v]) => { if (Array.isArray(v)) l.slog[k] = [...new Set([...(l.slog[k] || []), ...v])]; });
+  l.sfull = [...new Set([...l.sfull, ...r.sfull])].sort();
+  r.freeze.forEach(f => { if (f && Number.isFinite(f.from) && !l.freeze.some(x => x.from === f.from)) l.freeze.push(f); });
+  l.deleted = [...new Set([...l.deleted, ...r.deleted])];
+  l.kudos = Object.assign({}, r.kudos, l.kudos);
+  if (l.chest && r.chest) chestUnion(l.chest, r.chest); else if (!l.chest && r.chest) l.chest = r.chest;
+  return l;
+}
+function mergeCloudWorkouts(d, list, del) {
+  const map = new Map((d.workouts || []).map(w => [w.id, w])); let ch = false;
+  (Array.isArray(list) ? list : []).forEach(w => {
+    if (!w || !w.id || !Number.isFinite(w.start) || !Array.isArray(w.exercises) || del.has(w.id)) return;
+    const l = map.get(w.id); if (!l || (w.u || 0) > (l.u || 0)) { map.set(w.id, normW(w, String(w.id))); ch = true; }
+  });
+  if (ch) d.workouts = [...map.values()].sort((a, b) => b.start - a.start);
+  return ch;
+}
+const chatOut = sid => myChat(sid).slice(-300).map(x => ({ id:x.id, t:x.t, x:x.x, d:x.d }));
+async function cloudSt(u) { if (!CL.st[u]) CL.st[u] = (await KV.get('cs:' + u)) || { wm:{} }; return CL.st[u]; }
+const saveSt = u => { if (CL.st[u]) KV.set('cs:' + u, CL.st[u]); };
+
+/* ---------- one account: pull what changed, push what changed ---------- */
+async function cloudSyncAcc(pid, acc, o) {
+  ensureSids();
+  const u = acc.uid, st = await cloudSt(u), p = profiles().find(x => x.id === pid); if (!p) return;
+  if (pid === S.pid) { flush(); syncCur(); }
+  const d = S.store[pid] || (S.store[pid] = { profile:{}, workouts:[], active:null });
+  d.profile = normP(d.profile); d.workouts = d.workouts || [];
+  const head = await fsGet(acc, `users/${u}/pb/main`);
+  const rwm = head ? sjson(head.wm, {}) : {};
+  const first = !st.done;
+  let changed = false, pushProf = !head || profHash(d.profile, p) !== st.ph;
+  if (head && (head.pt || 0) > (st.pt || 0)) {
+    const pv = await fsGet(acc, `users/${u}/pv/profile`);
+    const rp = pv && sjson(pv.j, null), card = pv && sjson(pv.c, null);
+    if (rp) {
+      const localEmpty = first && !d.workouts.length && !d.profile.templates.length;
+      d.profile = mergeCloudProfile(d.profile, rp, pushProf && !localEmpty); changed = true;
+      if (card) applyCard(p, card, first, localEmpty);
+      if (!pushProf || localEmpty) pushProf = false;
+    }
+    st.pt = head.pt;
+  }
+  const del = new Set(d.profile.deleted);
+  const need = Object.keys(rwm).filter(m => rwm[m] !== (st.wm || {})[m]);
+  if (need.length) {
+    const got = await fsBatchGet(acc, need.map(m => `users/${u}/w/${m}`));
+    need.forEach(m => { const doc = got[`users/${u}/w/${m}`]; if (doc && mergeCloudWorkouts(d, sjson(doc.j, []), del)) changed = true; });
+  }
+  if (d.workouts.some(w => del.has(w.id))) { d.workouts = d.workouts.filter(w => !del.has(w.id)); changed = true; }
+  if (changed) { KV.set('p:' + pid, d); if (pid === S.pid) loadProfileData(); }
+  const dd = pid === S.pid ? (syncCur(), S.store[pid]) : d;
+  // chat from my other phones
+  if (p.sid && head && head.ch && head.ch !== st.ch) { const c = await fsGet(acc, `users/${u}/pb/chat`); const msgs = c ? (sjson(c.j, {}).msgs || []) : []; if (msgs.length) mergeChats({ [p.sid]:msgs }); }
+  // push
+  const lm = monthsOf(dd.workouts), lwm = {}; Object.entries(lm).forEach(([m, l]) => { lwm[m] = hash2(monthJSON(l)); });
+  const writes = [];
+  new Set([...Object.keys(lwm), ...Object.keys(rwm)]).forEach(m => {
+    if (lwm[m] === rwm[m]) return;
+    writes.push(lwm[m] ? { update:fsDoc(`users/${u}/w/${m}`, { j:monthJSON(lm[m]), h:lwm[m] }) } : { delete:fsName(`users/${u}/w/${m}`) });
+  });
+  const ph = profHash(dd.profile, p);
+  let pt = head ? (head.pt || 0) : 0;
+  if (pushProf) { pt = Math.max(Date.now(), pt + 1); writes.push({ update:fsDoc(`users/${u}/pv/profile`, { j:profJSON(dd.profile), c:JSON.stringify(cardOf(p)), t:pt }) }); }
+  const chatJ = p.sid ? JSON.stringify({ v:1, id:p.sid, msgs:chatOut(p.sid) }) : '', ch = chatJ ? hash2(chatJ) : '';
+  if (ch && (!head || head.ch !== ch) && chatOut(p.sid).length) writes.push({ update:fsDoc(`users/${u}/pb/chat`, { j:chatJ }) });
+  const pub = payload(pid); delete pub.workouts; delete pub.dev; pub.uid = u;
+  const pubJ = JSON.stringify(pub), wmJ = JSON.stringify(lwm), h = hash2(pubJ + wmJ + pt + ch);
+  if (!head || head.h !== h) writes.push({ update:fsDoc(`users/${u}/pb/main`, { j:pubJ, wm:wmJ, pt, ch, h, t:Date.now() }) });
+  if (writes.length) await fsCommit(acc, writes);
+  if (p.sid && myChat(p.sid).some(x => !x.ok)) { myChat(p.sid).forEach(x => { x.ok = true; }); KV.set('chat-mine', S.chatMine); }
+  st.wm = lwm; st.ph = ph; st.pt = pt; st.ch = ch; st.done = 1; saveSt(u);
+  return changed;
+}
+function applyCard(p, card, first, localEmpty) {
+  if (!p || !card) return;
+  if (first && !localEmpty && p.name) { if (card.sid && !p.sid) p.sid = card.sid; saveMeta(); return; } // this phone already had its own data: keep its name, join the history
+  if (card.name) p.name = String(card.name).slice(0, 24);
+  if (COLORS[card.color]) p.color = card.color;
+  if (CHARS[card.char]) p.char = card.char;
+  if (card.sid && (!p.sid || (!syncCfg() && first))) p.sid = card.sid;
+  saveMeta(); if (p.id === S.pid) applyAccent();
+}
+
+/* ---------- partners ---------- */
+async function cloudPartner(acc, owner) {
+  const pc = CL.parts[owner] || (CL.parts[owner] = (await KV.get('cp:' + owner)) || { wm:{}, mo:{}, ch:'', chat:[] });
+  const head = await fsGet(acc, `users/${owner}/pb/main`); if (!head) return null;
+  const rwm = sjson(head.wm, {}), need = Object.keys(rwm).filter(m => rwm[m] !== pc.wm[m]); let ch = need.length > 0;
+  if (need.length) { const got = await fsBatchGet(acc, need.map(m => `users/${owner}/w/${m}`)); need.forEach(m => { const doc = got[`users/${owner}/w/${m}`]; pc.mo[m] = doc ? sjson(doc.j, []) : []; }); }
+  Object.keys(pc.mo).forEach(m => { if (!(m in rwm)) { delete pc.mo[m]; ch = true; } });
+  pc.wm = rwm;
+  if (head.ch !== pc.ch) { const c = head.ch ? await fsGet(acc, `users/${owner}/pb/chat`) : null; pc.chat = c ? (sjson(c.j, {}).msgs || []) : []; pc.ch = head.ch || ''; ch = true; }
+  if (pc.h !== head.h) { pc.pub = sjson(head.j, {}); pc.h = head.h; ch = true; }
+  pc.t = head.t;
+  if (ch) KV.set('cp:' + owner, pc);
+  const m = validMember(Object.assign({}, pc.pub, { workouts:[].concat(...Object.values(pc.mo)), uid:owner, cloud:1, updated:head.t }));
+  return m && { m, chat:pc.chat, changed:ch };
+}
+async function cloudPartners(o = {}) {
+  const mine = new Set(Object.values(accs()).map(a => a.uid)), next = {}, chats = {}; let any = false;
+  for (const acc of Object.values(accs())) {
+    const st = await cloudSt(acc.uid);
+    if (o.links || !st.lk || Date.now() - (st.lkAt || 0) > 60000) { st.lk = [...new Set((await fsQuery(acc, 'links', 'reader', acc.uid)).map(l => l.owner).filter(x => x && !mine.has(x)))]; st.lkAt = Date.now(); saveSt(acc.uid); }
+    for (const owner of st.lk) {
+      if (next[owner]) continue;
+      let r = null; try { r = await cloudPartner(acc, owner); } catch (e) { if (e && e.code === 'denied') { st.lk = st.lk.filter(x => x !== owner); st.lkAt = 0; saveSt(acc.uid); KV.del('cp:' + owner); delete CL.parts[owner]; continue; } throw e; }
+      if (!r) continue;
+      next[owner] = r.m; if (r.changed) any = true; if (r.chat.length) chats[r.m.id] = r.chat;
+    }
+  }
+  const prev = cmembers(), bySid = {}; Object.values(next).forEach(m => { bySid[m.id] = m; });
+  Object.keys(prev).forEach(sid => { if (!bySid[sid]) { delete S.remote[sid]; any = true; } });
+  if (Object.keys(prev).length !== Object.keys(bySid).length) any = true;
+  S.cremote = bySid;
+  if (any) { Object.assign(S.remote, bySid); S.rd = {}; rebuildCustom(); KV.set('remote', S.remote); notifyRemote(); }
+  if (Object.keys(chats).length) notifyChat(mergeChats(chats));
+  return any;
+}
+/* gist → account: link to every gist partner who already has an account; once all of them are reachable through the cloud, GitHub is no longer needed */
+async function cloudGistMigrate() {
+  const c = syncCfg(); if (!c || !S.sync.files) return;
+  const mySids = new Set(profiles().map(p => p.sid).filter(Boolean));
+  for (const [pid, acc] of Object.entries(accs())) {
+    const st = await cloudSt(acc.uid), done = new Set(st.gl || []);
+    for (const m of Object.values(S.remote)) {
+      if (!m.acc || m.acc === acc.uid || done.has(m.acc) || mySids.has(m.id)) continue;
+      const id = `links/${acc.uid}_${m.acc}`;
+      if (!(await fsGet(acc, id))) await fsCommit(acc, [{ update:fsDoc(id, { owner:acc.uid, reader:m.acc, t:Date.now() }) }]);
+      done.add(m.acc); st.lkAt = 0;
+    }
+    st.gl = [...done]; saveSt(acc.uid);
+  }
+  const others = [...S.sync.files].filter(sid => !mySids.has(sid));
+  const localOk = profiles().every(p => !p.sid || !S.sync.files.has(p.sid) || accOf(p.id));
+  if (others.length && localOk && others.every(sid => cmembers()[sid])) {
+    S.meta.syncOld = { gist:c.gist, at:Date.now() }; S.meta.sync = null; saveMeta();
+    toast('Партнёр теперь подключён через аккаунт — GitHub больше не нужен');
+  }
+}
+
+/* ---------- the sync loop ---------- */
+function cloudSoon(ms = 2500) { if (!cloudOn()) return; clearTimeout(CL.t); CL.t = setTimeout(() => cloudSync(), ms); }
+async function cloudSync(o = {}) {
+  if (!cloudOn() || !S.metaLoaded) return;
+  if (CL.busy) { CL.again = true; return; }
+  if (navigator.onLine === false) { CL.status = 'off'; return; }
+  CL.busy = true; const was = CL.status; CL.status = 'sync'; if (was !== 'sync' && o.show) render();
+  let changed = false;
+  try {
+    for (const [pid, acc] of Object.entries(accs())) {
+      if (!profiles().some(p => p.id === pid)) { delete S.meta.accs[pid]; saveMeta(); continue; }
+      if (acc.bad) continue;
+      try { if (await cloudSyncAcc(pid, acc, o)) changed = true; }
+      catch (e) { if (e && e.code === 'relogin') { acc.bad = 1; saveMeta(); } else throw e; }
+    }
+    if (await cloudPartners(o)) changed = true;
+    await cloudGistMigrate();
+    CL.status = Object.values(accs()).some(a => a.bad) ? 'relogin' : 'ok'; CL.msg = ''; CL.last = Date.now();
+  } catch (e) {
+    CL.status = e && e.code === 'net' ? 'off' : 'err';
+    CL.msg = e && e.code === 'denied' ? AUTH_ERR.denied : e && e.code === 'http' ? `Облако ответило ошибкой ${e.status}. Попробуем позже` : e && e.code === 'net' ? '' : authErr(e);
+  } finally {
+    CL.busy = false;
+    if (changed || was !== CL.status || S.sheets.some(s => s.type === 'acc' || s.type === 'cpair' || s.type === 'set')) render();
+    if (CL.again) { CL.again = false; cloudSoon(500); }
+  }
+}
+const cloudText = () => {
+  const a = accOf(); if (!a) return '';
+  if (a.bad || CL.status === 'relogin') return 'Вход устарел — войдите заново';
+  if (CL.status === 'sync') return 'Синхронизация…';
+  if (CL.status === 'off') return 'Нет интернета — сохраним в облако, когда появится связь';
+  if (CL.status === 'err') return CL.msg || 'Ошибка синхронизации';
+  return CL.last ? 'В облаке · ' + relTime(CL.last) : 'Подключено';
+};
+const relTime = t => { const s = Math.round((Date.now() - t) / 1000); return s < 50 ? 'только что' : s < 3600 ? `${Math.round(s / 60)} мин назад` : new Date(t).toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' }); };
+
+/* ---------- signing in ---------- */
+async function afterSignIn(res, prov, sh) {
+  const fromWelcome = !S.meta || S.sheets.some(s => s.type === 'welcome');
+  const m = ensureMeta(), u = res.localId;
+  m.accs = m.accs || {};
+  if (fromWelcome) { ['v2seen', 'v22seen', 'v23seen', 'v24seen', 'v25seen', 'v26seen', 'v27seen', 'v271seen', 'v28seen'].forEach(k => { m[k] = true; }); if (m.chatSeen == null) m.chatSeen = Date.now(); }
+  const other = Object.entries(m.accs).find(([pid, a]) => a.uid === u && pid !== S.pid);
+  if (other) { switchProfile(other[0]); }
+  const pid = other ? other[0] : S.pid;
+  const old = m.accs[pid];
+  if (old && old.uid !== u) { delete CL.st[old.uid]; KV.del('cs:' + old.uid); }
+  m.accs[pid] = { uid:u, email:res.email || (old && old.email) || '', prov, rt:res.refreshToken, it:res.idToken, exp:Date.now() + (+res.expiresIn || 3600) * 1000 };
+  if (fromWelcome && !m.mode) m.mode = 'solo';
+  saveMeta(); buzz([10, 40, 10]); sfx('quest');
+  if (sh) { sh.busy = false; sh.mode = 'me'; sh.pass = ''; sh.pass2 = ''; sh.err = ''; }
+  render();
+  await cloudSync({ first:true, links:true, show:true });
+  if (fromWelcome) {
+    const p = curProf();
+    if (p.name) { S.sheets = []; m.v2seen = m.v22seen = m.v23seen = m.v24seen = m.v25seen = m.v26seen = m.v27seen = m.v271seen = m.v28seen = true; if (m.chatSeen == null) m.chatSeen = Date.now(); saveMeta(); toast(`С возвращением, ${p.name}! Данные загружены`); }
+    else { S.sheets = S.sheets.filter(s => s.type === 'welcome'); const w = S.sheets[0]; if (w && !w.name && res.displayName) w.name = String(res.displayName).split(' ')[0].slice(0, 24); toast('Аккаунт подключён. Осталось познакомиться'); }
+  } else toast(S.workouts.length ? 'Аккаунт подключён — данные в облаке' : 'Аккаунт подключён');
+  if (S.pendingJoin) { const code = S.pendingJoin; S.pendingJoin = null; try { localStorage.removeItem('podhod-join'); } catch (e) { /* private mode */ } openSheet({ type:'cpair', mode:'join', code, busy:false, err:'' }); }
+  render();
+}
+async function googleStart() {
+  const j = await idt('createAuthUri', { providerId:'google.com', continueUri:appUrl(), customParameter:{ prompt:'select_account' } });
+  try { localStorage.setItem('podhod-g', JSON.stringify({ s:j.sessionId, at:Date.now(), pid:S.pid, w:!S.meta || S.sheets.some(x => x.type === 'welcome') })); } catch (e) { /* private mode */ }
+  flush(); location.href = j.authUri;
+}
+async function googleFinish() {
+  const h = location.hash || '', q = location.search || '';
+  if (!/id_token=|access_token=|[?&]code=|error=/.test(h + q)) return;
+  let g = null; try { g = JSON.parse(localStorage.getItem('podhod-g') || 'null'); localStorage.removeItem('podhod-g'); } catch (e) { g = null; }
+  const url = location.href; history.replaceState(null, '', appUrl());
+  if (!g || Date.now() - g.at > 30 * 60000) return;
+  if (/error=/.test(h + q)) { toast(AUTH_ERR.cancel); return; }
+  if (g.pid && profiles().some(p => p.id === g.pid) && g.pid !== S.pid) switchProfile(g.pid);
+  if (g.w && !S.sheets.some(s => s.type === 'welcome') && !S.meta) S.sheets.push({ type:'welcome', name:'', color:'lime', char:'cat', key:uid() });
+  try {
+    let res;
+    try { res = await idt('signInWithIdp', { requestUri:url, sessionId:g.s, returnSecureToken:true, returnIdpCredential:true }); }
+    catch (e) { // second way: hand Firebase the Google id_token itself
+      const t = (url.match(/[#&?]id_token=([^&]+)/) || [])[1]; if (!t || e.code === 'net') throw e;
+      res = await idt('signInWithIdp', { requestUri:appUrl(), postBody:'id_token=' + t + '&providerId=google.com', returnSecureToken:true, returnIdpCredential:true });
+    }
+    if (!res.idToken) throw { code:'google' };
+    await afterSignIn(res, 'google', null);
+  } catch (e) { toast(authErr(e)); }
+}
+function signOut(pid = S.pid) {
+  const a = accOf(pid); if (!a) return;
+  delete S.meta.accs[pid]; saveMeta(); delete CL.st[a.uid]; KV.del('cs:' + a.uid);
+  if (!cloudOn()) { Object.keys(cmembers()).forEach(sid => { delete S.remote[sid]; }); S.cremote = {}; Object.keys(CL.parts).forEach(u => KV.del('cp:' + u)); CL.parts = {}; KV.set('remote', S.remote); S.rd = {}; rebuildCustom(); }
+  CL.status = '';
+}
+async function deleteAccount(sh) {
+  const a = accOf(); if (!a) return;
+  const u = a.uid, st = await cloudSt(u);
+  const head = await fsGet(a, `users/${u}/pb/main`), months = Object.keys(Object.assign({}, st.wm || {}, head ? sjson(head.wm, {}) : {}));
+  const writes = months.map(m => ({ delete:fsName(`users/${u}/w/${m}`) })).concat(['pv/profile', 'pb/main', 'pb/chat'].map(x => ({ delete:fsName(`users/${u}/${x}`) })));
+  await fsCommit(a, writes);
+  for (const f of ['reader', 'owner']) for (const l of await fsQuery(a, 'links', f, u)) { try { await fsCommit(a, [{ delete:l._n }]); } catch (e) { /* already gone */ } }
+  for (const c of st.inv || []) { try { await fsCommit(a, [{ delete:fsName('invites/' + c) }]); } catch (e) { /* expired or gone */ } }
+  await idt('delete', { idToken:await accToken(a) });
+  signOut(); S.sheets = []; toast('Аккаунт и данные в облаке удалены. На телефоне всё осталось');
+}
+
+/* ---------- partner invites ---------- */
+const CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const newCode = () => Array.from(crypto.getRandomValues(new Uint8Array(10)), b => CODE_ABC[b % 32]).join('');
+const fmtCode = c => c.slice(0, 4) + '-' + c.slice(4, 8) + '-' + c.slice(8);
+async function cloudInvite() {
+  const a = accOf(), st = await cloudSt(a.uid); ensureSids();
+  const code = newCode();
+  await fsCommit(a, [{ update:fsDoc('invites/' + code, { uid:a.uid, sid:curProf().sid, name:pname(curProf()), exp:Date.now() + 7 * DAY }), currentDocument:{ exists:false } }]);
+  st.inv = [...(st.inv || []).slice(-9), code]; saveSt(a.uid);
+  return code;
+}
+async function cloudJoin(raw) {
+  const a = accOf(), code = String(raw || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (code.length !== 10) throw { code:'badcode' };
+  const inv = await fsGet(a, 'invites/' + code);
+  if (!inv || !(inv.exp > Date.now())) throw { code:'badcode' };
+  if (inv.uid === a.uid) throw { code:'own' };
+  const w = [];
+  if (!(await fsGet(a, `links/${inv.uid}_${a.uid}`))) w.push({ update:fsDoc(`links/${inv.uid}_${a.uid}`, { owner:inv.uid, reader:a.uid, code, t:Date.now() }) });
+  if (!(await fsGet(a, `links/${a.uid}_${inv.uid}`))) w.push({ update:fsDoc(`links/${a.uid}_${inv.uid}`, { owner:a.uid, reader:inv.uid, t:Date.now() }) });
+  if (w.length) await fsCommit(a, w);
+  const m = ensureMeta(); if (m.mode !== 'pair') { m.mode = 'pair'; saveMeta(); }
+  await cloudSync({ links:true, show:true });
+  return inv.name || 'Партнёр';
+}
+async function cloudUnlink(sid) {
+  const mm = cmembers()[sid]; if (!mm) return;
+  for (const a of Object.values(accs())) {
+    for (const id of [`links/${mm.uid}_${a.uid}`, `links/${a.uid}_${mm.uid}`]) { try { if (await fsGet(a, id)) await fsCommit(a, [{ delete:fsName(id) }]); } catch (e) { /* not ours */ } }
+    const st = await cloudSt(a.uid); st.lk = (st.lk || []).filter(x => x !== mm.uid); saveSt(a.uid);
+  }
+  delete S.cremote[sid]; delete S.remote[sid]; KV.del('cp:' + mm.uid); delete CL.parts[mm.uid]; KV.set('remote', S.remote); S.rd = {}; rebuildCustom();
+}
+
+/* a partner's link: …/#join=CODE */
+function joinFromHash() {
+  let code = ''; const m = (location.hash || '').match(/join=([A-Za-z0-9-]{10,14})/); if (m) { code = m[1].toUpperCase().replace(/[^A-Z0-9]/g, ''); history.replaceState(null, '', appUrl()); }
+  if (!code) { try { const c = localStorage.getItem('podhod-join') || ''; if (c && accOf()) { localStorage.removeItem('podhod-join'); code = c; } else if (c) S.pendingJoin = c; } catch (e) { /* private mode */ } }
+  if (!code) return;
+  if (accOf()) { setTimeout(() => openSheet({ type:'cpair', mode:'join', code, busy:false, err:'' }), 400); return; }
+  S.pendingJoin = code; try { localStorage.setItem('podhod-join', code); } catch (e) { /* private mode */ }
+  setTimeout(() => openSheet({ type:'acc', mode:'login', busy:false, err:'', why:'Войдите, чтобы подключиться к партнёру' }), 400);
+}
+window.addEventListener('hashchange', () => { if (/join=/.test(location.hash)) joinFromHash(); });
+
+/* ---------- account and partner screens ---------- */
+const GLOGO = '<svg class="glogo" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+ICONS.cloud = ICONS.cloud || '<path d="M7 18h10.5a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.34 9.5 4.25 4.25 0 0 0 7 18z"/>';
+ICONS.key = '<circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l2 2M14 9l2 2"/>';
+ICONS.logout = '<path d="M14 5h4a1.5 1.5 0 0 1 1.5 1.5v11A1.5 1.5 0 0 1 18 19h-4"/><path d="M10 16l-4-4 4-4M6 12h9"/>';
+const jwtAuthAt = t => { try { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).auth_time * 1000; } catch (e) { return 0; } };
+const accField = (id, label, key, sh, o = {}) => `<label class="lbl">${label}<span class="pw-wrap"><input class="field" id="${id}" data-in="accF" data-k="${key}" type="${o.type || 'text'}" value="${esc(sh[key] || '')}" autocomplete="${o.ac || 'off'}"${o.im ? ` inputmode="${o.im}"` : ''} autocapitalize="off" spellcheck="false" enterkeyhint="${o.ek || 'next'}"${o.ph ? ` placeholder="${o.ph}"` : ''}>${o.eye ? `<button class="pw-eye icon-btn" type="button" data-act="accEye" aria-label="${sh.eye ? 'Скрыть пароль' : 'Показать пароль'}" aria-pressed="${!!sh.eye}">${icon(sh.eye ? 'eyeOff' : 'eye')}</button>` : ''}</span></label>`;
+ICONS.eye = ICONS.eye || '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>';
+ICONS.eyeOff = ICONS.eyeOff || '<path d="M4 4l16 16"/><path d="M9.9 5.8A9.6 9.6 0 0 1 12 5.5C18 5.5 21.5 12 21.5 12a17 17 0 0 1-3 3.8M6.6 7.4C3.9 9.2 2.5 12 2.5 12S6 18.5 12 18.5c1.6 0 3-.4 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>';
+SHEETS.acc = sh => {
+  const a = accOf(), pw = sh.eye ? 'text' : 'password', err = sh.err ? `<p class="acc-err" role="alert">${esc(sh.err)}</p>` : '';
+  const busy = sh.busy ? ' disabled aria-busy="true"' : '';
+  if (a && sh.mode !== 'pass' && sh.mode !== 'del') {
+    return `${sheetHead('Аккаунт', esc(pname(curProf())))}<div class="sheet-body">
+      <div class="acc-card"><span class="acc-ava" aria-hidden="true">${a.prov === 'google' ? GLOGO : icon('user')}</span><span class="acc-id"><b>${esc(a.email || 'Аккаунт')}</b><small>${a.prov === 'google' ? 'Вход через Google' : 'Вход по почте и паролю'}</small></span></div>
+      <p class="acc-st${a.bad || CL.status === 'err' ? ' bad' : ''}" role="status">${icon(CL.status === 'sync' ? 'repeat' : 'cloud')} ${esc(cloudText())}</p>
+      ${a.bad ? `<button class="btn btn-primary btn-block" data-act="accRelogin">Войти заново</button>` : `<button class="btn btn-block" data-act="accSync"${CL.busy ? ' disabled' : ''}>${icon('repeat')} Синхронизировать сейчас</button>`}
+      <div class="hint" style="margin-top:14px">${icon('cloud')}<span><b>Что хранится в облаке:</b> тренировки, программы, добавки, вес и замеры, сундуки и гардероб, настройки. Войдите с другого телефона — всё появится там. <b>Фото тела остаются только на этом телефоне.</b></span></div>
+      <div class="sblock"><div class="row">${a.prov !== 'google' ? `<button class="btn btn-sm" data-act="accMode" data-m="pass">${icon('key')} Сменить пароль</button>` : ''}<button class="btn btn-sm" data-act="accOut">${icon('logout')} ${sh.outc ? 'Точно выйти?' : 'Выйти'}</button><button class="btn btn-sm btn-danger-soft" data-act="accMode" data-m="del">${icon('trash')} Удалить аккаунт</button></div>
+      <p class="fine" style="margin:10px 0 0">После выхода данные остаются на телефоне, но перестают сохраняться в облако.</p></div>
+    </div>`;
+  }
+  if (a && sh.mode === 'pass') return `${sheetHead('Новый пароль', esc(a.email))}<div class="sheet-body"><form class="acc-form" onsubmit="return false">
+      ${accField('acc-cur', 'Текущий пароль', 'cur', sh, { type:pw, ac:'current-password' })}
+      ${accField('acc-new', 'Новый пароль', 'pass', sh, { type:pw, ac:'new-password', eye:true, ek:'done', ph:'Не меньше 6 символов' })}
+      ${err}<button class="btn btn-primary btn-block" data-act="accPassSave"${busy}>${sh.busy ? 'Сохраняем…' : 'Сменить пароль'}</button>
+      <button class="btn btn-ghost btn-block" type="button" data-act="accMode" data-m="me">Назад</button></form></div>`;
+  if (a && sh.mode === 'del') {
+    const fresh = Date.now() - jwtAuthAt(a.it || '') < 4 * 60000;
+    return `${sheetHead('Удалить аккаунт', esc(a.email))}<div class="sheet-body">
+      <p>Удалим аккаунт и всё, что хранится в облаке: тренировки, программы, добавки, вес. Партнёр перестанет видеть ваши тренировки. <b>На этом телефоне данные останутся.</b></p>
+      ${a.prov === 'google' && !fresh ? `<div class="hint">${icon('help')}<span>Для удаления Google просит подтвердить, что это вы. Войдите через Google ещё раз — и сразу удаляйте.</span></div><button class="btn btn-block" style="margin-top:12px" data-act="accGoogle">${GLOGO} Подтвердить через Google</button>`
+        : `${a.prov === 'google' ? '' : accField('acc-dp', 'Пароль для подтверждения', 'cur', sh, { type:pw, ac:'current-password', eye:true, ek:'done' })}${err}<button class="btn btn-danger btn-block" style="margin-top:12px" data-act="accDel"${busy}>${sh.busy ? 'Удаляем…' : sh.delc ? 'Да, удалить навсегда' : 'Удалить аккаунт и облако'}</button>`}
+      <button class="btn btn-ghost btn-block" data-act="accMode" data-m="me">Отмена</button></div>`;
+  }
+  const mode = sh.mode || 'login';
+  if (mode === 'reset') return `${sheetHead('Восстановить пароль', 'Аккаунт')}<div class="sheet-body">${sh.sent
+      ? `<div class="hint">${icon('check')}<span>Если такой аккаунт есть, письмо уже летит на <b>${esc(sh.sent)}</b>. Откройте ссылку из письма, задайте новый пароль и войдите. Письма нет пару минут — загляните в «Спам».</span></div><button class="btn btn-primary btn-block" style="margin-top:14px" data-act="accMode" data-m="login">Ко входу</button>`
+      : `<form class="acc-form" onsubmit="return false">${accField('acc-email', 'Почта', 'email', sh, { type:'email', ac:'email', im:'email', ek:'send', ph:'name@mail.ru' })}${err}
+        <button class="btn btn-primary btn-block" data-act="accReset"${busy}>${sh.busy ? 'Отправляем…' : 'Прислать ссылку'}</button><button class="btn btn-ghost btn-block" type="button" data-act="accMode" data-m="login">Назад</button></form>`}</div>`;
+  const up = mode === 'signup';
+  return `${sheetHead(up ? 'Создать аккаунт' : 'Вход', sh.why ? esc(sh.why) : 'Данные в облаке')}<div class="sheet-body">
+    <button class="btn btn-block btn-g" data-act="accGoogle"${busy}>${GLOGO} ${up ? 'Создать через Google' : 'Войти через Google'}</button>
+    <div class="or"><span>или по почте</span></div>
+    <form class="acc-form" onsubmit="return false">
+      ${accField('acc-email', 'Почта', 'email', sh, { type:'email', ac:'email', im:'email', ph:'name@mail.ru' })}
+      ${accField('acc-pass', 'Пароль', 'pass', sh, { type:pw, ac:up ? 'new-password' : 'current-password', eye:true, ek:'go', ph:up ? 'Не меньше 6 символов' : '' })}
+      ${err}<button class="btn btn-primary btn-block" data-act="${up ? 'accSignup' : 'accLogin'}"${busy}>${sh.busy ? (up ? 'Создаём…' : 'Входим…') : up ? 'Создать аккаунт' : 'Войти'}</button>
+    </form>
+    <div class="acc-links">${up ? `<button class="link" data-act="accMode" data-m="login">Уже есть аккаунт? Войти</button>` : `<button class="link" data-act="accMode" data-m="signup">Создать аккаунт</button><button class="link" data-act="accMode" data-m="reset">Забыли пароль?</button>`}</div>
+    <p class="fine">Без аккаунта приложение работает как раньше — всё хранится на телефоне. С аккаунтом данные сохраняются в облаке (Google Firebase): новый телефон — и всё на месте. Фото тела в облако не попадают.</p>
+  </div>`;
+};
+SHEETS.cpair = sh => {
+  const a = accOf(), ps = Object.values(cmembers()), err = sh.err ? `<p class="acc-err" role="alert">${esc(sh.err)}</p>` : '', busy = sh.busy ? ' disabled aria-busy="true"' : '';
+  if (!a) return `${sheetHead('Партнёр', 'Подключение')}<div class="sheet-body"><p>Чтобы видеть тренировки, рекорды и чат друг друга, войдите в аккаунт — у партнёра тоже нужен аккаунт.</p><button class="btn btn-primary btn-block" data-act="accOpen" data-why="Чтобы подключить партнёра">${icon('user')} Войти</button></div>`;
+  if (sh.mode === 'invite') {
+    const link = sh.code ? appUrl() + '#join=' + sh.code : '';
+    return `${sheetHead('Пригласить партнёра', 'Код действует 7 дней')}<div class="sheet-body">
+      ${sh.code ? `<div class="code-big" aria-label="Код ${esc(fmtCode(sh.code))}">${esc(fmtCode(sh.code))}</div>
+        <p class="fine" style="text-align:center">Партнёр открывает ссылку или вводит код: Настройки → Синхронизация с партнёром → «Ввести код». Ему тоже нужен аккаунт.</p>
+        <div class="row" style="justify-content:center">${navigator.share ? `<button class="btn btn-primary" data-act="cpairShare">${icon('share')} Отправить ссылку</button>` : ''}<button class="btn" data-act="cpairCopy" data-v="${esc(link)}">${icon('link')} Скопировать ссылку</button></div>`
+        : err || `<p class="muted" aria-busy="true">Создаём код…</p>`}
+      ${sh.code && err ? err : ''}</div>`;
+  }
+  if (sh.mode === 'join') return `${sheetHead('Ввести код партнёра', 'Подключение')}<div class="sheet-body"><form class="acc-form" onsubmit="return false">
+      <label class="lbl">Код из приглашения<input class="field code-in" id="cp-code" data-in="accF" data-k="code" value="${esc(sh.code || '')}" placeholder="ABCD-EFGH-JK" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="14" enterkeyhint="go"></label>
+      ${err}<button class="btn btn-primary btn-block" data-act="cpairJoin"${busy}>${sh.busy ? 'Подключаем…' : 'Подключиться'}</button></form></div>`;
+  return `${sheetHead('Партнёры', `${ps.length} ${plural(ps.length, ['партнёр', 'партнёра', 'партнёров'])}`)}<div class="sheet-body">
+    ${ps.length ? `<ul class="blist cp-list">${ps.map(m => `<li><span class="cp-who"><b>${esc(m.name || 'Партнёр')}</b><small>${m.workouts.length} ${plural(m.workouts.length, ['тренировка', 'тренировки', 'тренировок'])}</small></span><button class="btn btn-sm ${sh.un === m.id ? 'btn-danger' : 'btn-danger-soft'}" data-act="cpairUnlink" data-id="${esc(m.id)}">${sh.un === m.id ? 'Точно отключить?' : 'Отключить'}</button></li>`).join('')}</ul>` : '<p class="muted">Пока никого. Пригласите партнёра кодом.</p>'}
+    ${err}<div class="row" style="margin-top:12px"><button class="btn btn-primary" data-act="cpairOpen" data-m="invite">${icon('link')} Пригласить</button><button class="btn" data-act="cpairOpen" data-m="join">Ввести код</button></div></div>`;
+};
+function accountRowHTML() {
+  const a = accOf();
+  return `<div class="srow acc-row"><div class="srow-t"><b>${icon('cloud')} Аккаунт</b><span>${a ? esc(a.email || 'Подключён') + ' · ' + esc(cloudText()) : 'Не выполнен вход — данные только на этом телефоне'}</span></div><button class="btn btn-sm${a ? '' : ' btn-primary'}" data-act="accOpen">${a ? 'Открыть' : 'Войти'}</button></div>`;
+}
+function cloudPairHTML() {
+  const a = accOf(), ps = Object.values(cmembers());
+  if (!a) return `<p class="fine" style="margin:0 0 10px">Видите тренировки, рекорды и чат друг друга — даже в разных залах. Нужен аккаунт у обоих: вход через Google или по почте.</p><div class="row"><button class="btn btn-sm btn-primary" data-act="accOpen" data-why="Чтобы подключить партнёра">${icon('user')} Войти и подключить</button><button class="btn btn-sm btn-ghost" data-act="syncSetup">Через GitHub</button></div>`;
+  return `<p class="fine" style="margin:0 0 10px">${ps.length ? 'С вами: ' + ps.map(m => esc(m.name || 'партнёр')).join(', ') + ' · ' + esc(cloudText()) : 'Отправьте партнёру код или ссылку — у него тоже должен быть аккаунт.'}</p>
+    <div class="row"><button class="btn btn-sm btn-primary" data-act="cpairOpen" data-m="invite">${icon('link')} Пригласить</button><button class="btn btn-sm" data-act="cpairOpen" data-m="join">Ввести код</button>${ps.length ? `<button class="btn btn-sm" data-act="cpairOpen" data-m="menu">${icon('users')} Партнёры</button>` : ''}</div>
+    <div class="srow" style="border:0;padding-bottom:0"><div class="srow-t"><b>Показывать вес и замеры</b><span>Партнёр увидит ваш вес тела и замеры. Фото не передаются никогда</span></div><button class="switch" role="switch" aria-checked="${shareBodyOn()}" aria-label="Показывать вес тела партнёру" data-act="toggleShareBody"></button></div>`;
+}
+async function accRun(sh, fn) {
+  if (sh.busy) return; sh.busy = true; sh.err = ''; render();
+  try { await fn(); } catch (e) { sh.err = authErr(e); sfx('locked'); buzz([20, 40, 20]); }
+  finally { sh.busy = false; render(); }
+}
+// Enter in a field presses the main button of that form
+document.addEventListener('keydown', e => { if (e.key !== 'Enter' || !e.target || e.target.tagName !== 'INPUT') return; const f = e.target.closest('.acc-form'); if (!f) return; e.preventDefault(); const b = f.querySelector('.btn-primary,.btn-danger'); if (b && !b.disabled) b.click(); });
+Object.assign(IN, { accF: el => { const sh = top(); if (sh) { sh[el.dataset.k] = el.value; if (sh.err) { sh.err = ''; const e = $('#sheet-root .acc-err'); if (e) e.remove(); } } } });
+Object.assign(A, {
+  accOpen: el => openSheet({ type:'acc', mode:accOf() ? 'me' : 'login', email:'', pass:'', busy:false, err:'', why:el && el.dataset && el.dataset.why || '' }),
+  accMode: el => { const sh = top(); sh.mode = el.dataset.m; sh.err = ''; sh.sent = ''; sh.delc = false; sh.cur = ''; sh.pass = ''; render(); },
+  accEye: () => { const sh = top(); sh.eye = !sh.eye; render(); },
+  accGoogle: () => { const sh = top(); accRun(sh, () => googleStart()); },
+  accRelogin: () => { const sh = top(); const a = accOf(); sh.email = (a && a.email) || ''; if (a && a.prov === 'google') { accRun(sh, () => googleStart()); return; } signOut(); sh.mode = 'login'; render(); },
+  accLogin: () => { const sh = top(), email = (sh.email || '').trim(), pass = sh.pass || '';
+    if (!email) { sh.err = authErr({ code:'MISSING_EMAIL' }); render(); return; } if (!pass) { sh.err = authErr({ code:'MISSING_PASSWORD' }); render(); return; }
+    accRun(sh, async () => { const res = await idt('signInWithPassword', { email, password:pass, returnSecureToken:true }); await afterSignIn(res, 'password', sh); }); },
+  accSignup: () => { const sh = top(), email = (sh.email || '').trim(), pass = sh.pass || '';
+    if (!email) { sh.err = authErr({ code:'MISSING_EMAIL' }); render(); return; } if (pass.length < 6) { sh.err = authErr({ code:'short' }); render(); return; }
+    accRun(sh, async () => { const res = await idt('signUp', { email, password:pass, returnSecureToken:true }); await afterSignIn(res, 'password', sh); }); },
+  accReset: () => { const sh = top(), email = (sh.email || '').trim(); if (!email) { sh.err = authErr({ code:'MISSING_EMAIL' }); render(); return; }
+    accRun(sh, async () => { await idt('sendOobCode', { requestType:'PASSWORD_RESET', email }); sh.sent = email; }); },
+  accPassSave: () => { const sh = top(), a = accOf(); if (!a) return; if ((sh.pass || '').length < 6) { sh.err = authErr({ code:'short' }); render(); return; }
+    accRun(sh, async () => {
+      const r1 = await idt('signInWithPassword', { email:a.email, password:sh.cur || '', returnSecureToken:true });
+      const r2 = await idt('update', { idToken:r1.idToken, password:sh.pass, returnSecureToken:true });
+      a.it = r2.idToken || r1.idToken; a.rt = r2.refreshToken || r1.refreshToken; a.exp = Date.now() + (+(r2.expiresIn || r1.expiresIn) || 3600) * 1000; delete a.bad; saveMeta();
+      sh.mode = 'me'; sh.cur = ''; sh.pass = ''; toast('Пароль изменён'); sfx('set');
+    }); },
+  accSync: () => { cloudSync({ links:true, show:true }); render(); },
+  accOut: () => { const sh = top(); if (!sh.outc) { sh.outc = true; render(); return; } signOut(); sh.outc = false; sh.mode = 'login'; toast('Вы вышли. Данные остались на телефоне'); render(); },
+  accDel: () => { const sh = top(), a = accOf(); if (!a) return; if (!sh.delc) { sh.delc = true; render(); return; }
+    accRun(sh, async () => {
+      if (a.prov !== 'google') { const r = await idt('signInWithPassword', { email:a.email, password:sh.cur || '', returnSecureToken:true }); a.it = r.idToken; a.rt = r.refreshToken; a.exp = Date.now() + 3600e3; }
+      else if (Date.now() - jwtAuthAt(a.it || '') > 4 * 60000) throw { code:'CREDENTIAL_TOO_OLD_LOGIN_AGAIN' };
+      await deleteAccount(sh);
+    }); },
+  cpairOpen: el => {
+    const m = el.dataset.m || 'menu', cur = top();
+    if (!accOf()) { openSheet({ type:'acc', mode:'login', why:'Чтобы подключить партнёра', busy:false, err:'' }); return; }
+    const sh = cur && cur.type === 'cpair' ? Object.assign(cur, { mode:m, err:'', busy:false, code:m === 'join' ? '' : cur.code }) : (openSheet({ type:'cpair', mode:m, code:'', err:'', busy:false }), top());
+    if (m === 'invite' && !sh.code) { (async () => { try { sh.code = await cloudInvite(); } catch (e) { sh.err = authErr(e); } render(); })(); }
+    render();
+  },
+  pairConnect: () => A.cpairOpen({ dataset:{ m:'invite' } }),
+  cpairShare: async () => { const sh = top(); if (!sh || !sh.code) return; try { await navigator.share({ title:'Подход', text:`Давай тренироваться вместе в «Подходе». Код: ${fmtCode(sh.code)}`, url:appUrl() + '#join=' + sh.code }); } catch (e) { /* closed */ } },
+  cpairCopy: async el => { try { await navigator.clipboard.writeText(el.dataset.v); toast('Ссылка скопирована'); } catch (e) { toast('Не получилось скопировать — перепишите код'); } },
+  cpairJoin: () => { const sh = top(); accRun(sh, async () => { const name = await cloudJoin(sh.code); S.sheets = S.sheets.filter(s => s !== sh); toast(`Готово! Вы с ${name} теперь видите тренировки друг друга`); sfx('goal'); confetti(innerWidth / 2, innerHeight * .4, 80); }); },
+  cpairUnlink: el => { const sh = top(), id = el.dataset.id; if (sh.un !== id) { sh.un = id; render(); return; } accRun(sh, async () => { await cloudUnlink(id); sh.un = null; toast('Партнёр отключён'); }); },
+  welcomeLogin: () => openSheet({ type:'acc', mode:'login', email:'', pass:'', busy:false, err:'', why:'С возвращением' }),
+});
+SHEETS.news28 = () => `${sheetHead('Что нового', 'Версия ' + APP_VERSION)}<div class="sheet-body">
+  <ul class="pr-list news">
+    <li>${icon('cloud')}<span><b>Аккаунт</b> — вход через Google или по почте. Тренировки, программы, добавки и настройки хранятся в облаке: новый телефон — и всё на месте. Фото тела остаются только на телефоне</span></li>
+    <li>${icon('users')}<span><b>Партнёр по коду</b> — без GitHub: отправьте ссылку или код, и вы видите тренировки, рекорды и чат друг друга</span></li>
+    <li>${icon('key')}<span><b>Пароль</b> — можно сменить или восстановить по почте</span></li>
+    <li>${icon('check')}<span>Аккаунт не обязателен: без него всё работает как раньше, без интернета</span></li>
+  </ul>
+</div><footer class="sheet-foot"><button class="btn" data-act="closeSheet">Позже</button><button class="btn btn-primary" data-act="accOpen">${icon('user')} Войти</button></footer>`;
 
 /* ================= events ================= */
 document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const fn = A[el.dataset.act]; if (fn) { e.preventDefault(); SFXN.n = 0; fn(el, e); if (!SFXN.n) sfx(el.dataset.act === 'nav' ? 'tab' : el.dataset.act === 'closeSheet' ? 'close' : el.getAttribute('role') === 'switch' ? 'toggle' : 'tap'); } });
