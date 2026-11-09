@@ -9,7 +9,12 @@ const RM = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').
 const DAY = 864e5;
 const num = v => (v === null || v === undefined || v === '' || Number.isNaN(Number(v))) ? null : Number(v);
 const parseNum = str => { const s = String(str).replace(',', '.').replace(/[^\d.]/g, ''); if (!s) return null; const v = parseFloat(s); return Number.isFinite(v) ? Math.min(v, 9999) : null; };
-const NFC = {}; const nf = (x, d = 1) => (NFC[d] || (NFC[d] = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: d }))).format(Math.round(x * 10 ** d) / 10 ** d);
+const NFC = {}, NFM = new Map(); // Intl is slow, and the same numbers are formatted again on every render, so the results are remembered
+const nf = (x, d = 1) => {
+  const r = Math.round(x * 10 ** d) / 10 ** d, k = d + '|' + (Object.is(r, -0) ? '-0' : r); let s = NFM.get(k);
+  if (s === undefined) { s = (NFC[d] || (NFC[d] = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: d }))).format(r); if (NFM.size > 4000) NFM.clear(); NFM.set(k, s); }
+  return s;
+};
 const ton = x => x >= 10000 ? nf(x / 1000, 1) + ' т' : nf(Math.round(x), 0) + ' кг';
 const plural = (n, f) => { const a = Math.abs(Math.round(n)) % 100, b = a % 10; if (a > 10 && a < 20) return f[2]; if (b > 1 && b < 5) return f[1]; if (b === 1) return f[0]; return f[2]; };
 const pad = n => String(n).padStart(2, '0');

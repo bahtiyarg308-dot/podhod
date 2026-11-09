@@ -2,9 +2,9 @@
 const SERVER = require('../lib/server');
 const { chromium } = require('playwright'); const { spawn } = require('child_process'); const fs = require('fs');
 const ST = __dirname, MOCK = 'http://127.0.0.1:8899', SRC = process.env.SRC || process.env.REPO;
-{ let s = fs.readFileSync(SRC + '/index.html', 'utf8'); const r = (a, b) => { if (!s.includes(a)) throw new Error('no ' + a); s = s.split(a).join(b); };
+{ let s = fs.readFileSync(SRC + '/app.js', 'utf8'); const r = (a, b) => { if (!s.includes(a)) throw new Error('no ' + a); s = s.split(a).join(b); };
   r("idt:'https://identitytoolkit.googleapis.com/v1/accounts:'", `idt:'${MOCK}/idt/accounts:'`); r("stk:'https://securetoken.googleapis.com/v1/token'", `stk:'${MOCK}/stk'`); r("fs:'https://firestore.googleapis.com/v1/'", `fs:'${MOCK}/fs/'`);
-  fs.mkdirSync(ST + '/v29', { recursive: true }); fs.writeFileSync(ST + '/v29/index.html', s); fs.copyFileSync(SRC + '/sw.js', ST + '/v29/sw.js'); }
+  fs.mkdirSync(ST + '/v29', { recursive: true }); fs.writeFileSync(ST + '/v29/app.js', s); fs.copyFileSync(SRC + '/index.html', ST + '/v29/index.html'); fs.copyFileSync(SRC + '/sw.js', ST + '/v29/sw.js'); }
 (async () => {
   const procs = [spawn('node', [ST + '/mock-fb.js'], { stdio: 'ignore', env: Object.assign({}, process.env, { GEMAIL: 'google.user@gmail.com' }) }), SERVER.start('8895', ST + '/v29')];
   await new Promise(r => setTimeout(r, 1200));

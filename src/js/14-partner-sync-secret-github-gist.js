@@ -279,20 +279,24 @@ function syncStatusText() {
 async function boot() {
   buildNav(); applyTheme(); render();
   await KV.open();
-  S.meta = await KV.get('meta'); if (S.meta && S.meta.chatSeen == null) S.meta.chatSeen = Date.now();
-  S.remote = (await KV.get('remote')) || {}; Object.values(S.remote).forEach(validMember); rebuildCustom();
+  // independent reads go to the database together (they used to be awaited one after another)
+  const [meta, remote, chatMine, chatAll, errlog] = await Promise.all([KV.get('meta'), KV.get('remote'), KV.get('chat-mine'), KV.get('chat-all'), KV.get('errlog')]);
+  S.meta = meta; if (S.meta && S.meta.chatSeen == null) S.meta.chatSeen = Date.now();
+  S.remote = remote || {}; Object.values(S.remote).forEach(validMember); rebuildCustom();
   S.cremote = Object.fromEntries(Object.entries(S.remote).filter(([, m]) => m && m.cloud));
-  S.chatMine = (await KV.get('chat-mine')) || {}; S.chatAll = (await KV.get('chat-all')) || [];
-  const ids = profiles().map(p => p.id);
-  for (const id of ids) S.store[id] = (await KV.get('p:' + id)) || {};
+  S.chatMine = chatMine || {}; S.chatAll = chatAll || [];
+  const ids = profiles().map(p => p.id), pd = await Promise.all(ids.map(id => KV.get('p:' + id)));
+  ids.forEach((id, i) => { S.store[id] = pd[i] || {}; });
   S.pid = (S.meta && S.meta.cur && ids.includes(S.meta.cur)) ? S.meta.cur : 'main';
   S.mode = 'local'; S.metaLoaded = true;
   loadProfileData(); applyAccent(); applyTheme();
-  ERRLOG.push(...(((await KV.get('errlog')) || []).slice(-30))); await snapDaily();
+  ERRLOG.push(...((errlog || []).slice(-30)));
+  render(); // the data is on screen now; the daily safety copy below no longer holds the first paint back
+  await snapDaily();
   try { if (navigator.storage && navigator.storage.persisted) S.persisted = await navigator.storage.persisted(); } catch (e) { S.persisted = null; }
   if (isStandalone() && !S.persisted) requestPersist();
   if (syncCfg()) setSync('ok');
-  render();
+  if (S.sheets.length) render(); // the screen was drawn above already; only an open sheet could show the flags set since then
   registerSW();
   if (syncCfg()) syncNow(true);
   joinFromHash(); await googleFinish(); await authLink(); await verifyBoot();

@@ -1,8 +1,10 @@
 /* «Подход» — офлайн-кеш. При каждом обновлении приложения меняйте VERSION. */
-const VERSION = 'podhod-3.0.0';
+const VERSION = 'podhod-3.3.0';
+const APP_JS = './app.js?v=b3bbfd793f'; // rewritten by tools/build.js
 const ASSETS = [
   './',
   './index.html',
+  APP_JS,
   './manifest.webmanifest',
   './icons/icon.svg',
   './icons/icon-192.png',
@@ -17,7 +19,7 @@ const ASSETS = [
   './fonts/martian-mono-latin-wght-normal.woff2'
 ];
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(ASSETS)));
+  e.waitUntil(caches.open(VERSION).then(c => c.addAll(ASSETS.map(u => new Request(u, { cache:'reload' })))));
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));
@@ -32,7 +34,7 @@ self.addEventListener('fetch', e => {
     e.respondWith(caches.match('./index.html').then(r => r || fetch(req)));
     return;
   }
-  e.respondWith(caches.match(req, { ignoreSearch: true }).then(r => r || fetch(req).then(res => {
+  e.respondWith(caches.match(req, { ignoreSearch: !url.pathname.endsWith('/app.js') }).then(r => r || fetch(req).then(res => {
     if (res && res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); }
     return res;
   })));

@@ -1,3 +1,4 @@
 tests/.tmp/
 tests/scenarios/shots*/
 node_modules/
+tests/scenarios/v29/app.js

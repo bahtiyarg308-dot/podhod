@@ -32,10 +32,9 @@ function applyAccent(colorKey) { const c = lookOf() === 'noir' ? (NOIR_ACC[(S.me
 const nextColor = () => { const used = new Set(profiles().map(p => p.color)); return ['pink', 'lime', 'sky', 'orange', 'violet', 'mint', 'coral', 'blue', 'amber', 'fuchsia', 'teal', 'green', 'yellow', 'red', 'sand', 'mono'].find(k => !used.has(k)) || 'pink'; };
 function applyTheme() {
   const t0 = (S.meta && S.meta.theme) || 'auto', t = t0 === 'auto' && lookOf() === 'noir' ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : t0, r = document.documentElement;
-  r.setAttribute('data-look', lookOf());
-  if (S.meta && S.meta.oled) r.setAttribute('data-oled', '1'); else r.removeAttribute('data-oled');
-  if (t === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', t);
-  requestAnimationFrame(() => { const bg = getComputedStyle(r).getPropertyValue('--bg').trim(); const m = $('meta[name="theme-color"]'); if (m && bg) m.setAttribute('content', bg); });
+  const set = (n, v) => { if (v == null) { if (r.hasAttribute(n)) r.removeAttribute(n); } else if (r.getAttribute(n) !== v) r.setAttribute(n, v); }; // an unchanged attribute must not restyle the page
+  set('data-look', lookOf()); set('data-oled', S.meta && S.meta.oled ? '1' : null); set('data-theme', t === 'auto' ? null : t);
+  if (!applyTheme.raf) applyTheme.raf = requestAnimationFrame(() => { applyTheme.raf = 0; const bg = getComputedStyle(r).getPropertyValue('--bg').trim(); const m = $('meta[name="theme-color"]'); if (m && bg) m.setAttribute('content', bg); });
 }
 
 try { matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => { if (lookOf() === 'noir' && ((S.meta && S.meta.theme) || 'auto') === 'auto') { applyTheme(); render(); } }); } catch (e) { /* old browser */ }
