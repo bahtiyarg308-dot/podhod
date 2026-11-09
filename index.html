@@ -1441,26 +1441,45 @@ html[data-oled="1"][data-look="noir"]:not([data-theme="light"]){--bg:#000;--surf
 @media(max-width:340px){.hab-ics{grid-template-columns:repeat(6,1fr)}.hab-dots i{width:5px}}
 @media(max-width:340px){.tab{font-size:9px;letter-spacing:-.04em}}
 /* ===== 3.2: swipe a row to the left to delete ===== */
-/* ---------- swipe a row to the left ---------- */
-.swp{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
-.swp-fg{position:relative;z-index:1;touch-action:pan-y;background:var(--bg);will-change:transform;-webkit-user-select:none;user-select:none}
+.swp{position:relative;-webkit-tap-highlight-color:transparent}
+.swp.on,.swp.out,.swp.drag{overflow:hidden}
+.swp-fg{position:relative;z-index:1;touch-action:pan-y;background:var(--bg)}
+.swp-fg input,.swp-fg textarea{-webkit-user-select:text;user-select:text} /* iOS: a user-select:none parent makes fields uneditable */
+.panel .swp-fg,.sheet .swp-fg,.xcard .swp-fg{background:var(--surface)}
+/* the red button is a rounded pill that grows with the swipe (--e = how many px of the row are pulled away) */
+.swp-act{position:absolute;inset:0;visibility:hidden;cursor:pointer;-webkit-user-select:none;user-select:none}
+.swp.on .swp-act{visibility:visible}
+.swp-btn{position:absolute;top:5px;bottom:5px;right:6px;width:max(0px,calc(var(--e,0) * 1px - 12px));border-radius:12px;overflow:hidden;
+  background:linear-gradient(180deg,#DC574F 0%,#B93A34 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 1px 6px rgba(110,20,18,.35);transition:filter .16s,box-shadow .16s}
+.swp-act:active .swp-btn{filter:brightness(.9)}
+.swp.armed .swp-btn{filter:brightness(1.1) saturate(1.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 2px 10px rgba(140,24,20,.5)}
+.swp.out .swp-btn{transition:none}
+/* icon and label stay at the moving edge of the row, like on iOS */
+.swp-lbl{position:absolute;left:0;top:0;bottom:0;width:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#fff;
+  opacity:calc(.25 + var(--p,0) * .75);pointer-events:none}
+.swp-lbl .ic{width:21px;height:21px;transition:transform .18s var(--spring)}
+.swp.armed .swp-lbl .ic{transform:scale(1.18)}
+.swp.drag .swp-lbl .ic,.swp.out .swp-lbl .ic{transition:none}
+.swp-lbl b{font-size:11.5px;font-weight:600;letter-spacing:.02em}
+.swp.drag .swp-fg{cursor:grabbing;will-change:transform;-webkit-user-select:none;user-select:none}
+.swp.sm .swp-btn{top:4px;bottom:4px}
+.swp.sm .swp-lbl{flex-direction:row;gap:6px;width:84px}
+.swp.sm .swp-lbl .ic{width:17px;height:17px}
+.swp.sm .swp-lbl b{font-size:12px}
+/* rows that keep their own grid inside a list item or a card */
+.blist li.swp-li,.mlist li.swp-li{display:block;padding:0}
+.blist .swp-fg.sw-b{display:grid;grid-template-columns:minmax(0,1fr) auto auto 34px;gap:14px;align-items:center;padding:10px 0}
+.blist .swp-fg.sw-cx{display:grid;grid-template-columns:minmax(0,1fr) auto 34px 34px;gap:14px;align-items:center;padding:10px 0}
+.mlist .swp-fg.sw-m{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:10px;align-items:center;padding:10px 0}
 .sup-list .swp{margin:0 -12px}
-.sup-list .swp-fg{padding:0 12px;background:var(--surface)}
+.sup-list .swp-fg{padding:0 12px}
 .sup-list{overflow:hidden}
 .sup-list .swp:not(:last-child) .sup-row{border-bottom:1px solid var(--line)}
 .sup-list .swp:last-child .sup-row{border-bottom:0}
-.swp-act{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;visibility:hidden;color:#fff;cursor:pointer;
-  background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,0) 52%),linear-gradient(90deg,#892826 0%,#C4433C 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.2);transition:filter .18s}
-.swp.on .swp-act{visibility:visible}
-.swp.armed .swp-act{filter:brightness(1.12) saturate(1.1)}
-.swp-lbl{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:92px;pointer-events:none;
-  opacity:calc(.3 + var(--p,0) * .7);transform:scale(calc(.78 + var(--p,0) * .22));transition:transform .16s var(--spring)}
-.swp.armed .swp-lbl{transform:scale(1.14)}
-.swp-lbl .ic{width:22px;height:22px}
-.swp-lbl b{font-size:11.5px;font-weight:600;letter-spacing:.02em}
-.swp.drag .swp-fg{cursor:grabbing}
-@media (prefers-reduced-motion:reduce){.swp-lbl{transition:none}}
+.sets .swp{border-radius:12px}
+.tpl-items .swp{border-radius:14px}
+.tpl-items .swp-fg{background:var(--surface)}
+@media (prefers-reduced-motion:reduce){.swp-lbl .ic{transition:none}}
 </style>
 </head>
 <body>
@@ -1482,7 +1501,7 @@ html[data-oled="1"][data-look="noir"]:not([data-theme="light"]){--bg:#000;--surf
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '3.2.0';
+const APP_VERSION = '3.2.1';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -3494,13 +3513,13 @@ function xcardHTML(w, x, xi, prs) {
       if (f === 't' && ex.kind === 'cardio') { v = v != null ? v / 60 : v; ph = ph != null ? ph / 60 : ph; }
       return `<input id="s-${x.k}-${si}-${f}" class="set-in" data-in="set" data-x="${xi}" data-i="${si}" data-f="${f}" inputmode="${im}" enterkeyhint="${fi ? 'done' : 'next'}" autocomplete="off" value="${fmtIn(v)}" placeholder="${fmtIn(ph)}" aria-label="${label}, подход ${si + 1}">`;
     }).join('');
-    return `<div class="set-row${s.done ? ' done' : ''}${pr ? ' pr' : ''}${just ? ' just' : ''}" data-key="r-${x.k}-${si}">
+    return `${swOpen('set', xi + ':' + si)}<div class="set-row${s.done ? ' done' : ''}${pr ? ' pr' : ''}${just ? ' just' : ''}" data-key="r-${x.k}-${si}">
       <button class="set-n${s.warm ? ' warm' : ''}" data-act="setWarm" data-x="${xi}" data-i="${si}" title="${s.warm ? 'Разминочный подход' : 'Рабочий подход'}. Нажмите, чтобы переключить" aria-label="${s.warm ? 'Разминочный подход' : 'Подход ' + n}">${s.warm ? 'Р' : n}</button>
       <button class="set-prev" data-act="copyPrev" data-x="${xi}" data-i="${si}"${p ? ` title="Подставить прошлый результат"` : ' disabled'}>${p ? esc(setShort(p, ex.kind)) : '—'}</button>
       ${inputs}
       <button class="set-check" data-act="setDone" data-x="${xi}" data-i="${si}" aria-pressed="${!!s.done}" aria-label="${s.done ? 'Снять отметку' : 'Подход выполнен'}">${pr ? icon('star', 'ic-f') : icon('check')}${s.done && s.rir != null ? `<span class="rv">${s.rir >= 3 ? '3+' : s.rir}</span>` : ''}</button>
       <button class="set-del" data-act="setDel" data-x="${xi}" data-i="${si}" aria-label="Удалить подход">${icon('x')}</button>
-    </div>${S.rirAsk === x.k + ':' + si && s.done ? `<div class="rir-ask" data-key="ra-${x.k}-${si}"><span>Сколько ещё могли?</span>${[0, 1, 2, 3].map(v => `<button class="chip" data-act="setRir" data-x="${xi}" data-i="${si}" data-v="${v}" aria-pressed="${s.rir === v}">${v === 3 ? '3+' : v}</button>`).join('')}<button class="icon-btn" data-act="rirSkip" aria-label="Не отмечать">${icon('x')}</button></div>` : ''}`;
+    </div>${swClose()}${S.rirAsk === x.k + ':' + si && s.done ? `<div class="rir-ask" data-key="ra-${x.k}-${si}"><span>Сколько ещё могли?</span>${[0, 1, 2, 3].map(v => `<button class="chip" data-act="setRir" data-x="${xi}" data-i="${si}" data-v="${v}" aria-pressed="${s.rir === v}">${v === 3 ? '3+' : v}</button>`).join('')}<button class="icon-btn" data-act="rirSkip" aria-label="Не отмечать">${icon('x')}</button></div>` : ''}`;
   }).join('');
   const sub = `${MUSCLES[ex.muscle] || ''} · ${EQUIP[ex.equip] || ''} · ${last ? 'прошлый раз ' + dShort(last.start) : 'впервые'}`;
   const plates = ex.equip === 'barbell' ? `<div class="plates" id="pl-${x.k}">${platesHTML(topWeight(w, x, ex.kind), S.profile.bar)}</div>` : '';
@@ -3743,7 +3762,7 @@ function weightHTML() {
       <div class="kpi"><div class="kpi-l">Максимум</div><div class="kpi-v">${nf(Math.max(...ws), 1)} кг</div><div class="kpi-d flat">${dShort(list.find(e => e.w === Math.max(...ws)).d)}</div></div>
     </div></section>
     <section class="sec"><div class="sec-head"><h2 class="h2">Динамика</h2></div><div class="panel">${chart('line', 'ch-body', pts, { h:220, fy:v => nf(v, 1) + ' кг', fa:v => nf(v, 1), aria:'Вес тела' })}</div></section>
-    <section class="sec"><div class="sec-head"><h2 class="h2">Записи</h2></div><div class="panel"><ul class="blist">${list.map((e, i) => { const nx = list[i + 1]; const dl = nx ? e.w - nx.w : 0; return `<li data-key="b-${esc(e.id)}"><span>${dayMonth(e.d)} <span class="muted">${new Date(e.d).getFullYear() !== new Date().getFullYear() ? new Date(e.d).getFullYear() : ''}</span></span><span class="dl flat">${nx ? (dl > 0 ? '+' : dl < 0 ? '−' : '±') + nf(Math.abs(dl), 1) : ''}</span><span class="w">${nf(e.w, 1)} кг</span><button class="icon-btn" data-act="bodyDel" data-id="${esc(e.id)}" aria-label="Удалить запись">${icon('x')}</button></li>`; }).join('')}</ul></div></section>`
+    <section class="sec"><div class="sec-head"><h2 class="h2">Записи</h2></div><div class="panel"><ul class="blist">${list.map((e, i) => { const nx = list[i + 1]; const dl = nx ? e.w - nx.w : 0; return `<li data-key="b-${esc(e.id)}" class="swp-li">${swOpen('bw', e.id, 'sw-b')}<span>${dayMonth(e.d)} <span class="muted">${new Date(e.d).getFullYear() !== new Date().getFullYear() ? new Date(e.d).getFullYear() : ''}</span></span><span class="dl flat">${nx ? (dl > 0 ? '+' : dl < 0 ? '−' : '±') + nf(Math.abs(dl), 1) : ''}</span><span class="w">${nf(e.w, 1)} кг</span><button class="icon-btn" data-act="bodyDel" data-id="${esc(e.id)}" aria-label="Удалить запись">${icon('x')}</button>${swClose()}</li>`; }).join('')}</ul></div></section>`
     : `<div class="sec empty"><h3>Записывайте вес раз в несколько дней</h3><p>Утром натощак — так цифры честнее. Здесь появится график и изменение за месяц.</p></div>`}`;
 }
 function measHTML() {
@@ -3766,7 +3785,7 @@ function measHTML() {
     <section class="sec"><div class="sec-head"><h2 class="h2">Динамика · ${lbl.toLowerCase()}</h2></div><div class="panel">
       <div class="seg" role="group" aria-label="Замер" style="margin-bottom:12px">${MEAS.map(([k, l]) => `<button data-act="measKey" data-k="${k}" aria-pressed="${key === k}">${l}</button>`).join('')}</div>
       ${chart('line', 'ch-meas', pts, { h:200, key, fy:v => nf(v, 1) + ' см', fa:v => nf(v, 0), empty:'Нет записей для этого замера', aria:'Замер: ' + lbl })}</div></section>
-    <section class="sec"><div class="sec-head"><h2 class="h2">Записи</h2></div><div class="panel"><ul class="mlist">${list.map(e => `<li data-key="ms-${esc(e.id)}"><span><b>${dShort(e.d)}</b> ${MEAS.filter(([k]) => e[k] > 0).map(([k, l]) => `<span class="muted">${l}</span> ${nf(e[k], 1)}`).join(' · ')}</span><button class="icon-btn" data-act="measDel" data-id="${esc(e.id)}" aria-label="Удалить замеры">${icon('x')}</button></li>`).join('')}</ul></div></section>`;
+    <section class="sec"><div class="sec-head"><h2 class="h2">Записи</h2></div><div class="panel"><ul class="mlist">${list.map(e => `<li data-key="ms-${esc(e.id)}" class="swp-li">${swOpen('ms', e.id, 'sw-m')}<span><b>${dShort(e.d)}</b> ${MEAS.filter(([k]) => e[k] > 0).map(([k, l]) => `<span class="muted">${l}</span> ${nf(e[k], 1)}`).join(' · ')}</span><button class="icon-btn" data-act="measDel" data-id="${esc(e.id)}" aria-label="Удалить замеры">${icon('x')}</button>${swClose()}</li>`).join('')}</ul></div></section>`;
 }
 async function loadPhotos() {
   const pid = S.pid; if (S.photosLoading === pid) return; S.photosLoading = pid;
@@ -3985,10 +4004,10 @@ SHEETS.wd = sh => {
 
 SHEETS.tpl = sh => {
   const d = sh.draft;
-  const items = d.items.map((it, i) => { const ex = exById(it.ex); const unit = ex.kind === 'time' ? 'сек' : ex.kind === 'cardio' ? 'мин' : 'повт'; return `<div class="tpl-item"><div class="tpl-ex"><b>${esc(ex.name)}</b><span>${MUSCLES[ex.muscle] || ''}</span></div>
+  const items = d.items.map((it, i) => { const ex = exById(it.ex); const unit = ex.kind === 'time' ? 'сек' : ex.kind === 'cardio' ? 'мин' : 'повт'; return `${swOpen('ti', i)}<div class="tpl-item"><div class="tpl-ex"><b>${esc(ex.name)}</b><span>${MUSCLES[ex.muscle] || ''}</span></div>
     <div class="stepper"><button data-act="tplSets" data-i="${i}" data-d="-1" aria-label="Меньше подходов">−</button><span>${it.sets}×</span><button data-act="tplSets" data-i="${i}" data-d="1" aria-label="Больше подходов">+</button></div>
     <label class="tpl-rw"><input class="field tpl-r" id="tpl-r-${i}" data-in="tplReps" data-i="${i}" inputmode="numeric" autocomplete="off" value="${esc(it.reps ?? '')}" placeholder="—" aria-label="Цель, ${unit}"><span>${unit}</span></label>
-    <button class="icon-btn" data-act="tplItemDel" data-i="${i}" aria-label="Убрать упражнение">${icon('x')}</button></div>`; }).join('');
+    <button class="icon-btn" data-act="tplItemDel" data-i="${i}" aria-label="Убрать упражнение">${icon('x')}</button></div>${swClose()}`; }).join('');
   return `${sheetHead(sh.isNew ? 'Новая программа' : 'Программа')}<div class="sheet-body">
     <label class="lbl">Название<input class="field" id="tpl-name" data-in="tplName" value="${esc(d.name)}" placeholder="Например, Верх А или Ноги и ягодицы" autocomplete="off"></label>
     ${items ? `<div class="tpl-items">${items}</div>` : `<p class="fine" style="margin:14px 0">Добавьте упражнения и задайте число подходов и целевые повторы — они станут подсказками в тренировке.</p>`}
@@ -4161,7 +4180,7 @@ SHEETS.set = () => {
     <div class="srow"><div class="srow-t"><b>Сигнал после отдыха</b><span>Звук и вибрация, когда таймер закончился</span></div><button class="switch" role="switch" aria-checked="${!!p.sound}" aria-label="Сигнал после отдыха" data-act="toggleSound"></button></div>
     <div class="srow"><div class="srow-t"><b>Спрашивать запас повторов</b><span>После подхода: сколько ещё могли сделать. Подсказки веса станут точнее</span></div><button class="switch" role="switch" aria-checked="${p.rirAsk !== false}" aria-label="Спрашивать запас повторов" data-act="toggleRir"></button></div>
     <div class="sblock"><b>Вес грифа</b><div class="seg" role="group" aria-label="Вес грифа">${[20, 15, 10].map(v => `<button data-act="setBar" data-v="${v}" aria-pressed="${p.bar === v}">${v} кг</button>`).join('')}</div><p class="fine" style="margin-top:8px">Нужен, чтобы считать блины на каждую сторону.</p></div>
-    ${p.custom.length ? `<div class="sblock"><b>Свои упражнения</b><ul class="blist">${p.custom.map(e => `<li style="grid-template-columns:minmax(0,1fr) auto 34px 34px"><span>${esc(e.name)}</span><span class="muted" style="font-size:12px">${MUSCLES[e.muscle] || ''}</span><button class="icon-btn" data-act="cxEdit" data-id="${esc(e.id)}" aria-label="Переименовать: ${esc(e.name)}">${icon('edit')}</button><button class="icon-btn" data-act="customDel" data-id="${esc(e.id)}" aria-label="Удалить упражнение">${icon('x')}</button></li>`).join('')}</ul></div>` : ''}
+    ${p.custom.length ? `<div class="sblock"><b>Свои упражнения</b><ul class="blist">${p.custom.map(e => `<li class="swp-li" data-key="cx-${esc(e.id)}">${swOpen('cx', e.id, 'sw-cx')}<span>${esc(e.name)}</span><span class="muted" style="font-size:12px">${MUSCLES[e.muscle] || ''}</span><button class="icon-btn" data-act="cxEdit" data-id="${esc(e.id)}" aria-label="Переименовать: ${esc(e.name)}">${icon('edit')}</button><button class="icon-btn" data-act="customDel" data-id="${esc(e.id)}" aria-label="Удалить упражнение">${icon('x')}</button>${swClose()}</li>`).join('')}</ul></div>` : ''}
     <div class="sblock"><b>Резервная копия</b><p class="fine" style="margin:0 0 10px">Последняя: ${lastB}. В файл попадают все профили.</p><div class="row">${canShare ? `<button class="btn btn-sm btn-primary" data-act="backupShare">${icon('share')} Сохранить / отправить</button>` : ''}<button class="btn btn-sm${canShare ? '' : ' btn-primary'}" data-act="backupFile">${icon('download')} Скачать файл</button><label class="btn btn-sm" for="imp-file">${icon('upload')} Восстановить из файла</label><button class="btn btn-sm" data-act="exportCsv">${icon('download')} Таблица CSV</button></div></div>
     <div class="srow"><div class="srow-t"><b>Установка</b><span>${isStandalone() ? 'Приложение установлено на этот телефон' : 'Открыто в браузере. Установите на главный экран — так надёжнее и работает офлайн.'}</span></div>${isStandalone() ? `<span class="tick" style="color:var(--good)">${icon('check')}</span>` : `<button class="btn btn-sm" data-act="${S.installEvt ? 'install' : 'help'}">${S.installEvt ? 'Установить' : 'Как'}</button>`}</div>
     <div class="srow"><div class="srow-t"><b>Защита данных</b><span>${S.persisted ? 'Браузер не будет очищать данные приложения сам' : 'Попросите браузер не очищать данные приложения'}</span></div>${S.persisted ? `<span style="color:var(--good)">${icon('shield')}</span>` : `<button class="btn btn-sm" data-act="persist">Включить</button>`}</div>
@@ -6627,20 +6646,21 @@ function habToggle(id, day) {
   saveProfile();
   return { on, full };
 }
-function habAutoOk(h, day) {
-  if (h.auto === 'workout') { const k = dayKey(day); return S.workouts.some(w => dayKey(w.start) === k); }
+function habAutoOk(h, day, trained) {
+  if (h.auto === 'workout') return trained.has(dayKey(day));
   if (h.auto === 'supp') return (S.profile.supps || []).length > 0 && supDay(S.profile, day).full;
   return false;
 }
 // automatic habits follow the real data of the last week; idempotent, called from derive()
 function habSyncAuto() {
   const p = S.profile; if (!p || !Array.isArray(p.habits) || !p.habits.some(h => h.auto)) return;
-  const today = startOfDay(Date.now());
+  const today = startOfDay(Date.now()), from = addDays(today, -8), trained = new Set(); // the days with a workout, found in one pass
+  for (const w of S.workouts) if (w.start >= from) trained.add(dayKey(w.start));
   for (let i = 0; i < 8; i++) {
     const day = addDays(today, -i), k = dayKey(day); let chg = false;
     p.habits.forEach(h => {
       if (!h.auto) return;
-      const t = p.hlog[k] || (p.hlog[k] = {}), has = t[h.id] != null, ok = habDue(h, day) && habAutoOk(h, day);
+      const t = p.hlog[k] || (p.hlog[k] = {}), has = t[h.id] != null, ok = habDue(h, day) && habAutoOk(h, day, trained);
       if (ok && !has) { t[h.id] = 0; chg = true; } else if (!ok && has) { delete t[h.id]; chg = true; }
       if (!Object.keys(t).length) delete p.hlog[k];
     });
@@ -6668,7 +6688,7 @@ function habMerge(l, r) {
   l.hfull = [...new Set([...(l.hfull || []), ...(r.hfull || [])])].sort();
 }
 const habSub = (p, h, day) => {
-  const parts = [habCat(h.cat)[1]], n = habStreak(p, h, day === startOfDay(Date.now()) ? Date.now() : day + DAY - 1);
+  const parts = [habCat(h.cat)[1]], n = habStreak(p, h, day === startOfDay(Date.now()) ? Date.now() : addDays(day, 1) - 1);
   if (n >= 2) parts.push(`${n} ${plural(n, ['день', 'дня', 'дней'])} подряд`);
   if (h.auto) parts.push(h.auto === 'workout' ? 'по тренировке' : 'по добавкам'); else parts.push('+' + HAB_DIFF[h.d || 0][1]);
   if (Array.isArray(h.days) && h.days.length && h.days.length < 7) parts.push(WD_ORDER.filter(d => h.days.includes(d)).map(d => WD[d]).join(', '));
@@ -6806,16 +6826,47 @@ Object.assign(A, {
   },
 });
 /* ================= 3.2: swipe a row to the left to delete it (with «Отменить») =================
-   A row is wrapped by swOpen(kind, id) … swClose(): .swp > .swp-act (the red «Удалить» layer) + .swp-fg (the row itself).
-   Short swipe → the row stays open on a red button; long swipe (or a fast flick) → it flies out and is deleted.
-   The data is really deleted only after the «Отменить» toast is gone (or the app is hidden), so undo never has to rebuild anything. */
+   A row is wrapped by swOpen(kind, id) … swClose(): .swp > .swp-act (a red rounded «Удалить» button that grows with the swipe) + .swp-fg (the row itself).
+   Short swipe → the row stays open on the red button; long swipe (or a fast flick) → it flies out and is deleted.
+   Two kinds of delete (SW_KINDS):
+     commit — the data is hidden at once and really deleted only after the «Отменить» toast is gone (workouts, habits, supplements: they carry sync marks, xp, logs)
+     run    — the data is deleted at once, run() returns a function that puts it back (sets, programme items, weight, measurements, own exercises); returns false to refuse */
 const SW_OPEN = 92, SW_UNDO_MS = 8800;
+const swAt = (list, i, item) => list.splice(Math.max(0, Math.min(i, list.length)), 0, item);
 const SW_KINDS = {
   w:{ msg:'Тренировка удалена', commit:id => deleteWorkout(id) },
   h:{ msg:'Привычка удалена', commit:id => habRemove(id) },
   s:{ msg:'Добавка удалена', commit:id => supRemove(id) },
+  set:{ msg:'Подход удалён', run:id => {
+    const [xi, si] = String(id).split(':').map(Number), w = curW(), x = w && w.exercises[xi], s = x && x.sets[si]; if (!s) return false;
+    x.sets.splice(si, 1); changed();
+    return () => { const w2 = curW(), x2 = w2 && w2.exercises[xi]; if (x2) { swAt(x2.sets, si, s); changed(); } };
+  } },
+  ti:{ msg:'Упражнение убрано из программы', run:id => {
+    const sh = top(), i = +id, it = sh && sh.draft && sh.draft.items[i]; if (!it) return false;
+    sh.draft.items.splice(i, 1);
+    return () => { if (sh.draft) swAt(sh.draft.items, i, it); };
+  } },
+  bw:{ msg:'Запись веса удалена', run:id => {
+    const l = S.profile.body, i = l.findIndex(e => e.id === id); if (i < 0) return false;
+    const e = l.splice(i, 1)[0]; saveProfile();
+    return () => { swAt(S.profile.body, i, e); saveProfile(); };
+  } },
+  ms:{ msg:'Замер удалён', run:id => {
+    const l = S.profile.meas, i = l.findIndex(e => e.id === id); if (i < 0) return false;
+    const e = l.splice(i, 1)[0]; saveProfile();
+    return () => { swAt(S.profile.meas, i, e); saveProfile(); };
+  } },
+  cx:{ msg:'Своё упражнение удалено', run:id => {
+    if (D.usage[id]) { toast('Это упражнение уже есть в журнале, поэтому его нельзя удалить'); return false; }
+    const l = S.profile.custom, i = l.findIndex(e => e.id === id); if (i < 0) return false;
+    const e = l.splice(i, 1)[0]; saveProfile();
+    return () => { swAt(S.profile.custom, i, e); saveProfile(); };
+  } },
 };
-function swOpen(kind, id) { return `<div class="swp" data-key="sw-${kind}-${esc(id)}" data-swipe="${kind}" data-sid="${esc(id)}"><div class="swp-act" data-act="swipeDel" aria-hidden="true"><span class="swp-lbl">${icon('trash')}<b>Удалить</b></span></div><div class="swp-fg">`; }
+function swOpen(kind, id, cls = '') {
+  return `<div class="swp" data-key="sw-${kind}-${esc(id)}" data-swipe="${kind}" data-sid="${esc(id)}"><div class="swp-act" data-act="swipeDel" aria-hidden="true"><span class="swp-btn"><span class="swp-lbl">${icon('trash')}<b>Удалить</b></span></span></div><div class="swp-fg${cls ? ' ' + cls : ''}">`;
+}
 const swClose = () => '</div></div>';
 const swHid = id => !!(S.swHide && S.swHide.has(id));
 function swVis(list) { return S.swHide && S.swHide.size ? list.filter(x => !S.swHide.has(x.id)) : list; }
@@ -6833,51 +6884,57 @@ function supRemove(id) {
 function swCommit() {
   const p = S.swPend; if (!p) return;
   clearTimeout(p.timer); S.swPend = null;
-  if (p.pid === S.pid) { try { SW_KINDS[p.kind].commit(p.id); } catch (e) { logErr && logErr(e); } } // another profile is open now: leave the data alone
+  if (!p.undo && p.pid === S.pid) { try { SW_KINDS[p.kind].commit(p.id); } catch (e) { logErr('swipe', e); } } // another profile is open now: leave the data alone
   if (S.swHide) S.swHide.delete(p.id);
-  render();
+  if (!p.undo) render();
 }
+// returns false when the delete was refused (the row must come back)
 function swipeDelete(kind, id) {
+  const spec = SW_KINDS[kind]; if (!spec) return false;
   swCommit();
-  if (!SW_KINDS[kind]) return;
-  (S.swHide || (S.swHide = new Set())).add(id);
-  S.swPend = { kind, id, pid:S.pid, timer:setTimeout(swCommit, SW_UNDO_MS) };
-  render(); toast(SW_KINDS[kind].msg, '', { act:'swipeUndo', label:'Отменить' });
+  if (spec.run) {
+    const undo = spec.run(id); if (!undo) { render(); return false; }
+    const p = { kind, id, pid:S.pid, undo }; p.timer = setTimeout(() => { if (S.swPend === p) S.swPend = null; }, SW_UNDO_MS); S.swPend = p;
+  } else {
+    (S.swHide || (S.swHide = new Set())).add(id);
+    S.swPend = { kind, id, pid:S.pid, timer:setTimeout(swCommit, SW_UNDO_MS) };
+  }
+  render(); toast(spec.msg, '', { act:'swipeUndo', label:'Отменить' }); return true;
 }
-function swipeRun(sw) {
-  const kind = sw.dataset.swipe, id = sw.dataset.sid, host = sw.closest('li') || sw, fg = sw.querySelector(':scope > .swp-fg');
-  buzz([10, 40, 10]); sfx('del');
-  if (RM) { swipeDelete(kind, id); return; }
-  sw.classList.add('on', 'armed', 'out'); sw.style.setProperty('--p', 1);
-  fg.style.transition = 'transform .26s cubic-bezier(.5,0,.9,.6)'; fg.style.transform = 'translate3d(-106%,0,0)';
-  host.style.height = host.offsetHeight + 'px'; host.style.overflow = 'hidden'; void host.offsetHeight;
-  host.style.transition = 'height .26s .16s cubic-bezier(.3,0,.2,1), opacity .22s .16s'; host.style.height = '0px'; host.style.opacity = '0';
-  setTimeout(() => swipeDelete(kind, id), 440);
-}
-Object.assign(A, {
-  swipeDel: el => { const sw = el.closest('.swp'); if (sw) swipeRun(sw); },
-  swipeUndo: () => {
-    const p = S.swPend; if (!p) return;
-    clearTimeout(p.timer); S.swPend = null; if (S.swHide) S.swHide.delete(p.id);
-    clearTimeout(toast.t); S.toast = null; renderToast(); sfx('tab'); buzz(8); render();
-  },
-});
+A.swipeUndo = () => {
+  const p = S.swPend; if (!p) return;
+  clearTimeout(p.timer); S.swPend = null;
+  if (p.undo) { if (p.pid === S.pid) p.undo(); } else if (S.swHide) S.swHide.delete(p.id);
+  clearTimeout(toast.t); S.toast = null; renderToast(); sfx('tab'); buzz(8); render();
+};
 (() => {
   let g = null, openSw = null;
   const fgOf = sw => sw.querySelector(':scope > .swp-fg'), armAt = w => Math.max(170, w * .5);
   function setX(sw, x, anim) {
     const fg = fgOf(sw); if (!fg) return;
     fg.style.transition = anim ? 'transform .32s cubic-bezier(.2,.8,.2,1)' : 'none'; fg.style.transform = x ? `translate3d(${x}px,0,0)` : '';
-    sw.style.setProperty('--p', Math.min(1, Math.max(0, -x / SW_OPEN)).toFixed(3));
+    sw.style.setProperty('--e', Math.max(0, -x).toFixed(1)); sw.style.setProperty('--p', Math.min(1, Math.max(0, -x / SW_OPEN)).toFixed(3));
     sw.classList.toggle('on', x < -2);
   }
   function closeSw(sw, anim = true) { if (!sw) return; setX(sw, 0, anim); sw.classList.remove('open', 'armed'); if (openSw === sw) openSw = null; }
+  function swipeRun(sw) {
+    const kind = sw.dataset.swipe, id = sw.dataset.sid, host = sw.closest('li') || sw, fg = fgOf(sw);
+    buzz([10, 40, 10]); sfx('del');
+    const done = () => { if (swipeDelete(kind, id) === false) { host.style.cssText = ''; closeSw(sw, false); } };
+    if (RM) { done(); return; }
+    sw.classList.add('on', 'armed', 'out'); sw.style.setProperty('--e', sw.offsetWidth);
+    fg.style.transition = 'transform .26s cubic-bezier(.5,0,.9,.6)'; fg.style.transform = 'translate3d(-106%,0,0)';
+    host.style.height = host.offsetHeight + 'px'; host.style.overflow = 'hidden'; void host.offsetHeight;
+    host.style.transition = 'height .26s .16s cubic-bezier(.3,0,.2,1), opacity .22s .16s'; host.style.height = '0px'; host.style.opacity = '0';
+    setTimeout(done, 440);
+  }
+  A.swipeDel = el => { const sw = el.closest('.swp'); if (sw) swipeRun(sw); };
   document.addEventListener('pointerdown', e => {
     const t = e.target, fg = t.closest && t.closest('.swp-fg');
     if (openSw && !(fg && fg.parentElement === openSw) && !(t.closest && t.closest('.swp-act'))) closeSw(openSw);
-    if (!fg || S.sheets.length || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    const sw = fg.parentElement, now = performance.now();
-    g = { sw, fg, id:e.pointerId, x0:e.clientX, y0:e.clientY, x:0, base:sw.classList.contains('open') ? -SW_OPEN : 0, mode:null, w:sw.offsetWidth, lx:e.clientX, lt:now, v:0, armed:false };
+    if (!fg || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    const sw = fg.parentElement; sw.classList.toggle('sm', sw.offsetHeight < 60); // short rows get an icon and a label side by side
+    g = { sw, fg, id:e.pointerId, x0:e.clientX, y0:e.clientY, x:0, base:sw.classList.contains('open') ? -SW_OPEN : 0, mode:null, w:sw.offsetWidth, lx:e.clientX, lt:performance.now(), v:0, armed:false };
   }, true);
   document.addEventListener('pointermove', e => {
     if (!g || e.pointerId !== g.id) return;

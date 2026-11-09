@@ -46,20 +46,21 @@ function habToggle(id, day) {
   saveProfile();
   return { on, full };
 }
-function habAutoOk(h, day) {
-  if (h.auto === 'workout') { const k = dayKey(day); return S.workouts.some(w => dayKey(w.start) === k); }
+function habAutoOk(h, day, trained) {
+  if (h.auto === 'workout') return trained.has(dayKey(day));
   if (h.auto === 'supp') return (S.profile.supps || []).length > 0 && supDay(S.profile, day).full;
   return false;
 }
 // automatic habits follow the real data of the last week; idempotent, called from derive()
 function habSyncAuto() {
   const p = S.profile; if (!p || !Array.isArray(p.habits) || !p.habits.some(h => h.auto)) return;
-  const today = startOfDay(Date.now());
+  const today = startOfDay(Date.now()), from = addDays(today, -8), trained = new Set(); // the days with a workout, found in one pass
+  for (const w of S.workouts) if (w.start >= from) trained.add(dayKey(w.start));
   for (let i = 0; i < 8; i++) {
     const day = addDays(today, -i), k = dayKey(day); let chg = false;
     p.habits.forEach(h => {
       if (!h.auto) return;
-      const t = p.hlog[k] || (p.hlog[k] = {}), has = t[h.id] != null, ok = habDue(h, day) && habAutoOk(h, day);
+      const t = p.hlog[k] || (p.hlog[k] = {}), has = t[h.id] != null, ok = habDue(h, day) && habAutoOk(h, day, trained);
       if (ok && !has) { t[h.id] = 0; chg = true; } else if (!ok && has) { delete t[h.id]; chg = true; }
       if (!Object.keys(t).length) delete p.hlog[k];
     });
@@ -87,7 +88,7 @@ function habMerge(l, r) {
   l.hfull = [...new Set([...(l.hfull || []), ...(r.hfull || [])])].sort();
 }
 const habSub = (p, h, day) => {
-  const parts = [habCat(h.cat)[1]], n = habStreak(p, h, day === startOfDay(Date.now()) ? Date.now() : day + DAY - 1);
+  const parts = [habCat(h.cat)[1]], n = habStreak(p, h, day === startOfDay(Date.now()) ? Date.now() : addDays(day, 1) - 1);
   if (n >= 2) parts.push(`${n} ${plural(n, ['день', 'дня', 'дней'])} подряд`);
   if (h.auto) parts.push(h.auto === 'workout' ? 'по тренировке' : 'по добавкам'); else parts.push('+' + HAB_DIFF[h.d || 0][1]);
   if (Array.isArray(h.days) && h.days.length && h.days.length < 7) parts.push(WD_ORDER.filter(d => h.days.includes(d)).map(d => WD[d]).join(', '));

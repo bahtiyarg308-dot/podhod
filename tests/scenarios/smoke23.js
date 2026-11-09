@@ -55,7 +55,7 @@ const SEED = require('path').join(__dirname, '..', 'fixtures', 'seed.json');
     // sounds off -> silence
     await N.tap('.tab[data-v="log"]'); await N.tap('.ph-act [data-act="settings"]'); await N.tap('[data-act="sndToggle"]');
     await N.esc();
-    console.log('sound OFF: nav ->', await N.snd('.tab[data-v="path"]'), '| set done ->', await (async () => { await N.tap('.tab[data-v="today"]'); return N.snd('.set-row:nth-of-type(2) [data-act="setDone"]'); })());
+    console.log('sound OFF: nav ->', await N.snd('.tab[data-v="path"]'), '| set done ->', await (async () => { await N.tap('.tab[data-v="today"]'); return N.snd('.sets > .swp:nth-of-type(2) [data-act="setDone"]'); })());
     await N.tap('.tab[data-v="log"]');
     await N.tap('.ph-act [data-act="settings"]'); await N.tap('[data-act="setMode"][data-v="solo"]'); await N.esc();
     console.log('back to solo tabs:', await N.tabs());

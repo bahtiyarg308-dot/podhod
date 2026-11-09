@@ -1,14 +1,45 @@
 /* ================= 3.2: swipe a row to the left to delete it (with «Отменить») =================
-   A row is wrapped by swOpen(kind, id) … swClose(): .swp > .swp-act (the red «Удалить» layer) + .swp-fg (the row itself).
-   Short swipe → the row stays open on a red button; long swipe (or a fast flick) → it flies out and is deleted.
-   The data is really deleted only after the «Отменить» toast is gone (or the app is hidden), so undo never has to rebuild anything. */
+   A row is wrapped by swOpen(kind, id) … swClose(): .swp > .swp-act (a red rounded «Удалить» button that grows with the swipe) + .swp-fg (the row itself).
+   Short swipe → the row stays open on the red button; long swipe (or a fast flick) → it flies out and is deleted.
+   Two kinds of delete (SW_KINDS):
+     commit — the data is hidden at once and really deleted only after the «Отменить» toast is gone (workouts, habits, supplements: they carry sync marks, xp, logs)
+     run    — the data is deleted at once, run() returns a function that puts it back (sets, programme items, weight, measurements, own exercises); returns false to refuse */
 const SW_OPEN = 92, SW_UNDO_MS = 8800;
+const swAt = (list, i, item) => list.splice(Math.max(0, Math.min(i, list.length)), 0, item);
 const SW_KINDS = {
   w:{ msg:'Тренировка удалена', commit:id => deleteWorkout(id) },
   h:{ msg:'Привычка удалена', commit:id => habRemove(id) },
   s:{ msg:'Добавка удалена', commit:id => supRemove(id) },
+  set:{ msg:'Подход удалён', run:id => {
+    const [xi, si] = String(id).split(':').map(Number), w = curW(), x = w && w.exercises[xi], s = x && x.sets[si]; if (!s) return false;
+    x.sets.splice(si, 1); changed();
+    return () => { const w2 = curW(), x2 = w2 && w2.exercises[xi]; if (x2) { swAt(x2.sets, si, s); changed(); } };
+  } },
+  ti:{ msg:'Упражнение убрано из программы', run:id => {
+    const sh = top(), i = +id, it = sh && sh.draft && sh.draft.items[i]; if (!it) return false;
+    sh.draft.items.splice(i, 1);
+    return () => { if (sh.draft) swAt(sh.draft.items, i, it); };
+  } },
+  bw:{ msg:'Запись веса удалена', run:id => {
+    const l = S.profile.body, i = l.findIndex(e => e.id === id); if (i < 0) return false;
+    const e = l.splice(i, 1)[0]; saveProfile();
+    return () => { swAt(S.profile.body, i, e); saveProfile(); };
+  } },
+  ms:{ msg:'Замер удалён', run:id => {
+    const l = S.profile.meas, i = l.findIndex(e => e.id === id); if (i < 0) return false;
+    const e = l.splice(i, 1)[0]; saveProfile();
+    return () => { swAt(S.profile.meas, i, e); saveProfile(); };
+  } },
+  cx:{ msg:'Своё упражнение удалено', run:id => {
+    if (D.usage[id]) { toast('Это упражнение уже есть в журнале, поэтому его нельзя удалить'); return false; }
+    const l = S.profile.custom, i = l.findIndex(e => e.id === id); if (i < 0) return false;
+    const e = l.splice(i, 1)[0]; saveProfile();
+    return () => { swAt(S.profile.custom, i, e); saveProfile(); };
+  } },
 };
-function swOpen(kind, id) { return `<div class="swp" data-key="sw-${kind}-${esc(id)}" data-swipe="${kind}" data-sid="${esc(id)}"><div class="swp-act" data-act="swipeDel" aria-hidden="true"><span class="swp-lbl">${icon('trash')}<b>Удалить</b></span></div><div class="swp-fg">`; }
+function swOpen(kind, id, cls = '') {
+  return `<div class="swp" data-key="sw-${kind}-${esc(id)}" data-swipe="${kind}" data-sid="${esc(id)}"><div class="swp-act" data-act="swipeDel" aria-hidden="true"><span class="swp-btn"><span class="swp-lbl">${icon('trash')}<b>Удалить</b></span></span></div><div class="swp-fg${cls ? ' ' + cls : ''}">`;
+}
 const swClose = () => '</div></div>';
 const swHid = id => !!(S.swHide && S.swHide.has(id));
 function swVis(list) { return S.swHide && S.swHide.size ? list.filter(x => !S.swHide.has(x.id)) : list; }
@@ -26,51 +57,57 @@ function supRemove(id) {
 function swCommit() {
   const p = S.swPend; if (!p) return;
   clearTimeout(p.timer); S.swPend = null;
-  if (p.pid === S.pid) { try { SW_KINDS[p.kind].commit(p.id); } catch (e) { logErr && logErr(e); } } // another profile is open now: leave the data alone
+  if (!p.undo && p.pid === S.pid) { try { SW_KINDS[p.kind].commit(p.id); } catch (e) { logErr('swipe', e); } } // another profile is open now: leave the data alone
   if (S.swHide) S.swHide.delete(p.id);
-  render();
+  if (!p.undo) render();
 }
+// returns false when the delete was refused (the row must come back)
 function swipeDelete(kind, id) {
+  const spec = SW_KINDS[kind]; if (!spec) return false;
   swCommit();
-  if (!SW_KINDS[kind]) return;
-  (S.swHide || (S.swHide = new Set())).add(id);
-  S.swPend = { kind, id, pid:S.pid, timer:setTimeout(swCommit, SW_UNDO_MS) };
-  render(); toast(SW_KINDS[kind].msg, '', { act:'swipeUndo', label:'Отменить' });
+  if (spec.run) {
+    const undo = spec.run(id); if (!undo) { render(); return false; }
+    const p = { kind, id, pid:S.pid, undo }; p.timer = setTimeout(() => { if (S.swPend === p) S.swPend = null; }, SW_UNDO_MS); S.swPend = p;
+  } else {
+    (S.swHide || (S.swHide = new Set())).add(id);
+    S.swPend = { kind, id, pid:S.pid, timer:setTimeout(swCommit, SW_UNDO_MS) };
+  }
+  render(); toast(spec.msg, '', { act:'swipeUndo', label:'Отменить' }); return true;
 }
-function swipeRun(sw) {
-  const kind = sw.dataset.swipe, id = sw.dataset.sid, host = sw.closest('li') || sw, fg = sw.querySelector(':scope > .swp-fg');
-  buzz([10, 40, 10]); sfx('del');
-  if (RM) { swipeDelete(kind, id); return; }
-  sw.classList.add('on', 'armed', 'out'); sw.style.setProperty('--p', 1);
-  fg.style.transition = 'transform .26s cubic-bezier(.5,0,.9,.6)'; fg.style.transform = 'translate3d(-106%,0,0)';
-  host.style.height = host.offsetHeight + 'px'; host.style.overflow = 'hidden'; void host.offsetHeight;
-  host.style.transition = 'height .26s .16s cubic-bezier(.3,0,.2,1), opacity .22s .16s'; host.style.height = '0px'; host.style.opacity = '0';
-  setTimeout(() => swipeDelete(kind, id), 440);
-}
-Object.assign(A, {
-  swipeDel: el => { const sw = el.closest('.swp'); if (sw) swipeRun(sw); },
-  swipeUndo: () => {
-    const p = S.swPend; if (!p) return;
-    clearTimeout(p.timer); S.swPend = null; if (S.swHide) S.swHide.delete(p.id);
-    clearTimeout(toast.t); S.toast = null; renderToast(); sfx('tab'); buzz(8); render();
-  },
-});
+A.swipeUndo = () => {
+  const p = S.swPend; if (!p) return;
+  clearTimeout(p.timer); S.swPend = null;
+  if (p.undo) { if (p.pid === S.pid) p.undo(); } else if (S.swHide) S.swHide.delete(p.id);
+  clearTimeout(toast.t); S.toast = null; renderToast(); sfx('tab'); buzz(8); render();
+};
 (() => {
   let g = null, openSw = null;
   const fgOf = sw => sw.querySelector(':scope > .swp-fg'), armAt = w => Math.max(170, w * .5);
   function setX(sw, x, anim) {
     const fg = fgOf(sw); if (!fg) return;
     fg.style.transition = anim ? 'transform .32s cubic-bezier(.2,.8,.2,1)' : 'none'; fg.style.transform = x ? `translate3d(${x}px,0,0)` : '';
-    sw.style.setProperty('--p', Math.min(1, Math.max(0, -x / SW_OPEN)).toFixed(3));
+    sw.style.setProperty('--e', Math.max(0, -x).toFixed(1)); sw.style.setProperty('--p', Math.min(1, Math.max(0, -x / SW_OPEN)).toFixed(3));
     sw.classList.toggle('on', x < -2);
   }
   function closeSw(sw, anim = true) { if (!sw) return; setX(sw, 0, anim); sw.classList.remove('open', 'armed'); if (openSw === sw) openSw = null; }
+  function swipeRun(sw) {
+    const kind = sw.dataset.swipe, id = sw.dataset.sid, host = sw.closest('li') || sw, fg = fgOf(sw);
+    buzz([10, 40, 10]); sfx('del');
+    const done = () => { if (swipeDelete(kind, id) === false) { host.style.cssText = ''; closeSw(sw, false); } };
+    if (RM) { done(); return; }
+    sw.classList.add('on', 'armed', 'out'); sw.style.setProperty('--e', sw.offsetWidth);
+    fg.style.transition = 'transform .26s cubic-bezier(.5,0,.9,.6)'; fg.style.transform = 'translate3d(-106%,0,0)';
+    host.style.height = host.offsetHeight + 'px'; host.style.overflow = 'hidden'; void host.offsetHeight;
+    host.style.transition = 'height .26s .16s cubic-bezier(.3,0,.2,1), opacity .22s .16s'; host.style.height = '0px'; host.style.opacity = '0';
+    setTimeout(done, 440);
+  }
+  A.swipeDel = el => { const sw = el.closest('.swp'); if (sw) swipeRun(sw); };
   document.addEventListener('pointerdown', e => {
     const t = e.target, fg = t.closest && t.closest('.swp-fg');
     if (openSw && !(fg && fg.parentElement === openSw) && !(t.closest && t.closest('.swp-act'))) closeSw(openSw);
-    if (!fg || S.sheets.length || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    const sw = fg.parentElement, now = performance.now();
-    g = { sw, fg, id:e.pointerId, x0:e.clientX, y0:e.clientY, x:0, base:sw.classList.contains('open') ? -SW_OPEN : 0, mode:null, w:sw.offsetWidth, lx:e.clientX, lt:now, v:0, armed:false };
+    if (!fg || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    const sw = fg.parentElement; sw.classList.toggle('sm', sw.offsetHeight < 60); // short rows get an icon and a label side by side
+    g = { sw, fg, id:e.pointerId, x0:e.clientX, y0:e.clientY, x:0, base:sw.classList.contains('open') ? -SW_OPEN : 0, mode:null, w:sw.offsetWidth, lx:e.clientX, lt:performance.now(), v:0, armed:false };
   }, true);
   document.addEventListener('pointermove', e => {
     if (!g || e.pointerId !== g.id) return;

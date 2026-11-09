@@ -1,21 +1,40 @@
 /* ===== 3.2: swipe a row to the left to delete ===== */
-/* ---------- swipe a row to the left ---------- */
-.swp{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
-.swp-fg{position:relative;z-index:1;touch-action:pan-y;background:var(--bg);will-change:transform;-webkit-user-select:none;user-select:none}
+.swp{position:relative;-webkit-tap-highlight-color:transparent}
+.swp.on,.swp.out,.swp.drag{overflow:hidden}
+.swp-fg{position:relative;z-index:1;touch-action:pan-y;background:var(--bg)}
+.swp-fg input,.swp-fg textarea{-webkit-user-select:text;user-select:text} /* iOS: a user-select:none parent makes fields uneditable */
+.panel .swp-fg,.sheet .swp-fg,.xcard .swp-fg{background:var(--surface)}
+/* the red button is a rounded pill that grows with the swipe (--e = how many px of the row are pulled away) */
+.swp-act{position:absolute;inset:0;visibility:hidden;cursor:pointer;-webkit-user-select:none;user-select:none}
+.swp.on .swp-act{visibility:visible}
+.swp-btn{position:absolute;top:5px;bottom:5px;right:6px;width:max(0px,calc(var(--e,0) * 1px - 12px));border-radius:12px;overflow:hidden;
+  background:linear-gradient(180deg,#DC574F 0%,#B93A34 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 1px 6px rgba(110,20,18,.35);transition:filter .16s,box-shadow .16s}
+.swp-act:active .swp-btn{filter:brightness(.9)}
+.swp.armed .swp-btn{filter:brightness(1.1) saturate(1.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 2px 10px rgba(140,24,20,.5)}
+.swp.out .swp-btn{transition:none}
+/* icon and label stay at the moving edge of the row, like on iOS */
+.swp-lbl{position:absolute;left:0;top:0;bottom:0;width:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#fff;
+  opacity:calc(.25 + var(--p,0) * .75);pointer-events:none}
+.swp-lbl .ic{width:21px;height:21px;transition:transform .18s var(--spring)}
+.swp.armed .swp-lbl .ic{transform:scale(1.18)}
+.swp.drag .swp-lbl .ic,.swp.out .swp-lbl .ic{transition:none}
+.swp-lbl b{font-size:11.5px;font-weight:600;letter-spacing:.02em}
+.swp.drag .swp-fg{cursor:grabbing;will-change:transform;-webkit-user-select:none;user-select:none}
+.swp.sm .swp-btn{top:4px;bottom:4px}
+.swp.sm .swp-lbl{flex-direction:row;gap:6px;width:84px}
+.swp.sm .swp-lbl .ic{width:17px;height:17px}
+.swp.sm .swp-lbl b{font-size:12px}
+/* rows that keep their own grid inside a list item or a card */
+.blist li.swp-li,.mlist li.swp-li{display:block;padding:0}
+.blist .swp-fg.sw-b{display:grid;grid-template-columns:minmax(0,1fr) auto auto 34px;gap:14px;align-items:center;padding:10px 0}
+.blist .swp-fg.sw-cx{display:grid;grid-template-columns:minmax(0,1fr) auto 34px 34px;gap:14px;align-items:center;padding:10px 0}
+.mlist .swp-fg.sw-m{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:10px;align-items:center;padding:10px 0}
 .sup-list .swp{margin:0 -12px}
-.sup-list .swp-fg{padding:0 12px;background:var(--surface)}
+.sup-list .swp-fg{padding:0 12px}
 .sup-list{overflow:hidden}
 .sup-list .swp:not(:last-child) .sup-row{border-bottom:1px solid var(--line)}
 .sup-list .swp:last-child .sup-row{border-bottom:0}
-.swp-act{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;visibility:hidden;color:#fff;cursor:pointer;
-  background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,0) 52%),linear-gradient(90deg,#892826 0%,#C4433C 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.2);transition:filter .18s}
-.swp.on .swp-act{visibility:visible}
-.swp.armed .swp-act{filter:brightness(1.12) saturate(1.1)}
-.swp-lbl{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:92px;pointer-events:none;
-  opacity:calc(.3 + var(--p,0) * .7);transform:scale(calc(.78 + var(--p,0) * .22));transition:transform .16s var(--spring)}
-.swp.armed .swp-lbl{transform:scale(1.14)}
-.swp-lbl .ic{width:22px;height:22px}
-.swp-lbl b{font-size:11.5px;font-weight:600;letter-spacing:.02em}
-.swp.drag .swp-fg{cursor:grabbing}
-@media (prefers-reduced-motion:reduce){.swp-lbl{transition:none}}
+.sets .swp{border-radius:12px}
+.tpl-items .swp{border-radius:14px}
+.tpl-items .swp-fg{background:var(--surface)}
+@media (prefers-reduced-motion:reduce){.swp-lbl .ic{transition:none}}

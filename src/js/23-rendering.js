@@ -222,13 +222,13 @@ function xcardHTML(w, x, xi, prs) {
       if (f === 't' && ex.kind === 'cardio') { v = v != null ? v / 60 : v; ph = ph != null ? ph / 60 : ph; }
       return `<input id="s-${x.k}-${si}-${f}" class="set-in" data-in="set" data-x="${xi}" data-i="${si}" data-f="${f}" inputmode="${im}" enterkeyhint="${fi ? 'done' : 'next'}" autocomplete="off" value="${fmtIn(v)}" placeholder="${fmtIn(ph)}" aria-label="${label}, подход ${si + 1}">`;
     }).join('');
-    return `<div class="set-row${s.done ? ' done' : ''}${pr ? ' pr' : ''}${just ? ' just' : ''}" data-key="r-${x.k}-${si}">
+    return `${swOpen('set', xi + ':' + si)}<div class="set-row${s.done ? ' done' : ''}${pr ? ' pr' : ''}${just ? ' just' : ''}" data-key="r-${x.k}-${si}">
       <button class="set-n${s.warm ? ' warm' : ''}" data-act="setWarm" data-x="${xi}" data-i="${si}" title="${s.warm ? 'Разминочный подход' : 'Рабочий подход'}. Нажмите, чтобы переключить" aria-label="${s.warm ? 'Разминочный подход' : 'Подход ' + n}">${s.warm ? 'Р' : n}</button>
       <button class="set-prev" data-act="copyPrev" data-x="${xi}" data-i="${si}"${p ? ` title="Подставить прошлый результат"` : ' disabled'}>${p ? esc(setShort(p, ex.kind)) : '—'}</button>
       ${inputs}
       <button class="set-check" data-act="setDone" data-x="${xi}" data-i="${si}" aria-pressed="${!!s.done}" aria-label="${s.done ? 'Снять отметку' : 'Подход выполнен'}">${pr ? icon('star', 'ic-f') : icon('check')}${s.done && s.rir != null ? `<span class="rv">${s.rir >= 3 ? '3+' : s.rir}</span>` : ''}</button>
       <button class="set-del" data-act="setDel" data-x="${xi}" data-i="${si}" aria-label="Удалить подход">${icon('x')}</button>
-    </div>${S.rirAsk === x.k + ':' + si && s.done ? `<div class="rir-ask" data-key="ra-${x.k}-${si}"><span>Сколько ещё могли?</span>${[0, 1, 2, 3].map(v => `<button class="chip" data-act="setRir" data-x="${xi}" data-i="${si}" data-v="${v}" aria-pressed="${s.rir === v}">${v === 3 ? '3+' : v}</button>`).join('')}<button class="icon-btn" data-act="rirSkip" aria-label="Не отмечать">${icon('x')}</button></div>` : ''}`;
+    </div>${swClose()}${S.rirAsk === x.k + ':' + si && s.done ? `<div class="rir-ask" data-key="ra-${x.k}-${si}"><span>Сколько ещё могли?</span>${[0, 1, 2, 3].map(v => `<button class="chip" data-act="setRir" data-x="${xi}" data-i="${si}" data-v="${v}" aria-pressed="${s.rir === v}">${v === 3 ? '3+' : v}</button>`).join('')}<button class="icon-btn" data-act="rirSkip" aria-label="Не отмечать">${icon('x')}</button></div>` : ''}`;
   }).join('');
   const sub = `${MUSCLES[ex.muscle] || ''} · ${EQUIP[ex.equip] || ''} · ${last ? 'прошлый раз ' + dShort(last.start) : 'впервые'}`;
   const plates = ex.equip === 'barbell' ? `<div class="plates" id="pl-${x.k}">${platesHTML(topWeight(w, x, ex.kind), S.profile.bar)}</div>` : '';
@@ -471,7 +471,7 @@ function weightHTML() {
       <div class="kpi"><div class="kpi-l">Максимум</div><div class="kpi-v">${nf(Math.max(...ws), 1)} кг</div><div class="kpi-d flat">${dShort(list.find(e => e.w === Math.max(...ws)).d)}</div></div>
     </div></section>
     <section class="sec"><div class="sec-head"><h2 class="h2">Динамика</h2></div><div class="panel">${chart('line', 'ch-body', pts, { h:220, fy:v => nf(v, 1) + ' кг', fa:v => nf(v, 1), aria:'Вес тела' })}</div></section>
-    <section class="sec"><div class="sec-head"><h2 class="h2">Записи</h2></div><div class="panel"><ul class="blist">${list.map((e, i) => { const nx = list[i + 1]; const dl = nx ? e.w - nx.w : 0; return `<li data-key="b-${esc(e.id)}"><span>${dayMonth(e.d)} <span class="muted">${new Date(e.d).getFullYear() !== new Date().getFullYear() ? new Date(e.d).getFullYear() : ''}</span></span><span class="dl flat">${nx ? (dl > 0 ? '+' : dl < 0 ? '−' : '±') + nf(Math.abs(dl), 1) : ''}</span><span class="w">${nf(e.w, 1)} кг</span><button class="icon-btn" data-act="bodyDel" data-id="${esc(e.id)}" aria-label="Удалить запись">${icon('x')}</button></li>`; }).join('')}</ul></div></section>`
+    <section class="sec"><div class="sec-head"><h2 class="h2">Записи</h2></div><div class="panel"><ul class="blist">${list.map((e, i) => { const nx = list[i + 1]; const dl = nx ? e.w - nx.w : 0; return `<li data-key="b-${esc(e.id)}" class="swp-li">${swOpen('bw', e.id, 'sw-b')}<span>${dayMonth(e.d)} <span class="muted">${new Date(e.d).getFullYear() !== new Date().getFullYear() ? new Date(e.d).getFullYear() : ''}</span></span><span class="dl flat">${nx ? (dl > 0 ? '+' : dl < 0 ? '−' : '±') + nf(Math.abs(dl), 1) : ''}</span><span class="w">${nf(e.w, 1)} кг</span><button class="icon-btn" data-act="bodyDel" data-id="${esc(e.id)}" aria-label="Удалить запись">${icon('x')}</button>${swClose()}</li>`; }).join('')}</ul></div></section>`
     : `<div class="sec empty"><h3>Записывайте вес раз в несколько дней</h3><p>Утром натощак — так цифры честнее. Здесь появится график и изменение за месяц.</p></div>`}`;
 }
 function measHTML() {
@@ -494,7 +494,7 @@ function measHTML() {
     <section class="sec"><div class="sec-head"><h2 class="h2">Динамика · ${lbl.toLowerCase()}</h2></div><div class="panel">
       <div class="seg" role="group" aria-label="Замер" style="margin-bottom:12px">${MEAS.map(([k, l]) => `<button data-act="measKey" data-k="${k}" aria-pressed="${key === k}">${l}</button>`).join('')}</div>
       ${chart('line', 'ch-meas', pts, { h:200, key, fy:v => nf(v, 1) + ' см', fa:v => nf(v, 0), empty:'Нет записей для этого замера', aria:'Замер: ' + lbl })}</div></section>
-    <section class="sec"><div class="sec-head"><h2 class="h2">Записи</h2></div><div class="panel"><ul class="mlist">${list.map(e => `<li data-key="ms-${esc(e.id)}"><span><b>${dShort(e.d)}</b> ${MEAS.filter(([k]) => e[k] > 0).map(([k, l]) => `<span class="muted">${l}</span> ${nf(e[k], 1)}`).join(' · ')}</span><button class="icon-btn" data-act="measDel" data-id="${esc(e.id)}" aria-label="Удалить замеры">${icon('x')}</button></li>`).join('')}</ul></div></section>`;
+    <section class="sec"><div class="sec-head"><h2 class="h2">Записи</h2></div><div class="panel"><ul class="mlist">${list.map(e => `<li data-key="ms-${esc(e.id)}" class="swp-li">${swOpen('ms', e.id, 'sw-m')}<span><b>${dShort(e.d)}</b> ${MEAS.filter(([k]) => e[k] > 0).map(([k, l]) => `<span class="muted">${l}</span> ${nf(e[k], 1)}`).join(' · ')}</span><button class="icon-btn" data-act="measDel" data-id="${esc(e.id)}" aria-label="Удалить замеры">${icon('x')}</button>${swClose()}</li>`).join('')}</ul></div></section>`;
 }
 async function loadPhotos() {
   const pid = S.pid; if (S.photosLoading === pid) return; S.photosLoading = pid;
