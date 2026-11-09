@@ -1440,6 +1440,27 @@ html[data-oled="1"][data-look="noir"]:not([data-theme="light"]){--bg:#000;--surf
 .more-row>.ic:last-child{color:var(--muted);width:18px;height:18px}
 @media(max-width:340px){.hab-ics{grid-template-columns:repeat(6,1fr)}.hab-dots i{width:5px}}
 @media(max-width:340px){.tab{font-size:9px;letter-spacing:-.04em}}
+/* ===== 3.2: swipe a row to the left to delete ===== */
+/* ---------- swipe a row to the left ---------- */
+.swp{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.swp-fg{position:relative;z-index:1;touch-action:pan-y;background:var(--bg);will-change:transform;-webkit-user-select:none;user-select:none}
+.sup-list .swp{margin:0 -12px}
+.sup-list .swp-fg{padding:0 12px;background:var(--surface)}
+.sup-list{overflow:hidden}
+.sup-list .swp:not(:last-child) .sup-row{border-bottom:1px solid var(--line)}
+.sup-list .swp:last-child .sup-row{border-bottom:0}
+.swp-act{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;visibility:hidden;color:#fff;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,0) 52%),linear-gradient(90deg,#892826 0%,#C4433C 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.2);transition:filter .18s}
+.swp.on .swp-act{visibility:visible}
+.swp.armed .swp-act{filter:brightness(1.12) saturate(1.1)}
+.swp-lbl{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:92px;pointer-events:none;
+  opacity:calc(.3 + var(--p,0) * .7);transform:scale(calc(.78 + var(--p,0) * .22));transition:transform .16s var(--spring)}
+.swp.armed .swp-lbl{transform:scale(1.14)}
+.swp-lbl .ic{width:22px;height:22px}
+.swp-lbl b{font-size:11.5px;font-weight:600;letter-spacing:.02em}
+.swp.drag .swp-fg{cursor:grabbing}
+@media (prefers-reduced-motion:reduce){.swp-lbl{transition:none}}
 </style>
 </head>
 <body>
@@ -1461,7 +1482,7 @@ html[data-oled="1"][data-look="noir"]:not([data-theme="light"]){--bg:#000;--surf
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '3.1.1';
+const APP_VERSION = '3.2.0';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -3020,7 +3041,7 @@ setInterval(() => {
 /* ================= sounds: synthesised on the phone, no files, no internet ================= */
 const SND_DEF = { on:true, vol:2, train:true, game:true, ui:true };
 const sndCfg = () => Object.assign({}, SND_DEF, (S.meta && S.meta.snd) || {});
-const SFX_CAT = { tap:'ui', lens:'ui', tab:'ui', toggle:'ui', close:'ui', send:'ui', set:'train', unset:'train', tick:'train', count:'train', pr:'train', start:'train', finish:'train', level:'train',
+const SFX_CAT = { tap:'ui', lens:'ui', del:'ui', arm:'ui', tab:'ui', toggle:'ui', close:'ui', send:'ui', set:'train', unset:'train', tick:'train', count:'train', pr:'train', start:'train', finish:'train', level:'train',
   shake:'game', openc:'game', openr:'game', opene:'game', openl:'game', gift:'game', rank:'game', equip:'game', locked:'game', buy:'game', grow:'game', mate:'game', nom:'game', like:'game', sup:'game', supFull:'game' };
 const SFXN = { n:0, t:0 };
 let sfxOut = null, noiseBuf = null;
@@ -3063,6 +3084,8 @@ const SFX = {
   tap:o => { tone(o, 1180, 0, .06, .07, 'sine', 960, .004); tone(o, 2360, 0, .03, .02, 'sine', null, .003); hiss(o, 0, .01, .03, 4500, null, 1.2, 'highpass'); },
   // a soft glass «tink»; every tab has its own note of a pentatonic scale, so sliding along the bar plays a little run
   lens:(o, a) => { const f = [659.25, 783.99, 880, 1046.5, 1174.66][(+a || 0) % 5]; tone(o, f, 0, .22, .085, 'sine', null, .004); tone(o, f * 2.005, 0, .11, .03, 'sine', null, .003); tone(o, f * 3.01, 0, .05, .012, 'sine', null, .002); hiss(o, 0, .008, .035, 5200, null, 1.5, 'highpass'); },
+  arm:o => tone(o, 1500, 0, .04, .05),
+  del:o => { hiss(o, 0, .14, .07, 2600, 500, 1.1); tone(o, 480, 0, .12, .04, 'sine', 260, .004); },
   tab:(o, a) => { if (a != null) return SFX.lens(o, a); tone(o, 1046, 0, .035, .07); hiss(o, 0, .012, .06, 4200, null, 1.5, 'highpass'); },
   toggle:o => { tone(o, 1200, 0, .025, .07); tone(o, 1600, .045, .03, .07); },
   close:o => tone(o, 900, 0, .05, .05, 'sine', 650),
@@ -3569,14 +3592,15 @@ function exLine(w) {
 }
 function jrow(w, i = 0) {
   const d = new Date(w.start), st = wStats(w), pr = D.prCount[w.id] || 0, kg = kudosFor(w.id);
-  return `<li data-key="j-${esc(w.id)}"><button class="jrow" style="--i:${Math.min(i, 12)}" data-act="openWorkout" data-id="${esc(w.id)}"><span class="jdate"><b>${d.getDate()}</b><span>${WD[d.getDay()]}</span></span><span class="jmain"><span class="jtitle">${esc(w.title || 'Тренировка')}${pr ? `<span class="pr-chip">${icon('star', 'ic-f')}${pr} PR</span>` : ''}${kg.length ? `<span class="kd-got" aria-label="Реакции: ${kg.length}">${kg.map(k => icon(k.t, k.t === 'flame' ? '' : 'ic-f')).join('')}</span>` : ''}</span><span class="jex">${exLine(w)}</span></span><span class="jnums"><b>${st.vol ? ton(st.vol) : st.sets + ' подх.'}</b><span>${fmtDur(st.dur)}</span></span></button></li>`;
+  return `<li data-key="j-${esc(w.id)}">${swOpen('w', w.id)}<button class="jrow" style="--i:${Math.min(i, 12)}" data-act="openWorkout" data-id="${esc(w.id)}"><span class="jdate"><b>${d.getDate()}</b><span>${WD[d.getDay()]}</span></span><span class="jmain"><span class="jtitle">${esc(w.title || 'Тренировка')}${pr ? `<span class="pr-chip">${icon('star', 'ic-f')}${pr} PR</span>` : ''}${kg.length ? `<span class="kd-got" aria-label="Реакции: ${kg.length}">${kg.map(k => icon(k.t, k.t === 'flame' ? '' : 'ic-f')).join('')}</span>` : ''}</span><span class="jex">${exLine(w)}</span></span><span class="jnums"><b>${st.vol ? ton(st.vol) : st.sets + ' подх.'}</b><span>${fmtDur(st.dur)}</span></span></button>${swClose()}</li>`;
 }
 function viewLog() {
+  const LW = swVis(S.workouts);
   const add = `<button class="btn btn-sm" data-act="addPast" aria-label="Записать прошедшую тренировку">${icon('plus')}<span class="ph-l">Прошедшая</span></button>`;
-  const head = headHTML('Журнал', S.workouts.length ? `${S.workouts.length} ${plural(S.workouts.length, ['тренировка','тренировки','тренировок'])}` : 'Все тренировки', add) + trainSeg();
+  const head = headHTML('Журнал', LW.length ? `${LW.length} ${plural(LW.length, ['тренировка','тренировки','тренировок'])}` : 'Все тренировки', add) + trainSeg();
   if (!ready()) return head + loadingHTML();
-  if (!S.workouts.length) return `${head}<div class="empty"><h3>Здесь появятся ваши тренировки</h3><p>Начните тренировку на вкладке «Сегодня» или запишите ту, что уже прошла.</p><button class="btn btn-primary" data-act="nav" data-v="today">${icon('play', 'ic-f')} К тренировке</button></div>`;
-  const q = normQ(S.logQ).trim(), words = q.split(/\s+/).filter(Boolean), list = words.length ? S.workouts.filter(w => logMatch(w, words)) : S.workouts;
+  if (!LW.length) return `${head}<div class="empty"><h3>Здесь появятся ваши тренировки</h3><p>Начните тренировку на вкладке «Сегодня» или запишите ту, что уже прошла.</p><button class="btn btn-primary" data-act="nav" data-v="today">${icon('play', 'ic-f')} К тренировке</button></div>`;
+  const q = normQ(S.logQ).trim(), words = q.split(/\s+/).filter(Boolean), list = words.length ? LW.filter(w => logMatch(w, words)) : LW;
   const search = `<div class="log-search">${icon('search')}<input class="field" type="search" id="log-q" data-in="logQ" value="${esc(S.logQ || '')}" placeholder="Поиск: жим, «Верх», заметка" autocomplete="off" aria-label="Поиск по журналу">${S.logQ ? `<button class="icon-btn" data-act="logClear" aria-label="Очистить поиск">${icon('x')}</button>` : ''}</div>${words.length ? `<p class="log-found">Найдено: ${list.length} ${plural(list.length, ['тренировка','тренировки','тренировок'])}</p>` : ''}`;
   if (words.length && !list.length) return `${head}${search}<div class="empty"><h3>Ничего не нашлось</h3><p>Попробуйте часть слова: «жим», «прис», «тяг».</p></div>`;
   const groups = []; let cur = null; const lim = words.length ? 1e9 : (S.logN || 40);
@@ -4767,7 +4791,7 @@ const WD_ORDER = [1, 2, 3, 4, 5, 6, 0];
 const supDose = s => { const v = parseNum(s && s.dose); return v > 0 ? v : null; };
 const doseTxt = s => s.dose ? `${String(s.dose).replace('.', ',')} ${s.unit || ''}`.trim() : '';
 function supDue(s, day) {
-  if (!s || s.off) return false;
+  if (!s || s.off || swHid(s.id)) return false;
   if (Array.isArray(s.days) && s.days.length && !s.days.includes(new Date(day).getDay())) return false;
   if (s.cf) { const a = startOfDay(s.cf); if (day < a || (s.cd > 0 && day >= addDays(a, s.cd))) return false; }
   return true;
@@ -4871,9 +4895,9 @@ function viewSupp() {
   }
   const day = Math.max(addDays(today, -6), Math.min(today, S.supDay || today)), st = supDay(p, day), streak = supStreak(p), low = supLow(p);
   const lbl = day === today ? 'Сегодня' : day === addDays(today, -1) ? 'Вчера' : `${WD_FULL[new Date(day).getDay()]}, ${dayMonth(day)}`;
-  const row = (s, on) => `<div class="sup-row${on ? ' on' : ''}" data-key="sp-${esc(s.id)}"><button class="sup-check" data-act="supTake" data-id="${esc(s.id)}" data-day="${day}" aria-pressed="${on}" aria-label="${on ? 'Отменить приём' : 'Принял'}: ${esc(s.name)}">${icon('check')}</button><button class="sup-main" data-act="supEdit" data-id="${esc(s.id)}" aria-label="Изменить: ${esc(s.name)}"><b>${esc(s.name)}</b>${supSub(s, day) ? `<small>${esc(supSub(s, day))}</small>` : ''}</button></div>`;
+  const row = (s, on) => `${swOpen('s', s.id)}<div class="sup-row${on ? ' on' : ''}" data-key="sp-${esc(s.id)}"><button class="sup-check" data-act="supTake" data-id="${esc(s.id)}" data-day="${day}" aria-pressed="${on}" aria-label="${on ? 'Отменить приём' : 'Принял'}: ${esc(s.name)}">${icon('check')}</button><button class="sup-main" data-act="supEdit" data-id="${esc(s.id)}" aria-label="Изменить: ${esc(s.name)}"><b>${esc(s.name)}</b>${supSub(s, day) ? `<small>${esc(supSub(s, day))}</small>` : ''}</button></div>${swClose()}`;
   const groups = SUP_WHEN.map(([k, l]) => { const items = st.due.filter(s => (SUP_WHEN.some(w => w[0] === s.when) ? s.when : 'any') === k); return items.length ? `<section class="sec" data-key="sg-${k}"><div class="sec-head"><h2 class="h2">${l}</h2><span class="h2">${items.filter(s => st.taken.has(s.id)).length}/${items.length}</span></div><div class="panel sup-list">${items.map(s => row(s, st.taken.has(s.id))).join('')}</div></section>` : ''; }).join('');
-  const rest = p.supps.filter(s => !st.due.includes(s));
+  const rest = p.supps.filter(s => !st.due.includes(s) && !swHid(s.id));
   const restH = rest.length ? `<section class="sec" data-key="sg-off"><div class="sec-head"><h2 class="h2">Не в этот день</h2></div><div class="panel sup-list">${rest.map(s => `<div class="sup-row off" data-key="sx-${esc(s.id)}"><span class="sup-check" aria-hidden="true">${icon('moon')}</span><button class="sup-main" data-act="supEdit" data-id="${esc(s.id)}" aria-label="Изменить: ${esc(s.name)}"><b>${esc(s.name)}</b>${supSub(s, day) ? `<small>${esc(supSub(s, day))}</small>` : ''}</button></div>`).join('')}</div></section>` : '';
   const pct = st.due.length ? st.done / st.due.length * 100 : 0;
   return `${head}
@@ -5046,9 +5070,7 @@ Object.assign(A, {
   },
   supDel: () => {
     const sh = top(); if (!sh.confirm) { sh.confirm = true; render(); return; }
-    S.profile.supps = S.profile.supps.filter(x => x.id !== sh.id);
-    Object.keys(S.profile.slog).forEach(k => { const l = S.profile.slog[k].filter(id => id !== sh.id); if (l.length) S.profile.slog[k] = l; else delete S.profile.slog[k]; });
-    saveProfile(); S.sheets.pop(); toast('Добавка удалена'); render();
+    supRemove(sh.id); S.sheets.pop(); toast('Добавка удалена'); render();
   },
   supOrder: () => { S.supOrder = !S.supOrder; render(); },
   supMove: el => { const l = S.profile.supps, i = +el.dataset.i, j = i + +el.dataset.d; if (j < 0 || j >= l.length) return; [l[i], l[j]] = [l[j], l[i]]; buzz(6); saveProfile(); render(); },
@@ -6341,7 +6363,7 @@ function swipeTab(dir) {
 }
 (() => {
   let t = null;
-  const NOX = '#tabbar,input,textarea,select,[data-noswipe],.chart,.seg,.chips,.aw-strip,.grab,.sheet-head,.restbar,.composer,.rkrow';
+  const NOX = '#tabbar,input,textarea,select,[data-noswipe],.chart,.seg,.chips,.aw-strip,.grab,.sheet-head,.restbar,.composer,.rkrow,.swp';
   const blockedX = el => { for (let e = el; e && e !== document.body; e = e.parentElement) { if (e.matches && e.matches(NOX)) return true; const cs = getComputedStyle(e); if (/(auto|scroll)/.test(cs.overflowX) && e.scrollWidth > e.clientWidth + 2) return true; } return false; };
   const scrolledY = (el, stop) => { for (let e = el; e && e !== stop && e !== document.body; e = e.parentElement) { if (e.scrollHeight > e.clientHeight + 1 && /(auto|scroll)/.test(getComputedStyle(e).overflowY) && e.scrollTop > 0) return true; } return false; };
   const snap = s => { if (!s) return; s.style.transition = 'transform .25s cubic-bezier(.2,.8,.2,1)'; s.style.transform = ''; setTimeout(() => { s.style.transition = ''; }, 280); };
@@ -6572,7 +6594,7 @@ const HAB_AUTO = [['', 'Вручную'], ['workout', 'По тренировке
 const habCat = k => HAB_CATS.find(c => c[0] === k) || HAB_CATS[2];
 
 function habDue(h, day) {
-  if (!h || h.off || h.ar) return false;
+  if (!h || h.off || h.ar || swHid(h.id)) return false;
   if (h.ts && day < startOfDay(h.ts)) return false;
   if (Array.isArray(h.days) && h.days.length && !h.days.includes(new Date(day).getDay())) return false;
   return true;
@@ -6683,16 +6705,16 @@ function habCardHTML() {
   const rows = st.due.map(h => habRow(p, h, today, st.taken[h.id] != null)).join('');
   return `<section class="sec" data-key="hab-card"><div class="sec-head"><h2 class="h2">Привычки · ${st.done} из ${st.due.length}</h2><button class="btn btn-sm btn-ghost" data-act="nav" data-v="path">Все ${icon('chevron')}</button></div><div class="panel sup-list hab-list">${rows}</div></section>`;
 }
-function habRow(p, h, day, on) {
-  const c = habCat(h.cat);
-  return `<div class="sup-row hab-row${on ? ' on' : ''}" data-key="hb-${esc(h.id)}" style="--hc:${c[2]}"><button class="sup-check" data-act="habTake" data-id="${esc(h.id)}" data-day="${day}" aria-pressed="${on}"${h.auto ? ' disabled' : ''} aria-label="${h.auto ? 'Отмечается само' : on ? 'Отменить' : 'Сделал'}: ${esc(h.name)}">${icon(on ? 'check' : h.ic || 'check')}</button><button class="sup-main" data-act="habEdit" data-id="${esc(h.id)}" aria-label="Изменить: ${esc(h.name)}"><b>${esc(h.name)}</b><small>${esc(habSub(p, h, day))}</small></button><span class="hab-dots" aria-hidden="true">${habDots(p, h, day)}</span></div>`;
+function habRow(p, h, day, on, sw) {
+  const c = habCat(h.cat), row = `<div class="sup-row hab-row${on ? ' on' : ''}" data-key="hb-${esc(h.id)}" style="--hc:${c[2]}"><button class="sup-check" data-act="habTake" data-id="${esc(h.id)}" data-day="${day}" aria-pressed="${on}"${h.auto ? ' disabled' : ''} aria-label="${h.auto ? 'Отмечается само' : on ? 'Отменить' : 'Сделал'}: ${esc(h.name)}">${icon(on ? 'check' : h.ic || 'check')}</button><button class="sup-main" data-act="habEdit" data-id="${esc(h.id)}" aria-label="Изменить: ${esc(h.name)}"><b>${esc(h.name)}</b><small>${esc(habSub(p, h, day))}</small></button><span class="hab-dots" aria-hidden="true">${habDots(p, h, day)}</span></div>`;
+  return sw ? swOpen('h', h.id) + row + swClose() : row;
 }
 
 /* ---------- tab «Путь» ---------- */
 function viewPath() {
   const head = headHTML('Путь', `${icon('repeat')} Привычки`);
   if (!ready()) return head + loadingHTML();
-  const p = S.profile, today = startOfDay(Date.now()), hs = p.habits.filter(h => !h.ar);
+  const p = S.profile, today = startOfDay(Date.now()), hs = p.habits.filter(h => !h.ar && !swHid(h.id));
   if (!hs.length) {
     return `${head}<div class="empty sup-empty"><h3>Первая привычка</h3><p>Вода, чтение, сон, растяжка — всё, что хотите делать каждый день. Отмечайте галочкой, растите серию, получайте опыт и прокачивайте героя. Привычки видите только вы.</p></div>
       <section class="sec"><div class="sec-head"><h2 class="h2">Быстрый старт</h2></div><div class="sup-quick">${HAB_QUICK.map(([n, ic], i) => `<button class="chip" data-act="habQuick" data-i="${i}">${icon(ic)} ${esc(n)}</button>`).join('')}</div>
@@ -6706,7 +6728,7 @@ function viewPath() {
     <div class="sup-day"><button class="icon-btn" data-act="habDayShift" data-d="-1" aria-label="Предыдущий день"${day <= addDays(today, -6) ? ' disabled' : ''}>${icon('back')}</button><b>${lbl}</b><button class="icon-btn" data-act="habDayShift" data-d="1" aria-label="Следующий день"${day >= today ? ' disabled' : ''}>${icon('chevron')}</button></div>
     <section class="panel sup-sum${st.full ? ' full' : ''}"><div class="sup-sum-top"><div class="hs"><b>${st.done}<small>/${st.due.length}</small></b><span>сделано</span></div><div class="hs"><b>${icon('flame')}${streak}</b><span>${plural(streak, ['день', 'дня', 'дней'])} подряд</span></div><div class="hs"><b>+${habTodayXP(p, day)}</b><span>XP за день</span></div></div>
       <span class="q-bar"><i style="width:${pct.toFixed(1)}%"></i></span>${st.full ? `<p class="sup-done">${icon('check')} Все привычки ${day === today ? 'на сегодня' : 'этого дня'} выполнены</p>` : !st.due.length ? '<p class="sup-done muted">В этот день привычек по плану нет</p>' : ''}</section>
-    ${st.due.length ? `<section class="sec" data-key="hab-due"><div class="sec-head"><h2 class="h2">По плану</h2><span class="h2">${st.done}/${st.due.length}</span></div><div class="panel sup-list hab-list">${st.due.map(h => habRow(p, h, day, st.taken[h.id] != null)).join('')}</div></section>` : ''}
+    ${st.due.length ? `<section class="sec" data-key="hab-due"><div class="sec-head"><h2 class="h2">По плану</h2><span class="h2">${st.done}/${st.due.length}</span></div><div class="panel sup-list hab-list">${st.due.map(h => habRow(p, h, day, st.taken[h.id] != null, true)).join('')}</div></section>` : ''}
     ${live.length || paused.length ? `<section class="sec" data-key="hab-rest"><div class="sec-head"><h2 class="h2">Остальные</h2></div><div class="panel sup-list">${live.map(h => off(h, 'moon')).join('')}${paused.map(h => off(h, 'snow')).join('')}</div></section>` : ''}
     <div class="row sup-actions"><button class="btn btn-add" data-act="habNew">${icon('plus')} Добавить</button></div>
     <p class="fine">Привычки видите только вы — партнёру уходит лишь общий опыт. Сделанная привычка даёт 5, 10 или 15 XP (не больше ${HAB_CAP} в день), полный день — ещё +${HAB_FULL}.</p>`;
@@ -6780,13 +6802,118 @@ Object.assign(A, {
   },
   habDel: () => {
     const sh = top(); if (!sh.confirm) { sh.confirm = true; render(); return; }
-    const p = S.profile, used = Object.values(p.hlog).some(t => t && t[sh.id] != null);
-    if (used) { const h = p.habits.find(x => x.id === sh.id); if (h) h.ar = true; } // keep the history and the xp already earned
-    else p.habits = p.habits.filter(x => x.id !== sh.id);
-    habFullFix(p, startOfDay(Date.now()));
-    saveProfile(); S.sheets.pop(); toast('Привычка удалена'); render();
+    habRemove(sh.id); S.sheets.pop(); toast('Привычка удалена'); render();
   },
 });
+/* ================= 3.2: swipe a row to the left to delete it (with «Отменить») =================
+   A row is wrapped by swOpen(kind, id) … swClose(): .swp > .swp-act (the red «Удалить» layer) + .swp-fg (the row itself).
+   Short swipe → the row stays open on a red button; long swipe (or a fast flick) → it flies out and is deleted.
+   The data is really deleted only after the «Отменить» toast is gone (or the app is hidden), so undo never has to rebuild anything. */
+const SW_OPEN = 92, SW_UNDO_MS = 8800;
+const SW_KINDS = {
+  w:{ msg:'Тренировка удалена', commit:id => deleteWorkout(id) },
+  h:{ msg:'Привычка удалена', commit:id => habRemove(id) },
+  s:{ msg:'Добавка удалена', commit:id => supRemove(id) },
+};
+function swOpen(kind, id) { return `<div class="swp" data-key="sw-${kind}-${esc(id)}" data-swipe="${kind}" data-sid="${esc(id)}"><div class="swp-act" data-act="swipeDel" aria-hidden="true"><span class="swp-lbl">${icon('trash')}<b>Удалить</b></span></div><div class="swp-fg">`; }
+const swClose = () => '</div></div>';
+const swHid = id => !!(S.swHide && S.swHide.has(id));
+function swVis(list) { return S.swHide && S.swHide.size ? list.filter(x => !S.swHide.has(x.id)) : list; }
+function habRemove(id) {
+  const p = S.profile, used = Object.values(p.hlog).some(t => t && t[id] != null);
+  if (used) { const h = p.habits.find(x => x.id === id); if (h) h.ar = true; } // keep the history and the xp already earned
+  else p.habits = p.habits.filter(x => x.id !== id);
+  habFullFix(p, startOfDay(Date.now())); saveProfile();
+}
+function supRemove(id) {
+  const p = S.profile; p.supps = p.supps.filter(x => x.id !== id);
+  Object.keys(p.slog).forEach(k => { const l = p.slog[k].filter(x => x !== id); if (l.length) p.slog[k] = l; else delete p.slog[k]; });
+  saveProfile();
+}
+function swCommit() {
+  const p = S.swPend; if (!p) return;
+  clearTimeout(p.timer); S.swPend = null;
+  if (p.pid === S.pid) { try { SW_KINDS[p.kind].commit(p.id); } catch (e) { logErr && logErr(e); } } // another profile is open now: leave the data alone
+  if (S.swHide) S.swHide.delete(p.id);
+  render();
+}
+function swipeDelete(kind, id) {
+  swCommit();
+  if (!SW_KINDS[kind]) return;
+  (S.swHide || (S.swHide = new Set())).add(id);
+  S.swPend = { kind, id, pid:S.pid, timer:setTimeout(swCommit, SW_UNDO_MS) };
+  render(); toast(SW_KINDS[kind].msg, '', { act:'swipeUndo', label:'Отменить' });
+}
+function swipeRun(sw) {
+  const kind = sw.dataset.swipe, id = sw.dataset.sid, host = sw.closest('li') || sw, fg = sw.querySelector(':scope > .swp-fg');
+  buzz([10, 40, 10]); sfx('del');
+  if (RM) { swipeDelete(kind, id); return; }
+  sw.classList.add('on', 'armed', 'out'); sw.style.setProperty('--p', 1);
+  fg.style.transition = 'transform .26s cubic-bezier(.5,0,.9,.6)'; fg.style.transform = 'translate3d(-106%,0,0)';
+  host.style.height = host.offsetHeight + 'px'; host.style.overflow = 'hidden'; void host.offsetHeight;
+  host.style.transition = 'height .26s .16s cubic-bezier(.3,0,.2,1), opacity .22s .16s'; host.style.height = '0px'; host.style.opacity = '0';
+  setTimeout(() => swipeDelete(kind, id), 440);
+}
+Object.assign(A, {
+  swipeDel: el => { const sw = el.closest('.swp'); if (sw) swipeRun(sw); },
+  swipeUndo: () => {
+    const p = S.swPend; if (!p) return;
+    clearTimeout(p.timer); S.swPend = null; if (S.swHide) S.swHide.delete(p.id);
+    clearTimeout(toast.t); S.toast = null; renderToast(); sfx('tab'); buzz(8); render();
+  },
+});
+(() => {
+  let g = null, openSw = null;
+  const fgOf = sw => sw.querySelector(':scope > .swp-fg'), armAt = w => Math.max(170, w * .5);
+  function setX(sw, x, anim) {
+    const fg = fgOf(sw); if (!fg) return;
+    fg.style.transition = anim ? 'transform .32s cubic-bezier(.2,.8,.2,1)' : 'none'; fg.style.transform = x ? `translate3d(${x}px,0,0)` : '';
+    sw.style.setProperty('--p', Math.min(1, Math.max(0, -x / SW_OPEN)).toFixed(3));
+    sw.classList.toggle('on', x < -2);
+  }
+  function closeSw(sw, anim = true) { if (!sw) return; setX(sw, 0, anim); sw.classList.remove('open', 'armed'); if (openSw === sw) openSw = null; }
+  document.addEventListener('pointerdown', e => {
+    const t = e.target, fg = t.closest && t.closest('.swp-fg');
+    if (openSw && !(fg && fg.parentElement === openSw) && !(t.closest && t.closest('.swp-act'))) closeSw(openSw);
+    if (!fg || S.sheets.length || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    const sw = fg.parentElement, now = performance.now();
+    g = { sw, fg, id:e.pointerId, x0:e.clientX, y0:e.clientY, x:0, base:sw.classList.contains('open') ? -SW_OPEN : 0, mode:null, w:sw.offsetWidth, lx:e.clientX, lt:now, v:0, armed:false };
+  }, true);
+  document.addEventListener('pointermove', e => {
+    if (!g || e.pointerId !== g.id) return;
+    const dx = e.clientX - g.x0, dy = e.clientY - g.y0;
+    if (!g.mode) {
+      if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) { g = null; return; } // the page is scrolling
+      if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      g.mode = 'h'; g.sw.classList.add('drag'); try { g.fg.setPointerCapture(e.pointerId); } catch (err) { /* capture unsupported */ }
+    }
+    const now = performance.now(); g.v = (e.clientX - g.lx) / Math.max(1, now - g.lt); g.lx = e.clientX; g.lt = now;
+    let x = g.base + dx;
+    if (x > 0) x *= .18; else if (x < -SW_OPEN) x = -SW_OPEN + (x + SW_OPEN) * .9; // a little resistance after the button
+    x = Math.max(x, -g.w); g.x = x; setX(g.sw, x, false);
+    const arm = -x >= armAt(g.w); if (arm !== g.armed) { g.armed = arm; g.sw.classList.toggle('armed', arm); buzz(arm ? 9 : 4); if (arm) sfx('arm'); }
+  });
+  const end = e => {
+    if (!g || e.pointerId !== g.id) return;
+    const s = g; g = null; if (s.mode !== 'h') return;
+    s.sw.classList.remove('drag'); s.sw._moved = performance.now();
+    if (e.type === 'pointercancel') { closeSw(s.sw); return; }
+    const x = s.x;
+    if (-x >= armAt(s.w) || (s.v < -1.1 && -x > SW_OPEN * .7)) swipeRun(s.sw);
+    else if (-x > SW_OPEN * .5 || (s.v < -.6 && -x > 24)) { if (openSw && openSw !== s.sw) closeSw(openSw); setX(s.sw, -SW_OPEN, true); s.sw.classList.add('open'); openSw = s.sw; buzz(5); }
+    else closeSw(s.sw);
+  };
+  document.addEventListener('pointerup', end, true); document.addEventListener('pointercancel', end, true);
+  // the click that ends a drag must not open the row; a tap on an opened row only closes it
+  document.addEventListener('click', e => {
+    const fg = e.target.closest && e.target.closest('.swp-fg'); if (!fg) return;
+    const sw = fg.parentElement;
+    if (sw._moved && performance.now() - sw._moved < 400) { e.stopPropagation(); e.preventDefault(); return; }
+    if (sw.classList.contains('open')) { e.stopPropagation(); e.preventDefault(); closeSw(sw); }
+  }, true);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') swCommit(); });
+  window.addEventListener('pagehide', swCommit);
+})();
 /* ================= events ================= */
 document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const fn = A[el.dataset.act]; if (fn) { e.preventDefault(); SFXN.n = 0; fn(el, e); if (!SFXN.n) sfx(el.dataset.act === 'nav' ? 'tab' : el.dataset.act === 'closeSheet' ? 'close' : el.getAttribute('role') === 'switch' ? 'toggle' : 'tap'); } });
 // buttons without data-act, checkboxes and selects get the same soft sound (the data-act handler above already plays its own)

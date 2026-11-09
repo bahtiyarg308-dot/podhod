@@ -13,7 +13,7 @@ const HAB_AUTO = [['', 'Вручную'], ['workout', 'По тренировке
 const habCat = k => HAB_CATS.find(c => c[0] === k) || HAB_CATS[2];
 
 function habDue(h, day) {
-  if (!h || h.off || h.ar) return false;
+  if (!h || h.off || h.ar || swHid(h.id)) return false;
   if (h.ts && day < startOfDay(h.ts)) return false;
   if (Array.isArray(h.days) && h.days.length && !h.days.includes(new Date(day).getDay())) return false;
   return true;
@@ -124,16 +124,16 @@ function habCardHTML() {
   const rows = st.due.map(h => habRow(p, h, today, st.taken[h.id] != null)).join('');
   return `<section class="sec" data-key="hab-card"><div class="sec-head"><h2 class="h2">Привычки · ${st.done} из ${st.due.length}</h2><button class="btn btn-sm btn-ghost" data-act="nav" data-v="path">Все ${icon('chevron')}</button></div><div class="panel sup-list hab-list">${rows}</div></section>`;
 }
-function habRow(p, h, day, on) {
-  const c = habCat(h.cat);
-  return `<div class="sup-row hab-row${on ? ' on' : ''}" data-key="hb-${esc(h.id)}" style="--hc:${c[2]}"><button class="sup-check" data-act="habTake" data-id="${esc(h.id)}" data-day="${day}" aria-pressed="${on}"${h.auto ? ' disabled' : ''} aria-label="${h.auto ? 'Отмечается само' : on ? 'Отменить' : 'Сделал'}: ${esc(h.name)}">${icon(on ? 'check' : h.ic || 'check')}</button><button class="sup-main" data-act="habEdit" data-id="${esc(h.id)}" aria-label="Изменить: ${esc(h.name)}"><b>${esc(h.name)}</b><small>${esc(habSub(p, h, day))}</small></button><span class="hab-dots" aria-hidden="true">${habDots(p, h, day)}</span></div>`;
+function habRow(p, h, day, on, sw) {
+  const c = habCat(h.cat), row = `<div class="sup-row hab-row${on ? ' on' : ''}" data-key="hb-${esc(h.id)}" style="--hc:${c[2]}"><button class="sup-check" data-act="habTake" data-id="${esc(h.id)}" data-day="${day}" aria-pressed="${on}"${h.auto ? ' disabled' : ''} aria-label="${h.auto ? 'Отмечается само' : on ? 'Отменить' : 'Сделал'}: ${esc(h.name)}">${icon(on ? 'check' : h.ic || 'check')}</button><button class="sup-main" data-act="habEdit" data-id="${esc(h.id)}" aria-label="Изменить: ${esc(h.name)}"><b>${esc(h.name)}</b><small>${esc(habSub(p, h, day))}</small></button><span class="hab-dots" aria-hidden="true">${habDots(p, h, day)}</span></div>`;
+  return sw ? swOpen('h', h.id) + row + swClose() : row;
 }
 
 /* ---------- tab «Путь» ---------- */
 function viewPath() {
   const head = headHTML('Путь', `${icon('repeat')} Привычки`);
   if (!ready()) return head + loadingHTML();
-  const p = S.profile, today = startOfDay(Date.now()), hs = p.habits.filter(h => !h.ar);
+  const p = S.profile, today = startOfDay(Date.now()), hs = p.habits.filter(h => !h.ar && !swHid(h.id));
   if (!hs.length) {
     return `${head}<div class="empty sup-empty"><h3>Первая привычка</h3><p>Вода, чтение, сон, растяжка — всё, что хотите делать каждый день. Отмечайте галочкой, растите серию, получайте опыт и прокачивайте героя. Привычки видите только вы.</p></div>
       <section class="sec"><div class="sec-head"><h2 class="h2">Быстрый старт</h2></div><div class="sup-quick">${HAB_QUICK.map(([n, ic], i) => `<button class="chip" data-act="habQuick" data-i="${i}">${icon(ic)} ${esc(n)}</button>`).join('')}</div>
@@ -147,7 +147,7 @@ function viewPath() {
     <div class="sup-day"><button class="icon-btn" data-act="habDayShift" data-d="-1" aria-label="Предыдущий день"${day <= addDays(today, -6) ? ' disabled' : ''}>${icon('back')}</button><b>${lbl}</b><button class="icon-btn" data-act="habDayShift" data-d="1" aria-label="Следующий день"${day >= today ? ' disabled' : ''}>${icon('chevron')}</button></div>
     <section class="panel sup-sum${st.full ? ' full' : ''}"><div class="sup-sum-top"><div class="hs"><b>${st.done}<small>/${st.due.length}</small></b><span>сделано</span></div><div class="hs"><b>${icon('flame')}${streak}</b><span>${plural(streak, ['день', 'дня', 'дней'])} подряд</span></div><div class="hs"><b>+${habTodayXP(p, day)}</b><span>XP за день</span></div></div>
       <span class="q-bar"><i style="width:${pct.toFixed(1)}%"></i></span>${st.full ? `<p class="sup-done">${icon('check')} Все привычки ${day === today ? 'на сегодня' : 'этого дня'} выполнены</p>` : !st.due.length ? '<p class="sup-done muted">В этот день привычек по плану нет</p>' : ''}</section>
-    ${st.due.length ? `<section class="sec" data-key="hab-due"><div class="sec-head"><h2 class="h2">По плану</h2><span class="h2">${st.done}/${st.due.length}</span></div><div class="panel sup-list hab-list">${st.due.map(h => habRow(p, h, day, st.taken[h.id] != null)).join('')}</div></section>` : ''}
+    ${st.due.length ? `<section class="sec" data-key="hab-due"><div class="sec-head"><h2 class="h2">По плану</h2><span class="h2">${st.done}/${st.due.length}</span></div><div class="panel sup-list hab-list">${st.due.map(h => habRow(p, h, day, st.taken[h.id] != null, true)).join('')}</div></section>` : ''}
     ${live.length || paused.length ? `<section class="sec" data-key="hab-rest"><div class="sec-head"><h2 class="h2">Остальные</h2></div><div class="panel sup-list">${live.map(h => off(h, 'moon')).join('')}${paused.map(h => off(h, 'snow')).join('')}</div></section>` : ''}
     <div class="row sup-actions"><button class="btn btn-add" data-act="habNew">${icon('plus')} Добавить</button></div>
     <p class="fine">Привычки видите только вы — партнёру уходит лишь общий опыт. Сделанная привычка даёт 5, 10 или 15 XP (не больше ${HAB_CAP} в день), полный день — ещё +${HAB_FULL}.</p>`;
@@ -221,10 +221,6 @@ Object.assign(A, {
   },
   habDel: () => {
     const sh = top(); if (!sh.confirm) { sh.confirm = true; render(); return; }
-    const p = S.profile, used = Object.values(p.hlog).some(t => t && t[sh.id] != null);
-    if (used) { const h = p.habits.find(x => x.id === sh.id); if (h) h.ar = true; } // keep the history and the xp already earned
-    else p.habits = p.habits.filter(x => x.id !== sh.id);
-    habFullFix(p, startOfDay(Date.now()));
-    saveProfile(); S.sheets.pop(); toast('Привычка удалена'); render();
+    habRemove(sh.id); S.sheets.pop(); toast('Привычка удалена'); render();
   },
 });

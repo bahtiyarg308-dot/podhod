@@ -1,0 +1,21 @@
+/* ===== 3.2: swipe a row to the left to delete ===== */
+/* ---------- swipe a row to the left ---------- */
+.swp{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.swp-fg{position:relative;z-index:1;touch-action:pan-y;background:var(--bg);will-change:transform;-webkit-user-select:none;user-select:none}
+.sup-list .swp{margin:0 -12px}
+.sup-list .swp-fg{padding:0 12px;background:var(--surface)}
+.sup-list{overflow:hidden}
+.sup-list .swp:not(:last-child) .sup-row{border-bottom:1px solid var(--line)}
+.sup-list .swp:last-child .sup-row{border-bottom:0}
+.swp-act{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;visibility:hidden;color:#fff;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,0) 52%),linear-gradient(90deg,#892826 0%,#C4433C 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.2);transition:filter .18s}
+.swp.on .swp-act{visibility:visible}
+.swp.armed .swp-act{filter:brightness(1.12) saturate(1.1)}
+.swp-lbl{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:92px;pointer-events:none;
+  opacity:calc(.3 + var(--p,0) * .7);transform:scale(calc(.78 + var(--p,0) * .22));transition:transform .16s var(--spring)}
+.swp.armed .swp-lbl{transform:scale(1.14)}
+.swp-lbl .ic{width:22px;height:22px}
+.swp-lbl b{font-size:11.5px;font-weight:600;letter-spacing:.02em}
+.swp.drag .swp-fg{cursor:grabbing}
+@media (prefers-reduced-motion:reduce){.swp-lbl{transition:none}}

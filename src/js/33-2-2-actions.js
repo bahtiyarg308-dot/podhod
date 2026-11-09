@@ -93,9 +93,7 @@ Object.assign(A, {
   },
   supDel: () => {
     const sh = top(); if (!sh.confirm) { sh.confirm = true; render(); return; }
-    S.profile.supps = S.profile.supps.filter(x => x.id !== sh.id);
-    Object.keys(S.profile.slog).forEach(k => { const l = S.profile.slog[k].filter(id => id !== sh.id); if (l.length) S.profile.slog[k] = l; else delete S.profile.slog[k]; });
-    saveProfile(); S.sheets.pop(); toast('Добавка удалена'); render();
+    supRemove(sh.id); S.sheets.pop(); toast('Добавка удалена'); render();
   },
   supOrder: () => { S.supOrder = !S.supOrder; render(); },
   supMove: el => { const l = S.profile.supps, i = +el.dataset.i, j = i + +el.dataset.d; if (j < 0 || j >= l.length) return; [l[i], l[j]] = [l[j], l[i]]; buzz(6); saveProfile(); render(); },

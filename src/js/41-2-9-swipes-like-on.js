@@ -10,7 +10,7 @@ function swipeTab(dir) {
 }
 (() => {
   let t = null;
-  const NOX = '#tabbar,input,textarea,select,[data-noswipe],.chart,.seg,.chips,.aw-strip,.grab,.sheet-head,.restbar,.composer,.rkrow';
+  const NOX = '#tabbar,input,textarea,select,[data-noswipe],.chart,.seg,.chips,.aw-strip,.grab,.sheet-head,.restbar,.composer,.rkrow,.swp';
   const blockedX = el => { for (let e = el; e && e !== document.body; e = e.parentElement) { if (e.matches && e.matches(NOX)) return true; const cs = getComputedStyle(e); if (/(auto|scroll)/.test(cs.overflowX) && e.scrollWidth > e.clientWidth + 2) return true; } return false; };
   const scrolledY = (el, stop) => { for (let e = el; e && e !== stop && e !== document.body; e = e.parentElement) { if (e.scrollHeight > e.clientHeight + 1 && /(auto|scroll)/.test(getComputedStyle(e).overflowY) && e.scrollTop > 0) return true; } return false; };
   const snap = s => { if (!s) return; s.style.transition = 'transform .25s cubic-bezier(.2,.8,.2,1)'; s.style.transform = ''; setTimeout(() => { s.style.transition = ''; }, 280); };

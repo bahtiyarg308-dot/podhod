@@ -6,7 +6,7 @@ const WD_ORDER = [1, 2, 3, 4, 5, 6, 0];
 const supDose = s => { const v = parseNum(s && s.dose); return v > 0 ? v : null; };
 const doseTxt = s => s.dose ? `${String(s.dose).replace('.', ',')} ${s.unit || ''}`.trim() : '';
 function supDue(s, day) {
-  if (!s || s.off) return false;
+  if (!s || s.off || swHid(s.id)) return false;
   if (Array.isArray(s.days) && s.days.length && !s.days.includes(new Date(day).getDay())) return false;
   if (s.cf) { const a = startOfDay(s.cf); if (day < a || (s.cd > 0 && day >= addDays(a, s.cd))) return false; }
   return true;

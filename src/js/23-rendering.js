@@ -320,14 +320,15 @@ function exLine(w) {
 }
 function jrow(w, i = 0) {
   const d = new Date(w.start), st = wStats(w), pr = D.prCount[w.id] || 0, kg = kudosFor(w.id);
-  return `<li data-key="j-${esc(w.id)}"><button class="jrow" style="--i:${Math.min(i, 12)}" data-act="openWorkout" data-id="${esc(w.id)}"><span class="jdate"><b>${d.getDate()}</b><span>${WD[d.getDay()]}</span></span><span class="jmain"><span class="jtitle">${esc(w.title || 'Тренировка')}${pr ? `<span class="pr-chip">${icon('star', 'ic-f')}${pr} PR</span>` : ''}${kg.length ? `<span class="kd-got" aria-label="Реакции: ${kg.length}">${kg.map(k => icon(k.t, k.t === 'flame' ? '' : 'ic-f')).join('')}</span>` : ''}</span><span class="jex">${exLine(w)}</span></span><span class="jnums"><b>${st.vol ? ton(st.vol) : st.sets + ' подх.'}</b><span>${fmtDur(st.dur)}</span></span></button></li>`;
+  return `<li data-key="j-${esc(w.id)}">${swOpen('w', w.id)}<button class="jrow" style="--i:${Math.min(i, 12)}" data-act="openWorkout" data-id="${esc(w.id)}"><span class="jdate"><b>${d.getDate()}</b><span>${WD[d.getDay()]}</span></span><span class="jmain"><span class="jtitle">${esc(w.title || 'Тренировка')}${pr ? `<span class="pr-chip">${icon('star', 'ic-f')}${pr} PR</span>` : ''}${kg.length ? `<span class="kd-got" aria-label="Реакции: ${kg.length}">${kg.map(k => icon(k.t, k.t === 'flame' ? '' : 'ic-f')).join('')}</span>` : ''}</span><span class="jex">${exLine(w)}</span></span><span class="jnums"><b>${st.vol ? ton(st.vol) : st.sets + ' подх.'}</b><span>${fmtDur(st.dur)}</span></span></button>${swClose()}</li>`;
 }
 function viewLog() {
+  const LW = swVis(S.workouts);
   const add = `<button class="btn btn-sm" data-act="addPast" aria-label="Записать прошедшую тренировку">${icon('plus')}<span class="ph-l">Прошедшая</span></button>`;
-  const head = headHTML('Журнал', S.workouts.length ? `${S.workouts.length} ${plural(S.workouts.length, ['тренировка','тренировки','тренировок'])}` : 'Все тренировки', add) + trainSeg();
+  const head = headHTML('Журнал', LW.length ? `${LW.length} ${plural(LW.length, ['тренировка','тренировки','тренировок'])}` : 'Все тренировки', add) + trainSeg();
   if (!ready()) return head + loadingHTML();
-  if (!S.workouts.length) return `${head}<div class="empty"><h3>Здесь появятся ваши тренировки</h3><p>Начните тренировку на вкладке «Сегодня» или запишите ту, что уже прошла.</p><button class="btn btn-primary" data-act="nav" data-v="today">${icon('play', 'ic-f')} К тренировке</button></div>`;
-  const q = normQ(S.logQ).trim(), words = q.split(/\s+/).filter(Boolean), list = words.length ? S.workouts.filter(w => logMatch(w, words)) : S.workouts;
+  if (!LW.length) return `${head}<div class="empty"><h3>Здесь появятся ваши тренировки</h3><p>Начните тренировку на вкладке «Сегодня» или запишите ту, что уже прошла.</p><button class="btn btn-primary" data-act="nav" data-v="today">${icon('play', 'ic-f')} К тренировке</button></div>`;
+  const q = normQ(S.logQ).trim(), words = q.split(/\s+/).filter(Boolean), list = words.length ? LW.filter(w => logMatch(w, words)) : LW;
   const search = `<div class="log-search">${icon('search')}<input class="field" type="search" id="log-q" data-in="logQ" value="${esc(S.logQ || '')}" placeholder="Поиск: жим, «Верх», заметка" autocomplete="off" aria-label="Поиск по журналу">${S.logQ ? `<button class="icon-btn" data-act="logClear" aria-label="Очистить поиск">${icon('x')}</button>` : ''}</div>${words.length ? `<p class="log-found">Найдено: ${list.length} ${plural(list.length, ['тренировка','тренировки','тренировок'])}</p>` : ''}`;
   if (words.length && !list.length) return `${head}${search}<div class="empty"><h3>Ничего не нашлось</h3><p>Попробуйте часть слова: «жим», «прис», «тяг».</p></div>`;
   const groups = []; let cur = null; const lim = words.length ? 1e9 : (S.logN || 40);

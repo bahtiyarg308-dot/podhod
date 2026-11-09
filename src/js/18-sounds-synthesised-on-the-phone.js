@@ -1,7 +1,7 @@
 /* ================= sounds: synthesised on the phone, no files, no internet ================= */
 const SND_DEF = { on:true, vol:2, train:true, game:true, ui:true };
 const sndCfg = () => Object.assign({}, SND_DEF, (S.meta && S.meta.snd) || {});
-const SFX_CAT = { tap:'ui', lens:'ui', tab:'ui', toggle:'ui', close:'ui', send:'ui', set:'train', unset:'train', tick:'train', count:'train', pr:'train', start:'train', finish:'train', level:'train',
+const SFX_CAT = { tap:'ui', lens:'ui', del:'ui', arm:'ui', tab:'ui', toggle:'ui', close:'ui', send:'ui', set:'train', unset:'train', tick:'train', count:'train', pr:'train', start:'train', finish:'train', level:'train',
   shake:'game', openc:'game', openr:'game', opene:'game', openl:'game', gift:'game', rank:'game', equip:'game', locked:'game', buy:'game', grow:'game', mate:'game', nom:'game', like:'game', sup:'game', supFull:'game' };
 const SFXN = { n:0, t:0 };
 let sfxOut = null, noiseBuf = null;
@@ -44,6 +44,8 @@ const SFX = {
   tap:o => { tone(o, 1180, 0, .06, .07, 'sine', 960, .004); tone(o, 2360, 0, .03, .02, 'sine', null, .003); hiss(o, 0, .01, .03, 4500, null, 1.2, 'highpass'); },
   // a soft glass «tink»; every tab has its own note of a pentatonic scale, so sliding along the bar plays a little run
   lens:(o, a) => { const f = [659.25, 783.99, 880, 1046.5, 1174.66][(+a || 0) % 5]; tone(o, f, 0, .22, .085, 'sine', null, .004); tone(o, f * 2.005, 0, .11, .03, 'sine', null, .003); tone(o, f * 3.01, 0, .05, .012, 'sine', null, .002); hiss(o, 0, .008, .035, 5200, null, 1.5, 'highpass'); },
+  arm:o => tone(o, 1500, 0, .04, .05),
+  del:o => { hiss(o, 0, .14, .07, 2600, 500, 1.1); tone(o, 480, 0, .12, .04, 'sine', 260, .004); },
   tab:(o, a) => { if (a != null) return SFX.lens(o, a); tone(o, 1046, 0, .035, .07); hiss(o, 0, .012, .06, 4200, null, 1.5, 'highpass'); },
   toggle:o => { tone(o, 1200, 0, .025, .07); tone(o, 1600, .045, .03, .07); },
   close:o => tone(o, 900, 0, .05, .05, 'sine', 650),
