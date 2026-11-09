@@ -49,7 +49,7 @@ const W = +(process.env.W || 375), SCHEME = process.env.SCHEME || 'dark';
     await tap('.tab[data-v="log"]'); await tap('[data-act="openWorkout"]'); await p.evaluate(() => { const m = document.querySelector('.wmap'); m && m.scrollIntoView(); }); await shot('06-workout-map'); await esc();
     // female body
     await tap('.ph-act [data-act="settings"]'); await esc(); await tap('.ava-btn'); await tap('[data-act="setBody"][data-v="f"]'); await esc();
-    await tap('.tab[data-v="progress"]'); await p.evaluate(() => { const r = document.querySelector('.rec'); r && r.scrollIntoView(); }); await shot('07-female');
+    await tap('.tab[data-v="log"]'); await tap('.train-seg [data-v="progress"]'); await p.evaluate(() => { const r = document.querySelector('.rec'); r && r.scrollIntoView(); }); await shot('07-female');
   } catch (e) { errs.push('TEST ' + e.message); }
   console.log('ERRORS', JSON.stringify(errs, null, 1));
   await b.close(); srv.kill();

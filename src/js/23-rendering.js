@@ -37,17 +37,17 @@ function render0() {
 }
 function buildNav() {
   const tabs = tabsNow(), tb = $('#tabbar'); tb.dataset.sig = tabs.map(t => t[0]).join(); tb.style.setProperty('--n', tabs.length);
-  const b = (cls, [v, l, ic]) => `<button class="${cls}" data-act="nav" data-v="${v}">${icon(ic)}<span>${l}</span><i class="badge" hidden aria-label="идёт тренировка"></i>${v === 'chat' ? '<i class="cnt" hidden></i>' : ''}</button>`;
+  const b = (cls, [v, l, ic]) => `<button class="${cls}" data-act="nav" data-v="${v}">${icon(ic)}<span>${l}</span><i class="badge" hidden aria-label="идёт тренировка"></i>${v === 'more' ? '<i class="cnt" hidden></i>' : ''}</button>`;
   tb.innerHTML = '<span class="tab-ind" aria-hidden="true"></span>' + tabs.map(t => b('tab', t)).join('');
   $('#rail-links').innerHTML = '<span class="rail-ind" aria-hidden="true"></span>' + tabs.map(t => b('rlink', t)).join('');
 }
 function renderNav() {
   if ($('#tabbar').dataset.sig !== tabsNow().map(t => t[0]).join()) buildNav();
-  const cur = S.view === 'editor' ? 'log' : S.view;
+  const cur = tabOf(S.view);
   $$('.tab,.rlink').forEach(b => {
     if (b.dataset.v === cur) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
     const bd = b.querySelector('.badge'); if (bd) bd.hidden = !(b.dataset.v === 'today' && S.active && cur !== 'today');
-    const cn = b.querySelector('.cnt'); if (cn) { const n = cur === 'chat' ? 0 : chatUnread(); cn.hidden = !n; cn.textContent = n > 9 ? '9+' : String(n); cn.setAttribute('aria-label', n + ' непрочитанных'); }
+    const cn = b.querySelector('.cnt'); if (cn) { const n = S.view === 'chat' ? 0 : chatUnread(); cn.hidden = !n; cn.textContent = n > 9 ? '9+' : String(n); cn.setAttribute('aria-label', n + ' непрочитанных'); }
   });
   moveInd();
   const p = curProf();
@@ -69,6 +69,9 @@ function viewHTML() {
   if (S.view === 'body') return viewBody();
   if (S.view === 'chat') return viewChat();
   if (S.view === 'supp') return viewSupp();
+  if (S.view === 'path') return viewPath();
+  if (S.view === 'hero') return viewHero();
+  if (S.view === 'more') return viewMore();
   return viewToday();
 }
 function headHTML(title, eyebrow, extra = '') {
@@ -137,14 +140,14 @@ function viewToday() {
   const sum = thisWeek.length ? `${a.n} ${plural(a.n, ['тренировка','тренировки','тренировок'])} · ${ton(a.vol)} · ${fmtDur(a.dur)}` : 'На этой неделе тренировок пока нет';
   const tpls = S.profile.templates, last = S.workouts[0];
   return `${headHTML(title, eb)}
-    ${dbgHTML()}${hungerHTML()}${heroHTML()}
+    ${dbgHTML()}${hungerHTML()}${heroMini()}${dayCardHTML()}
     <section class="week" aria-label="Эта неделя">${days}</section>
     <p class="week-sum">${sum}</p>
     ${planTodayHTML()}<button class="btn btn-primary btn-lg btn-block start" data-act="startEmpty">${icon('play', 'ic-f')} Начать тренировку</button>
+    ${habCardHTML()}
     ${reportBanner()}${weekBanner()}${bannersHTML()}
     ${supCardHTML()}
     ${recCardHTML()}
-    ${questsHTML()}
     ${pairCard()}
     <section class="sec"><div class="sec-head"><h2 class="h2">Программы</h2>${S.profile.templates.length ? `<button class="btn btn-sm btn-ghost" data-act="planOpen">${icon('today')} План недели</button>` : ''}</div>
       <div class="progs">${tpls.map(progCard).join('')}<button class="prog prog-new" data-act="tplNew">${icon('plus')}<span>Новая программа</span><small>Набор упражнений с подходами, чтобы начинать тренировку в одно касание</small></button><button class="prog prog-new" data-act="presetsOpen">${icon('log')}<span>Готовые программы</span><small>Фулбоди, верх/низ, тяни-толкай, дома</small></button></div>
@@ -321,7 +324,7 @@ function jrow(w, i = 0) {
 }
 function viewLog() {
   const add = `<button class="btn btn-sm" data-act="addPast" aria-label="Записать прошедшую тренировку">${icon('plus')}<span class="ph-l">Прошедшая</span></button>`;
-  const head = headHTML('Журнал', S.workouts.length ? `${S.workouts.length} ${plural(S.workouts.length, ['тренировка','тренировки','тренировок'])}` : 'Все тренировки', add);
+  const head = headHTML('Журнал', S.workouts.length ? `${S.workouts.length} ${plural(S.workouts.length, ['тренировка','тренировки','тренировок'])}` : 'Все тренировки', add) + trainSeg();
   if (!ready()) return head + loadingHTML();
   if (!S.workouts.length) return `${head}<div class="empty"><h3>Здесь появятся ваши тренировки</h3><p>Начните тренировку на вкладке «Сегодня» или запишите ту, что уже прошла.</p><button class="btn btn-primary" data-act="nav" data-v="today">${icon('play', 'ic-f')} К тренировке</button></div>`;
   const q = normQ(S.logQ).trim(), words = q.split(/\s+/).filter(Boolean), list = words.length ? S.workouts.filter(w => logMatch(w, words)) : S.workouts;
@@ -372,7 +375,7 @@ function muscleLoadHTML() {
 function viewProgress() {
   const P = S.prog, per = PERIODS[P.period] || PERIODS['90'];
   const seg = `<div class="seg" role="group" aria-label="Период">${Object.entries(PERIODS).map(([k, v]) => `<button data-act="period" data-p="${k}" aria-pressed="${P.period === k}">${v.l}</button>`).join('')}</div>`;
-  const head = headHTML('Прогресс', 'Уровень, нагрузка и рекорды');
+  const head = headHTML('Прогресс', 'Уровень, нагрузка и рекорды') + trainSeg();
   if (!ready()) return head + loadingHTML();
   if (!S.workouts.length) return `${head}${awardsPanel()}<div class="empty" style="margin-top:20px"><h3>Графики появятся после первых тренировок</h3><p>Здесь будет видно, как растут веса, объём и регулярность, а ещё — свежие рекорды.</p><button class="btn btn-primary" data-act="nav" data-v="today">${icon('play', 'ic-f')} К тренировке</button></div>`;
   const now = Date.now(), from = per.d ? now - per.d * DAY : 0, pfrom = per.d ? now - 2 * per.d * DAY : 0;

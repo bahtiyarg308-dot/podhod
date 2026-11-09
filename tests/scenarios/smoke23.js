@@ -45,8 +45,8 @@ const SEED = require('path').join(__dirname, '..', 'fixtures', 'seed.json');
     await N.tap('[data-act="setMode"][data-v="pair"]'); await N.esc();
     console.log('after switching to pair, tabs:', await N.tabs(), '| pair banner:', !!(await N.$('.banner [data-act="syncSetup"]')));
     console.log('sound: tab nav ->', await N.snd('.tab[data-v="log"]'));
-    console.log('sound: companion tap ->', await N.snd('.tab[data-v="today"]') , await N.snd('.ch-btn.mate', 800)); await N.esc();
-    console.log('sound: chest shake+open ->', await N.snd('.chestbtn'), await N.snd('.sheet-foot .btn-primary', 1800)); await N.esc();
+    console.log('sound: companion tap ->', await N.snd('.tab[data-v="hero"]') , await N.snd('.ch-btn.mate', 800)); await N.esc();
+    console.log('sound: chest shake+open ->', await N.snd('.chestbtn'), await N.snd('.sheet-foot .btn-primary', 1800)); await N.esc(); await N.tap('.tab[data-v="today"]');
     // workout sounds
     await N.tap('[data-act="startEmpty"]'); await N.tap('[data-act="addEx"]'); await N.tap('.pick-row'); await N.tap('[data-act="pickConfirm"]');
     const ins = await N.$$('.set-in'); await ins[0].fill('60'); await ins[1].fill('8');
@@ -55,7 +55,7 @@ const SEED = require('path').join(__dirname, '..', 'fixtures', 'seed.json');
     // sounds off -> silence
     await N.tap('.tab[data-v="log"]'); await N.tap('.ph-act [data-act="settings"]'); await N.tap('[data-act="sndToggle"]');
     await N.esc();
-    console.log('sound OFF: nav ->', await N.snd('.tab[data-v="progress"]'), '| set done ->', await (async () => { await N.tap('.tab[data-v="today"]'); return N.snd('.set-row:nth-of-type(2) [data-act="setDone"]'); })());
+    console.log('sound OFF: nav ->', await N.snd('.tab[data-v="path"]'), '| set done ->', await (async () => { await N.tap('.tab[data-v="today"]'); return N.snd('.set-row:nth-of-type(2) [data-act="setDone"]'); })());
     await N.tap('.tab[data-v="log"]');
     await N.tap('.ph-act [data-act="settings"]'); await N.tap('[data-act="setMode"][data-v="solo"]'); await N.esc();
     console.log('back to solo tabs:', await N.tabs());

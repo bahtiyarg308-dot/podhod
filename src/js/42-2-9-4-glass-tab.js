@@ -5,7 +5,7 @@
   const PAD = 4, geo = () => { const r = tb.getBoundingClientRect(), n = tb.querySelectorAll('.tab').length || 1; return { l:r.left + PAD, w:(r.width - 2 * PAD) / n, n }; };
   const idxAt = x => { const g = geo(); return Math.max(0, Math.min(g.n - 1, Math.floor((x - g.l) / g.w))); };
   const fracAt = x => { const g = geo(); return Math.max(0, Math.min(g.n - 1, (x - g.l) / g.w - .5)); };
-  const go2 = () => { if (!st) return; st.raf = 0; const v = (tabsNow()[st.idx] || [])[0]; if (v && v !== S.view) go(v); };
+  const go2 = () => { if (!st) return; st.raf = 0; const v = (tabsNow()[st.idx] || [])[0]; if (v && v !== tabOf(S.view)) go(v); };
   tb.addEventListener('pointerdown', e => {
     if ((e.pointerType === 'mouse' && e.button > 0) || !e.target.closest('.tab') || S.sheets.length) return;
     st = { id:e.pointerId, x0:e.clientX, moved:false, idx:idxAt(e.clientX), raf:0 };

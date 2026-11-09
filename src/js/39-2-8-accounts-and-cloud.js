@@ -96,6 +96,7 @@ function mergeCloudProfile(local, remote, dirty) {
   ['templates', 'custom', 'body', 'meas', 'supps'].forEach(k => { const have = new Set(l[k].map(o => o && o.id)); r[k].forEach(o => { if (o && o.id && !have.has(o.id)) l[k].push(o); }); });
   Object.entries(r.slog || {}).forEach(([k, v]) => { if (Array.isArray(v)) l.slog[k] = [...new Set([...(l.slog[k] || []), ...v])]; });
   l.sfull = [...new Set([...l.sfull, ...r.sfull])].sort();
+  habMerge(l, r);
   r.freeze.forEach(f => { if (f && Number.isFinite(f.from) && !l.freeze.some(x => x.from === f.from)) l.freeze.push(f); });
   l.deleted = [...new Set([...l.deleted, ...r.deleted])];
   l.kudos = Object.assign({}, r.kudos, l.kudos);

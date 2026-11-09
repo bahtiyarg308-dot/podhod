@@ -24,7 +24,7 @@ const SERVER = require('../lib/server'), SITE = process.env.SITE, SEED = require
   say('4 started a ready program:', await p.$$eval('.xcard', e => e.length), 'exercises |', await p.$$eval('.xcard .xname, .xcard h3, .xcard b', e => e.slice(0, 3).map(x => x.innerText).join(' / ')));
   await tap('[data-act="discardOpen"]', 400); await tap('[data-act="discardConfirm"]', 700);
   // weekly summary
-  await tap('.tab[data-v="progress"]', 900); await tap('[data-act="weekOpen"]', 700);
+  await tap('.tab[data-v="log"]', 400); await tap('.train-seg [data-v="progress"]', 900); await tap('[data-act="weekOpen"]', 700);
   say('5 week sheet:', await txt('#sheet-title'), '|', (await txt('.sheet .kv') || '').slice(0, 80)); say('5 bullets:', (await txt('.sheet .pr-list') || '').slice(0, 160));
   await tap('[data-act="weekShift"][data-d="-1"]', 400); say('5 previous week:', (await txt('.sheet .sup-day') || '').slice(0, 40), '|', (await txt('.sheet .kv') || '').slice(0, 50));
   await p.keyboard.press('Escape'); await p.waitForTimeout(400);

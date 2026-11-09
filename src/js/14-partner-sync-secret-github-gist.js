@@ -25,7 +25,7 @@ function payload(pid) {
   const prof = normP(d.profile), share = shareBodyOn();
   return { v:1, id:p.sid, acc:(accOf(pid) || {}).uid, dev:devId(), name:p.name || '', color:p.color || 'red', char:charOf(p),
     profile:{ goal:prof.goal, custom:prof.custom, body: share ? prof.body : [], meas: share ? prof.meas : [], gear:prof.gear, freeze:prof.freeze.slice(-24),
-      chest: prof.chest ? { v:1, at:prof.chest.at, st:prof.chest.st, op:prof.chest.op, buy:prof.chest.buy, old:prof.chest.old || 0, rk:prof.chest.rk, gift:prof.chest.gift } : undefined, sx:supShared(prof) },
+      chest: prof.chest ? { v:1, at:prof.chest.at, st:prof.chest.st, op:prof.chest.op, buy:prof.chest.buy, old:prof.chest.old || 0, rk:prof.chest.rk, gift:prof.chest.gift } : undefined, sx:supShared(prof) + habShared(prof) },
     workouts:(d.workouts || []).map(w => clean(w)), deleted:prof.deleted.slice(-800), kudos:prof.kudos,
     live: d.active ? { start:d.active.start, title:d.active.title || '' } : null };
 }
@@ -39,7 +39,7 @@ function validMember(m) {
     pf.freeze = Array.isArray(pf.freeze) ? pf.freeze.filter(f => f && Number.isFinite(f.from) && Number.isFinite(f.to)).slice(-24) : [];
     if (!pf.chest || typeof pf.chest !== 'object' || !pf.chest.op || typeof pf.chest.op !== 'object' || Array.isArray(pf.chest.op)) delete pf.chest;
     else { if (!Array.isArray(pf.chest.st)) pf.chest.st = []; pf.chest.st = pf.chest.st.filter(x => typeof x === 'string'); pf.chest.buy = Array.isArray(pf.chest.buy) ? pf.chest.buy.filter(b => b && typeof b.id === 'string' && Number.isFinite(b.at)) : []; }
-    pf.sx = Number.isFinite(pf.sx) ? Math.max(0, pf.sx) : 0; delete pf.supps; delete pf.slog; delete pf.sfull; }
+    pf.sx = Number.isFinite(pf.sx) ? Math.max(0, pf.sx) : 0; delete pf.supps; delete pf.slog; delete pf.sfull; delete pf.habits; delete pf.hlog; delete pf.hfull; }
   m.kudos = m.kudos && typeof m.kudos === 'object' ? m.kudos : {};
   m.deleted = Array.isArray(m.deleted) ? m.deleted : [];
   if (!COLORS[m.color]) m.color = 'blue';

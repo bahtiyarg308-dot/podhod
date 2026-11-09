@@ -1,5 +1,5 @@
 /* ================= derived history ================= */
-function derive() { D = deriveFrom(S.workouts); }
+function derive() { D = deriveFrom(S.workouts); habSyncAuto(); }
 function deriveFrom(list) {
   const asc = [...(list || [])].sort((a, b) => a.start - b.start);
   const hist = {}, best = {}, prSets = {}, prCount = {}, prEvents = [], usage = {};

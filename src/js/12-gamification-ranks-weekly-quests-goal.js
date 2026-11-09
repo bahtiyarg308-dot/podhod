@@ -127,7 +127,7 @@ const BADGES = [
   ['gift7','Неделя подарков','Забрать 7 подарков дня','@gift', s => s.gifts >= 7],
 ];
 function unlockedBadges(st = gameStats()) { return BADGES.filter(b => b[4](st)).map(b => b[0]); }
-function totalXP(st = gameStats(), c = ctxLocal()) { return c.workouts.reduce((a, w) => a + workoutXP(w, c.D), 0) + st.goalWeeks * 60 + unlockedBadges(st).length * 30 + st.questXP + (c.local ? supXP(c.profile) : Math.max(0, Math.min(1e6, +c.profile.sx || 0))); }
+function totalXP(st = gameStats(), c = ctxLocal()) { return c.workouts.reduce((a, w) => a + workoutXP(w, c.D), 0) + st.goalWeeks * 60 + unlockedBadges(st).length * 30 + st.questXP + (c.local ? supXP(c.profile) + habXP(c.profile) : Math.max(0, Math.min(1e6, +c.profile.sx || 0))); }
 function medalHTML(b, i, unlocked, isNew, row) {
   const g = b[3].startsWith('@') ? icon(b[3].slice(1)) : esc(b[3]);
   const circ = `<span class="medal-c">${unlocked ? g : (b[3].startsWith('@') ? icon(b[3].slice(1)) : esc(b[3]))}</span>`;

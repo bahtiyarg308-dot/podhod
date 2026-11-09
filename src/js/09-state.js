@@ -1,5 +1,5 @@
 /* ================= state ================= */
-const DEFAULT_PROFILE = { rest:90, sound:true, bar:20, goal:3, rirAsk:true, templates:[], custom:[], body:[], meas:[], deleted:[], kudos:{}, gear:{}, freeze:[], supps:[], slog:{}, sfull:[] };
+const DEFAULT_PROFILE = { rest:90, sound:true, bar:20, goal:3, rirAsk:true, templates:[], custom:[], body:[], meas:[], deleted:[], kudos:{}, gear:{}, freeze:[], supps:[], slog:{}, sfull:[], habits:[], hlog:{}, hfull:[] };
 const S = {
   mode:'loading', loaded:{ profile:false, workouts:false, active:false }, metaLoaded:false,
   meta:null, pid:'main', store:{},
@@ -24,9 +24,10 @@ function normP(d) {
   const p = Object.assign(clone(DEFAULT_PROFILE), d ? clone(d) : {});
   if (typeof p.body === 'string') { if (!p.sex && (p.body === 'f' || p.body === 'm')) p.sex = p.body; p.bodyLost = 1; }
   if (p.sex !== 'f' && p.sex !== 'm') delete p.sex;
-  ['templates','custom','body','meas','deleted','freeze','supps','sfull'].forEach(k => { if (!Array.isArray(p[k])) p[k] = []; });
-  ['kudos','gear','slog','plan','rx'].forEach(k => { if (!p[k] || typeof p[k] !== 'object' || Array.isArray(p[k])) p[k] = {}; });
+  ['templates','custom','body','meas','deleted','freeze','supps','sfull','habits','hfull'].forEach(k => { if (!Array.isArray(p[k])) p[k] = []; });
+  ['kudos','gear','slog','plan','rx','hlog'].forEach(k => { if (!p[k] || typeof p[k] !== 'object' || Array.isArray(p[k])) p[k] = {}; });
   p.supps = p.supps.filter(x => x && x.id && typeof x.name === 'string');
+  p.habits = p.habits.filter(x => x && x.id && typeof x.name === 'string');
   if (p.chest && (typeof p.chest !== 'object' || !p.chest.op || typeof p.chest.op !== 'object')) delete p.chest;
   if (p.chest) { if (!Array.isArray(p.chest.st)) p.chest.st = []; if (!Array.isArray(p.chest.buy)) p.chest.buy = []; }
   if (!(p.goal >= 1 && p.goal <= 7)) p.goal = 3;

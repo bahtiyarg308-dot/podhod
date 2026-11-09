@@ -66,7 +66,7 @@ const W = +(process.env.W || 375), SCHEME = process.env.SCHEME || 'dark', N = +(
     // open all + wardrobe, equip something then delete its workout
     await tap('[data-act="dbgChests"]'); await tap('[data-act="dbgOpenAll"]');
     const g = await p.evaluate(() => { const out = []; return out; });
-    await tap('.ch-btn.mate'); await p.waitForTimeout(600); await shot('13-ward');
+    await tap('.tab[data-v="hero"]'); await tap('.ch-btn.mate'); await p.waitForTimeout(600); await shot('13-ward');
     await esc();
     console.log('final', JSON.stringify(await state()));
   } catch (e) { errs.push('TEST ERROR ' + e.message); }

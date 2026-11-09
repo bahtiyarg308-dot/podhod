@@ -52,7 +52,7 @@ const SHOTS = process.env.SHOTS !== '0', SEX = process.env.SEX || '';
         const cb = clipOf(el), vis2 = Math.min(q.right, cb.x1) - Math.max(q.left, cb.x0) > 2;
         if (vis2 && (Math.min(q.right, cb.x1) > innerWidth + 1 || Math.max(q.left, cb.x0) < -1)) out.push(`offscreen «${txt}» ${Math.round(q.left)}..${Math.round(q.right)}`);
         // text cut without an ellipsis: visible part is narrower than the text and the clipping box has no text-overflow
-        if (vis2 && q.right > cb.x1 + 2 && q.left < cb.x1) { let e = el, ell = false; for (; e && e !== document.body; e = e.parentElement) { if (getComputedStyle(e).textOverflow === 'ellipsis') { ell = true; break; } } if (!ell) out.push(`clipped «${txt}» ${Math.round(q.right - cb.x1)}px`); }
+        if (vis2 && q.right > cb.x1 + 2 && q.left < cb.x1) { let e = el, ell = false; for (; e && e !== document.body; e = e.parentElement) { { const cs = getComputedStyle(e); if (cs.textOverflow === 'ellipsis' || /(auto|scroll)/.test(cs.overflowX)) { ell = true; break; } } } if (!ell) out.push(`clipped «${txt}» ${Math.round(q.right - cb.x1)}px`); }
       }
       const de = document.documentElement; if (de.scrollWidth > de.clientWidth + 1) out.push(`page h-scroll ${de.scrollWidth}>${de.clientWidth}`);
       return [...new Set(out)].slice(0, 30);
@@ -73,23 +73,28 @@ const SHOTS = process.env.SHOTS !== '0', SEX = process.env.SEX || '';
     const t0 = Date.now();
     console.log('tabs:', await tabs());
     await audit('today'); await shot('01-today'); await shot('01b-today-full', { full: true });
-    for (const v of ['log', 'progress', 'supp', 'chat', 'body']) {
-      const ok = await tap(`.tab[data-v="${v}"]`, { opt: v === 'chat' && MODE === 'solo', w: 650 }); if (!ok) continue;
+    const HOME = { progress:'log', supp:'more', chat:'more', body:'more' };
+    for (const v of ['path', 'log', 'progress', 'hero', 'more', 'supp', 'chat', 'body']) {
+      let ok = true;
+      if (HOME[v]) { await tap(`.tab[data-v="${HOME[v]}"]`, { w: 400 }); ok = await tap(HOME[v] === 'log' ? `.train-seg [data-v="${v}"]` : `.more-row[data-v="${v}"]`, { opt: v === 'chat' && MODE === 'solo', w: 650 }); }
+      else ok = await tap(`.tab[data-v="${v}"]`, { w: 650 });
+      if (!ok) continue;
       const cur = await p.evaluate(() => document.querySelector('.tab[aria-current]') && document.querySelector('.tab[aria-current]').dataset.v);
-      if (cur !== v) errs.push(`tab ${v} did not open (current ${cur})`);
+      if (cur !== (HOME[v] || v)) errs.push(`tab ${v} did not open (current ${cur})`);
       await audit(v); await shot('02-' + v); await shot('02-' + v + '-full', { full: true });
       if (v === 'body') { for (const t of ['m', 'p', 'w']) { await tap(`[data-act="bodyTab"][data-t="${t}"]`); await audit('body-' + t); } }
       if (v === 'progress') console.log('tabs@progress:', await tabs());
     }
-    await tap('.tab[data-v="today"]', { w: 650 });
-    // sheets
-    const sheets = [['awards', '[data-act="awards"]'], ['companion', '[data-act="comp"],[data-act="companion"],.comp-ava,.cmp-ava'], ['settings', '.ph-act [data-act="settings"]'], ['profiles', '.ava-btn']];
+    await tap('.tab[data-v="hero"]', { w: 650 });
+    // sheets (awards and the companion live on the Hero tab)
+    const sheets = [['awards', '[data-act="awards"]'], ['companion', '[data-act="mate"]'], ['settings', '.ph-act [data-act="settings"]'], ['profiles', '.ava-btn']];
     for (const [n, sel] of sheets) {
       const el = await p.$(sel); if (!el) { issues.push('no trigger for ' + n); continue; }
       await el.click(); await wait(700); await audit('sheet-' + n); await shot('03-' + n); await shot('03-' + n + '-full', { full: true });
       if (n === 'awards') { await p.evaluate(() => { const s = document.querySelector('#sheet-root .sheet-body'); s && (s.scrollTop = 99999); }); await wait(200); await shot('03-awards-end'); }
       await esc();
     }
+    await tap('.tab[data-v="today"]', { w: 650 });
     // workout flow
     await tap('[data-act="startEmpty"]', { opt: true }); await audit('live'); await shot('04-live');
     await tap('[data-act="addEx"]', { opt: true }); await audit('picker'); await shot('05-picker');

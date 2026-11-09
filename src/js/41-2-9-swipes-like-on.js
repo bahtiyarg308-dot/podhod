@@ -4,7 +4,7 @@
    Not in fields, charts, scrolling strips, the rest bar, the chat composer or while a sign-in screen is shown. */
 function swipeTab(dir) {
   if (S.view === 'editor' || S.sheets.length) return;
-  const ids = tabsNow().map(t => t[0]), i = ids.indexOf(S.view), n = i < 0 ? null : ids[i + dir]; if (!n) return;
+  const ids = tabsNow().map(t => t[0]), i = ids.indexOf(tabOf(S.view)), n = i < 0 ? null : ids[i + dir]; if (!n) return;
   buzz(6); sfx('tab'); go(n);
   if (!RM) { const m = $('#main'); try { m.animate([{ transform:`translateX(${dir * 36}px)`, opacity:.35 }, { transform:'none', opacity:1 }], { duration:240, easing:'cubic-bezier(.2,.8,.2,1)' }); } catch (e) { /* no animations API */ } }
 }

@@ -30,8 +30,8 @@ const W = +(process.env.W || 375), SCHEME = process.env.SCHEME || 'dark';
     await p.reload(); await p.waitForTimeout(1500);
     console.log('first sheet:', (await info()).title); await shot('01-news');
     await esc(); console.log('home:', JSON.stringify(await info())); await shot('02-home');
-    await tap('.giftbtn'); console.log('after gift:', JSON.stringify(await info()));
-    await tap('.ch-btn.mate'); await p.waitForTimeout(600);
+    await tap('.tab[data-v="hero"]'); await tap('.giftbtn'); console.log('after gift:', JSON.stringify(await info()));
+    await tap('.tab[data-v="hero"]'); await tap('.ch-btn.mate'); await p.waitForTimeout(600);
     console.log('wardrobe:', await p.$eval('.wstat b', e => e.textContent), '| slot chips:', await p.$$eval('.slots .chip', e => e.map(x => x.textContent).join(', ')));
     await shot('03-ward'); await tap('[data-act="shop"]'); await shot('04-shop');
     console.log('shop sections:', await p.$$eval('.sheet .sblock > b', e => e.map(x => x.textContent).join(' | ')));
@@ -41,7 +41,7 @@ const W = +(process.env.W || 375), SCHEME = process.env.SCHEME || 'dark';
     // push towards the next rank with debug workouts (one per day)
     let rank = null;
     for (let i = 0; i < 40 && !rank; i++) {
-      await tap('[data-act="dbgDay"][data-d="1"]'); await tap('[data-act="dbgWorkout"]'); await p.waitForTimeout(2600);
+      await tap('.tab[data-v="today"]'); await tap('[data-act="dbgDay"][data-d="1"]'); await tap('[data-act="dbgWorkout"]'); await p.waitForTimeout(2600);
       const t = await p.evaluate(() => [...document.querySelectorAll('#sheet-title')].map(e => e.textContent).join('|'));
       if (/./.test(t) && await p.$('.rank-hero')) { rank = t; break; }
       await esc(); await tap('.tab[data-v="today"]');

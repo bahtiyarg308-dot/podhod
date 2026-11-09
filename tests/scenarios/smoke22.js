@@ -45,7 +45,7 @@ const W = +(process.env.W || 375), SCHEME = process.env.SCHEME || 'dark', LAG = 
     await tap('.sheet-foot [data-act="chestWear"]');
     for (let i = 0; i < 3; i++) if (await p.$('.sheet')) { await p.keyboard.press('Escape'); await p.waitForTimeout(350); }
     await shot('05-today', true);
-    await tap('.ch-btn.mate'); await p.waitForTimeout(700);
+    await tap('.tab[data-v="hero"]'); await tap('.ch-btn.mate'); await p.waitForTimeout(700);
     await shot('06-wardrobe');
     const own = await p.$$('.tiles .tile:not(.lock)');
     if (own[1]) { await own[1].click(); await p.waitForTimeout(400); }
@@ -53,7 +53,7 @@ const W = +(process.env.W || 375), SCHEME = process.env.SCHEME || 'dark', LAG = 
     await tap('[data-act="shop"]'); await shot('08-shop');
     await p.keyboard.press('Escape'); await p.waitForTimeout(300); await p.keyboard.press('Escape'); await p.waitForTimeout(300);
     // supplements tab
-    await tap('.tab[data-v="supp"]'); await shot('09-supp-empty', true);
+    await tap('.tab[data-v="more"]'); await tap('.more-row[data-v="supp"]'); await shot('09-supp-empty', true);
     await tap('[data-act="supQuick"][data-i="0"]'); await shot('10-supp-edit');
     await p.fill('#sup-stock', '300'); await tap('[data-act="supSave"]');
     await tap('[data-act="supNew"]'); await p.fill('#sup-name', 'Витамин D'); await p.fill('#sup-dose', '2000'); await tap('[data-act="supSet"][data-f="unit"][data-v="МЕ"]'); await tap('[data-act="supDayT"][data-v="1"]'); await tap('[data-act="supDayT"][data-v="3"]'); await tap('[data-act="supDayT"][data-v="5"]'); await tap('[data-act="supSave"]');
@@ -66,7 +66,7 @@ const W = +(process.env.W || 375), SCHEME = process.env.SCHEME || 'dark', LAG = 
     // settings: freeze
     await tap('[data-act="settings"]'); const fz = await p.$('[data-act="freezeOn"]'); if (fz) { await fz.scrollIntoViewIfNeeded(); } await shot('16-settings');
     await p.keyboard.press('Escape'); await p.waitForTimeout(300);
-    await tap('[data-act="awards"]'); await shot('17-awards'); await p.keyboard.press('Escape');
+    await tap('.tab[data-v="hero"]'); await tap('[data-act="awards"]'); await shot('17-awards'); await p.keyboard.press('Escape');
     const st = await p.evaluate(() => { const r = {}; return r; });
   } catch (e) { errs.push('TEST ERROR ' + e.message); }
   console.log('ERRORS', JSON.stringify(errs, null, 1));

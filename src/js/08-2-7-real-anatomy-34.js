@@ -245,6 +245,8 @@ const exById = id => EXMAP[id] || (S.profile.custom || []).find(e => e.id === id
 const allExercises = () => [...BUILTIN, ...(S.profile.custom || [])];
 const FEELS = [[1,'Легко'],[2,'Нормально'],[3,'Тяжело'],[4,'На пределе']];
 const PERIODS = { '28':{ l:'4 недели', d:28 }, '90':{ l:'3 месяца', d:90 }, '365':{ l:'Год', d:365 }, 'all':{ l:'Всё время', d:0 } };
-const VIEWS = ['today','log','progress','chat','body','supp'];
-const TABS = [['today','Сегодня','today'],['log','Журнал','log'],['progress','Прогресс','progress'],['supp','Добавки','pill'],['chat','Чат','chat'],['body','Тело','body']];
+const VIEWS = ['today','path','log','progress','hero','more','chat','body','supp'];
+const TABS = [['today','Сегодня','today'],['path','Путь','repeat'],['log','Тренировки','log'],['hero','Герой','shield'],['more','Ещё','more']];
+const TAB_OF = { editor:'log', progress:'log', body:'more', supp:'more', chat:'more' }; // sub-screens belong to a tab
+const tabOf = v => TAB_OF[v] || v;
 

@@ -1414,6 +1414,32 @@ html[data-oled="1"][data-look="noir"]:not([data-theme="light"]){--bg:#000;--surf
 .preset-d b{display:block;margin-bottom:4px;font-size:14px}
 .preset-d ol{margin:0;padding-left:20px;color:var(--ink-2);font-size:14px;line-height:1.6}
 .preset-d li span{color:var(--muted);font:11.5px var(--f-mono);margin-left:4px;white-space:nowrap}
+/* ===== 3.1: habits, plan of the day, «Герой» / «Ещё» ===== */
+.train-seg{display:flex;width:100%;margin:0 0 12px}.train-seg button{flex:1}
+.day-card{display:flex;align-items:center;gap:14px;padding:12px 14px;margin:12px 0 4px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.dring{flex:none}.dring-t{font:500 15px var(--f-head,inherit);fill:var(--ink)}
+.dc-t b{display:block;font-size:17px}.dc-t span{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.day-card.full .dring circle:last-of-type{stroke:var(--good,var(--accent))}
+.hmini{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;padding:8px 12px 8px 8px;margin:4px 0 0;border:1px solid var(--line);border-radius:16px;background:var(--surface);text-align:left}
+.hmini .ch{width:44px;height:44px;pointer-events:none}.hm-t b{display:block;font-size:14.5px}
+.hab-row{grid-template-columns:44px minmax(0,1fr) auto}
+.hab-row .sup-check{border-color:color-mix(in oklab,var(--hc,var(--line)) 55%,var(--line));color:var(--hc,var(--muted))}
+.hab-row.on .sup-check{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.hab-row .sup-check:disabled{opacity:.75}
+.hab-dots{display:flex;gap:3px;align-items:center}.hab-dots i{width:6px;height:14px;border-radius:3px;background:var(--surface-2)}
+.hab-dots i.on{background:var(--hc,var(--accent))}.hab-dots i.miss{background:color-mix(in oklab,var(--muted) 35%,var(--surface-2));opacity:.6}
+.hab-ics{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:6px}
+.hab-ic{display:grid;place-items:center;height:40px;border-radius:12px;border:1px solid var(--line);color:var(--ink-2)}
+.hab-ic[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.hab-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:1px}
+.hab-new{min-height:84px}
+.more-list{display:grid;gap:8px}
+.more-row{display:grid;grid-template-columns:26px minmax(0,1fr) auto auto;gap:14px;align-items:center;width:100%;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--surface);text-align:left}
+.more-row b{display:block;font-size:15px}.more-row small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.more-row .cnt{position:static;min-width:20px;height:20px;border-radius:10px;padding:0 6px;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font:600 11px var(--f-mono,inherit)}
+.more-row>.ic:last-child{color:var(--muted);width:18px;height:18px}
+@media(max-width:340px){.hab-ics{grid-template-columns:repeat(6,1fr)}.hab-dots i{width:5px}}
+@media(max-width:340px){.tab{font-size:9px;letter-spacing:-.04em}}
 </style>
 </head>
 <body>
@@ -1435,7 +1461,7 @@ html[data-oled="1"][data-look="noir"]:not([data-theme="light"]){--bg:#000;--surf
 <script>
 (() => {
 'use strict';
-const APP_VERSION = '3.0.0';
+const APP_VERSION = '3.1.0';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -2207,11 +2233,13 @@ const exById = id => EXMAP[id] || (S.profile.custom || []).find(e => e.id === id
 const allExercises = () => [...BUILTIN, ...(S.profile.custom || [])];
 const FEELS = [[1,'Легко'],[2,'Нормально'],[3,'Тяжело'],[4,'На пределе']];
 const PERIODS = { '28':{ l:'4 недели', d:28 }, '90':{ l:'3 месяца', d:90 }, '365':{ l:'Год', d:365 }, 'all':{ l:'Всё время', d:0 } };
-const VIEWS = ['today','log','progress','chat','body','supp'];
-const TABS = [['today','Сегодня','today'],['log','Журнал','log'],['progress','Прогресс','progress'],['supp','Добавки','pill'],['chat','Чат','chat'],['body','Тело','body']];
+const VIEWS = ['today','path','log','progress','hero','more','chat','body','supp'];
+const TABS = [['today','Сегодня','today'],['path','Путь','repeat'],['log','Тренировки','log'],['hero','Герой','shield'],['more','Ещё','more']];
+const TAB_OF = { editor:'log', progress:'log', body:'more', supp:'more', chat:'more' }; // sub-screens belong to a tab
+const tabOf = v => TAB_OF[v] || v;
 
 /* ================= state ================= */
-const DEFAULT_PROFILE = { rest:90, sound:true, bar:20, goal:3, rirAsk:true, templates:[], custom:[], body:[], meas:[], deleted:[], kudos:{}, gear:{}, freeze:[], supps:[], slog:{}, sfull:[] };
+const DEFAULT_PROFILE = { rest:90, sound:true, bar:20, goal:3, rirAsk:true, templates:[], custom:[], body:[], meas:[], deleted:[], kudos:{}, gear:{}, freeze:[], supps:[], slog:{}, sfull:[], habits:[], hlog:{}, hfull:[] };
 const S = {
   mode:'loading', loaded:{ profile:false, workouts:false, active:false }, metaLoaded:false,
   meta:null, pid:'main', store:{},
@@ -2236,9 +2264,10 @@ function normP(d) {
   const p = Object.assign(clone(DEFAULT_PROFILE), d ? clone(d) : {});
   if (typeof p.body === 'string') { if (!p.sex && (p.body === 'f' || p.body === 'm')) p.sex = p.body; p.bodyLost = 1; }
   if (p.sex !== 'f' && p.sex !== 'm') delete p.sex;
-  ['templates','custom','body','meas','deleted','freeze','supps','sfull'].forEach(k => { if (!Array.isArray(p[k])) p[k] = []; });
-  ['kudos','gear','slog','plan','rx'].forEach(k => { if (!p[k] || typeof p[k] !== 'object' || Array.isArray(p[k])) p[k] = {}; });
+  ['templates','custom','body','meas','deleted','freeze','supps','sfull','habits','hfull'].forEach(k => { if (!Array.isArray(p[k])) p[k] = []; });
+  ['kudos','gear','slog','plan','rx','hlog'].forEach(k => { if (!p[k] || typeof p[k] !== 'object' || Array.isArray(p[k])) p[k] = {}; });
   p.supps = p.supps.filter(x => x && x.id && typeof x.name === 'string');
+  p.habits = p.habits.filter(x => x && x.id && typeof x.name === 'string');
   if (p.chest && (typeof p.chest !== 'object' || !p.chest.op || typeof p.chest.op !== 'object')) delete p.chest;
   if (p.chest) { if (!Array.isArray(p.chest.st)) p.chest.st = []; if (!Array.isArray(p.chest.buy)) p.chest.buy = []; }
   if (!(p.goal >= 1 && p.goal <= 7)) p.goal = 3;
@@ -2300,7 +2329,7 @@ function agg(list) { const a = { n:list.length, vol:0, sets:0, dur:0 }; list.for
 function weekSummary(list) { const ws = weekStart(Date.now()), days = new Set(); let n = 0, vol = 0; (list || []).forEach(w => { if (w.start >= ws) { n++; days.add(dayKey(w.start)); vol += wStats(w).vol; } }); return { n, days, vol }; }
 
 /* ================= derived history ================= */
-function derive() { D = deriveFrom(S.workouts); }
+function derive() { D = deriveFrom(S.workouts); habSyncAuto(); }
 function deriveFrom(list) {
   const asc = [...(list || [])].sort((a, b) => a.start - b.start);
   const hist = {}, best = {}, prSets = {}, prCount = {}, prEvents = [], usage = {};
@@ -2507,7 +2536,7 @@ const BADGES = [
   ['gift7','Неделя подарков','Забрать 7 подарков дня','@gift', s => s.gifts >= 7],
 ];
 function unlockedBadges(st = gameStats()) { return BADGES.filter(b => b[4](st)).map(b => b[0]); }
-function totalXP(st = gameStats(), c = ctxLocal()) { return c.workouts.reduce((a, w) => a + workoutXP(w, c.D), 0) + st.goalWeeks * 60 + unlockedBadges(st).length * 30 + st.questXP + (c.local ? supXP(c.profile) : Math.max(0, Math.min(1e6, +c.profile.sx || 0))); }
+function totalXP(st = gameStats(), c = ctxLocal()) { return c.workouts.reduce((a, w) => a + workoutXP(w, c.D), 0) + st.goalWeeks * 60 + unlockedBadges(st).length * 30 + st.questXP + (c.local ? supXP(c.profile) + habXP(c.profile) : Math.max(0, Math.min(1e6, +c.profile.sx || 0))); }
 function medalHTML(b, i, unlocked, isNew, row) {
   const g = b[3].startsWith('@') ? icon(b[3].slice(1)) : esc(b[3]);
   const circ = `<span class="medal-c">${unlocked ? g : (b[3].startsWith('@') ? icon(b[3].slice(1)) : esc(b[3]))}</span>`;
@@ -2607,7 +2636,7 @@ function payload(pid) {
   const prof = normP(d.profile), share = shareBodyOn();
   return { v:1, id:p.sid, acc:(accOf(pid) || {}).uid, dev:devId(), name:p.name || '', color:p.color || 'red', char:charOf(p),
     profile:{ goal:prof.goal, custom:prof.custom, body: share ? prof.body : [], meas: share ? prof.meas : [], gear:prof.gear, freeze:prof.freeze.slice(-24),
-      chest: prof.chest ? { v:1, at:prof.chest.at, st:prof.chest.st, op:prof.chest.op, buy:prof.chest.buy, old:prof.chest.old || 0, rk:prof.chest.rk, gift:prof.chest.gift } : undefined, sx:supShared(prof) },
+      chest: prof.chest ? { v:1, at:prof.chest.at, st:prof.chest.st, op:prof.chest.op, buy:prof.chest.buy, old:prof.chest.old || 0, rk:prof.chest.rk, gift:prof.chest.gift } : undefined, sx:supShared(prof) + habShared(prof) },
     workouts:(d.workouts || []).map(w => clean(w)), deleted:prof.deleted.slice(-800), kudos:prof.kudos,
     live: d.active ? { start:d.active.start, title:d.active.title || '' } : null };
 }
@@ -2621,7 +2650,7 @@ function validMember(m) {
     pf.freeze = Array.isArray(pf.freeze) ? pf.freeze.filter(f => f && Number.isFinite(f.from) && Number.isFinite(f.to)).slice(-24) : [];
     if (!pf.chest || typeof pf.chest !== 'object' || !pf.chest.op || typeof pf.chest.op !== 'object' || Array.isArray(pf.chest.op)) delete pf.chest;
     else { if (!Array.isArray(pf.chest.st)) pf.chest.st = []; pf.chest.st = pf.chest.st.filter(x => typeof x === 'string'); pf.chest.buy = Array.isArray(pf.chest.buy) ? pf.chest.buy.filter(b => b && typeof b.id === 'string' && Number.isFinite(b.at)) : []; }
-    pf.sx = Number.isFinite(pf.sx) ? Math.max(0, pf.sx) : 0; delete pf.supps; delete pf.slog; delete pf.sfull; }
+    pf.sx = Number.isFinite(pf.sx) ? Math.max(0, pf.sx) : 0; delete pf.supps; delete pf.slog; delete pf.sfull; delete pf.habits; delete pf.hlog; delete pf.hfull; }
   m.kudos = m.kudos && typeof m.kudos === 'object' ? m.kudos : {};
   m.deleted = Array.isArray(m.deleted) ? m.deleted : [];
   if (!COLORS[m.color]) m.color = 'blue';
@@ -3071,7 +3100,7 @@ function sfx(name) {
 
 /* ================= training alone or with a partner ================= */
 const pairOn = () => !!syncCfg() || cloudPartnersN() > 0 || (S.meta && S.meta.mode ? S.meta.mode === 'pair' : profiles().length > 1);
-const tabsNow = () => TABS.filter(t => t[0] !== 'chat' || pairOn());
+const tabsNow = () => TABS;
 const modeSeg = act => `<div class="seg" role="group" aria-label="Как тренируетесь">${[['solo', 'Один', 'user'], ['pair', 'С партнёром', 'users']].map(([k, l, ic]) => `<button data-act="${act}" data-v="${k}" aria-pressed="${(act === 'wlMode' ? (top() && top().mode) || 'solo' : pairOn() ? 'pair' : 'solo') === k}"${act !== 'wlMode' && k === 'solo' && (syncCfg() || cloudPartnersN()) ? ' disabled' : ''}>${icon(ic)} ${l}</button>`).join('')}</div>`;
 
 
@@ -3255,17 +3284,17 @@ function render0() {
 }
 function buildNav() {
   const tabs = tabsNow(), tb = $('#tabbar'); tb.dataset.sig = tabs.map(t => t[0]).join(); tb.style.setProperty('--n', tabs.length);
-  const b = (cls, [v, l, ic]) => `<button class="${cls}" data-act="nav" data-v="${v}">${icon(ic)}<span>${l}</span><i class="badge" hidden aria-label="идёт тренировка"></i>${v === 'chat' ? '<i class="cnt" hidden></i>' : ''}</button>`;
+  const b = (cls, [v, l, ic]) => `<button class="${cls}" data-act="nav" data-v="${v}">${icon(ic)}<span>${l}</span><i class="badge" hidden aria-label="идёт тренировка"></i>${v === 'more' ? '<i class="cnt" hidden></i>' : ''}</button>`;
   tb.innerHTML = '<span class="tab-ind" aria-hidden="true"></span>' + tabs.map(t => b('tab', t)).join('');
   $('#rail-links').innerHTML = '<span class="rail-ind" aria-hidden="true"></span>' + tabs.map(t => b('rlink', t)).join('');
 }
 function renderNav() {
   if ($('#tabbar').dataset.sig !== tabsNow().map(t => t[0]).join()) buildNav();
-  const cur = S.view === 'editor' ? 'log' : S.view;
+  const cur = tabOf(S.view);
   $$('.tab,.rlink').forEach(b => {
     if (b.dataset.v === cur) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
     const bd = b.querySelector('.badge'); if (bd) bd.hidden = !(b.dataset.v === 'today' && S.active && cur !== 'today');
-    const cn = b.querySelector('.cnt'); if (cn) { const n = cur === 'chat' ? 0 : chatUnread(); cn.hidden = !n; cn.textContent = n > 9 ? '9+' : String(n); cn.setAttribute('aria-label', n + ' непрочитанных'); }
+    const cn = b.querySelector('.cnt'); if (cn) { const n = S.view === 'chat' ? 0 : chatUnread(); cn.hidden = !n; cn.textContent = n > 9 ? '9+' : String(n); cn.setAttribute('aria-label', n + ' непрочитанных'); }
   });
   moveInd();
   const p = curProf();
@@ -3287,6 +3316,9 @@ function viewHTML() {
   if (S.view === 'body') return viewBody();
   if (S.view === 'chat') return viewChat();
   if (S.view === 'supp') return viewSupp();
+  if (S.view === 'path') return viewPath();
+  if (S.view === 'hero') return viewHero();
+  if (S.view === 'more') return viewMore();
   return viewToday();
 }
 function headHTML(title, eyebrow, extra = '') {
@@ -3355,14 +3387,14 @@ function viewToday() {
   const sum = thisWeek.length ? `${a.n} ${plural(a.n, ['тренировка','тренировки','тренировок'])} · ${ton(a.vol)} · ${fmtDur(a.dur)}` : 'На этой неделе тренировок пока нет';
   const tpls = S.profile.templates, last = S.workouts[0];
   return `${headHTML(title, eb)}
-    ${dbgHTML()}${hungerHTML()}${heroHTML()}
+    ${dbgHTML()}${hungerHTML()}${heroMini()}${dayCardHTML()}
     <section class="week" aria-label="Эта неделя">${days}</section>
     <p class="week-sum">${sum}</p>
     ${planTodayHTML()}<button class="btn btn-primary btn-lg btn-block start" data-act="startEmpty">${icon('play', 'ic-f')} Начать тренировку</button>
+    ${habCardHTML()}
     ${reportBanner()}${weekBanner()}${bannersHTML()}
     ${supCardHTML()}
     ${recCardHTML()}
-    ${questsHTML()}
     ${pairCard()}
     <section class="sec"><div class="sec-head"><h2 class="h2">Программы</h2>${S.profile.templates.length ? `<button class="btn btn-sm btn-ghost" data-act="planOpen">${icon('today')} План недели</button>` : ''}</div>
       <div class="progs">${tpls.map(progCard).join('')}<button class="prog prog-new" data-act="tplNew">${icon('plus')}<span>Новая программа</span><small>Набор упражнений с подходами, чтобы начинать тренировку в одно касание</small></button><button class="prog prog-new" data-act="presetsOpen">${icon('log')}<span>Готовые программы</span><small>Фулбоди, верх/низ, тяни-толкай, дома</small></button></div>
@@ -3539,7 +3571,7 @@ function jrow(w, i = 0) {
 }
 function viewLog() {
   const add = `<button class="btn btn-sm" data-act="addPast" aria-label="Записать прошедшую тренировку">${icon('plus')}<span class="ph-l">Прошедшая</span></button>`;
-  const head = headHTML('Журнал', S.workouts.length ? `${S.workouts.length} ${plural(S.workouts.length, ['тренировка','тренировки','тренировок'])}` : 'Все тренировки', add);
+  const head = headHTML('Журнал', S.workouts.length ? `${S.workouts.length} ${plural(S.workouts.length, ['тренировка','тренировки','тренировок'])}` : 'Все тренировки', add) + trainSeg();
   if (!ready()) return head + loadingHTML();
   if (!S.workouts.length) return `${head}<div class="empty"><h3>Здесь появятся ваши тренировки</h3><p>Начните тренировку на вкладке «Сегодня» или запишите ту, что уже прошла.</p><button class="btn btn-primary" data-act="nav" data-v="today">${icon('play', 'ic-f')} К тренировке</button></div>`;
   const q = normQ(S.logQ).trim(), words = q.split(/\s+/).filter(Boolean), list = words.length ? S.workouts.filter(w => logMatch(w, words)) : S.workouts;
@@ -3590,7 +3622,7 @@ function muscleLoadHTML() {
 function viewProgress() {
   const P = S.prog, per = PERIODS[P.period] || PERIODS['90'];
   const seg = `<div class="seg" role="group" aria-label="Период">${Object.entries(PERIODS).map(([k, v]) => `<button data-act="period" data-p="${k}" aria-pressed="${P.period === k}">${v.l}</button>`).join('')}</div>`;
-  const head = headHTML('Прогресс', 'Уровень, нагрузка и рекорды');
+  const head = headHTML('Прогресс', 'Уровень, нагрузка и рекорды') + trainSeg();
   if (!ready()) return head + loadingHTML();
   if (!S.workouts.length) return `${head}${awardsPanel()}<div class="empty" style="margin-top:20px"><h3>Графики появятся после первых тренировок</h3><p>Здесь будет видно, как растут веса, объём и регулярность, а ещё — свежие рекорды.</p><button class="btn btn-primary" data-act="nav" data-v="today">${icon('play', 'ic-f')} К тренировке</button></div>`;
   const now = Date.now(), from = per.d ? now - per.d * DAY : 0, pfrom = per.d ? now - 2 * per.d * DAY : 0;
@@ -5778,6 +5810,7 @@ function mergeCloudProfile(local, remote, dirty) {
   ['templates', 'custom', 'body', 'meas', 'supps'].forEach(k => { const have = new Set(l[k].map(o => o && o.id)); r[k].forEach(o => { if (o && o.id && !have.has(o.id)) l[k].push(o); }); });
   Object.entries(r.slog || {}).forEach(([k, v]) => { if (Array.isArray(v)) l.slog[k] = [...new Set([...(l.slog[k] || []), ...v])]; });
   l.sfull = [...new Set([...l.sfull, ...r.sfull])].sort();
+  habMerge(l, r);
   r.freeze.forEach(f => { if (f && Number.isFinite(f.from) && !l.freeze.some(x => x.from === f.from)) l.freeze.push(f); });
   l.deleted = [...new Set([...l.deleted, ...r.deleted])];
   l.kudos = Object.assign({}, r.kudos, l.kudos);
@@ -6300,7 +6333,7 @@ Object.assign(A, {
    Not in fields, charts, scrolling strips, the rest bar, the chat composer or while a sign-in screen is shown. */
 function swipeTab(dir) {
   if (S.view === 'editor' || S.sheets.length) return;
-  const ids = tabsNow().map(t => t[0]), i = ids.indexOf(S.view), n = i < 0 ? null : ids[i + dir]; if (!n) return;
+  const ids = tabsNow().map(t => t[0]), i = ids.indexOf(tabOf(S.view)), n = i < 0 ? null : ids[i + dir]; if (!n) return;
   buzz(6); sfx('tab'); go(n);
   if (!RM) { const m = $('#main'); try { m.animate([{ transform:`translateX(${dir * 36}px)`, opacity:.35 }, { transform:'none', opacity:1 }], { duration:240, easing:'cubic-bezier(.2,.8,.2,1)' }); } catch (e) { /* no animations API */ } }
 }
@@ -6351,7 +6384,7 @@ function swipeTab(dir) {
   const PAD = 4, geo = () => { const r = tb.getBoundingClientRect(), n = tb.querySelectorAll('.tab').length || 1; return { l:r.left + PAD, w:(r.width - 2 * PAD) / n, n }; };
   const idxAt = x => { const g = geo(); return Math.max(0, Math.min(g.n - 1, Math.floor((x - g.l) / g.w))); };
   const fracAt = x => { const g = geo(); return Math.max(0, Math.min(g.n - 1, (x - g.l) / g.w - .5)); };
-  const go2 = () => { if (!st) return; st.raf = 0; const v = (tabsNow()[st.idx] || [])[0]; if (v && v !== S.view) go(v); };
+  const go2 = () => { if (!st) return; st.raf = 0; const v = (tabsNow()[st.idx] || [])[0]; if (v && v !== tabOf(S.view)) go(v); };
   tb.addEventListener('pointerdown', e => {
     if ((e.pointerType === 'mouse' && e.button > 0) || !e.target.closest('.tab') || S.sheets.length) return;
     st = { id:e.pointerId, x0:e.clientX, moved:false, idx:idxAt(e.clientX), raf:0 };
@@ -6521,6 +6554,236 @@ Object.assign(A, {
   weekOpen: el => { const w = el && el.dataset && el.dataset.w ? +el.dataset.w : weekStart(Date.now()); if (el && el.dataset && el.dataset.w) { ensureMeta().wkSeen = dayKey(w); saveMeta(); } openSheet({ type:'weekrep', w }); },
   weekHide: el => { ensureMeta().wkSeen = dayKey(+el.dataset.w); saveMeta(); render(); },
   weekShift: el => { const sh = top(); sh.w = addDays(sh.w, 7 * +el.dataset.d); render(); },
+});
+/* ================= 3.1: habits, tab «Путь», «Герой», «Ещё», «Сегодня» as one plan =================
+   habits live in the private profile:
+     habits : [{ id, name, ic, cat, d (0..2), days:[0..6]|[], off, ar, auto:'workout'|'supp'|'', ts }]
+     hlog   : { 'YYYY-MM-DD': { habitId: xpGivenWhenTicked } }   — xp is fixed at the moment of the tick, so edits and deletes never rewrite history
+     hfull  : ['YYYY-MM-DD', …]                                  — days when every habit due that day was done
+   xp: a tick gives 5/10/15 by difficulty, at most HAB_CAP a day, +HAB_FULL for a full day. Automatic habits give 0 (the workout or the supplements already pay). */
+const HAB_CATS = [['s', 'Сила', '#D96B5F'], ['v', 'Выносливость', '#E3A857'], ['d', 'Дисциплина', '#8FA8C8'], ['r', 'Разум', '#A78BD6'], ['c', 'Спокойствие', '#6FBFA5'], ['z', 'Достаток', '#D8C45F']];
+const HAB_DIFF = [['Лёгкая', 5], ['Средняя', 10], ['Трудная', 15]];
+const HAB_ICONS = ['check', 'flame', 'heart', 'sun', 'moon', 'target', 'star', 'spark', 'clock', 'pill', 'note', 'sound', 'today', 'trophy', 'shield', 'body'];
+const HAB_CAP = 40, HAB_FULL = 10;
+const HAB_QUICK = [['Вода 2 литра', 'heart', 'v', 0], ['Чтение 20 минут', 'note', 'r', 1], ['Прогулка 30 минут', 'sun', 'v', 1], ['Растяжка', 'body', 'v', 0], ['Без сахара', 'flame', 'd', 2], ['Сон до 23:00', 'moon', 'c', 1], ['Медитация 10 минут', 'spark', 'c', 1], ['Дневник', 'note', 'c', 0], ['Учёба 30 минут', 'target', 'r', 1], ['Отложить деньги', 'box', 'z', 1]];
+const HAB_AUTO = [['', 'Вручную'], ['workout', 'По тренировке'], ['supp', 'По добавкам']];
+const habCat = k => HAB_CATS.find(c => c[0] === k) || HAB_CATS[2];
+
+function habDue(h, day) {
+  if (!h || h.off || h.ar) return false;
+  if (h.ts && day < startOfDay(h.ts)) return false;
+  if (Array.isArray(h.days) && h.days.length && !h.days.includes(new Date(day).getDay())) return false;
+  return true;
+}
+function habDay(p, day) {
+  const due = (p.habits || []).filter(h => habDue(h, day)), t = (p.hlog || {})[dayKey(day)] || {};
+  const done = due.filter(h => t[h.id] != null).length;
+  return { due, taken:t, done, full:due.length > 0 && done === due.length };
+}
+const habDayXP = t => Math.min(HAB_CAP, Object.values(t || {}).reduce((a, v) => a + (+v || 0), 0));
+function habXP(p) {
+  let n = 0; const l = p.hlog || {};
+  for (const k in l) n += habDayXP(l[k]);
+  return n + (Array.isArray(p.hfull) ? p.hfull.length : 0) * HAB_FULL;
+}
+const habShared = p => habXP(p); // the partner only gets one number
+const habTodayXP = (p, day) => { const k = dayKey(day); return habDayXP((p.hlog || {})[k]) + ((p.hfull || []).includes(k) ? HAB_FULL : 0); };
+function habFullFix(p, day) {
+  const k = dayKey(day), st = habDay(p, day), f = new Set(p.hfull || []);
+  if (st.full) f.add(k); else f.delete(k);
+  p.hfull = [...f].sort();
+}
+function habToggle(id, day) {
+  const p = S.profile, h = p.habits.find(x => x.id === id); if (!h || h.auto) return null;
+  const k = dayKey(day), t = p.hlog[k] || (p.hlog[k] = {}), on = t[id] == null;
+  if (on) t[id] = HAB_DIFF[h.d || 0][1]; else delete t[id];
+  if (!Object.keys(t).length) delete p.hlog[k];
+  habFullFix(p, day);
+  const full = habDay(p, day).full;
+  saveProfile();
+  return { on, full };
+}
+function habAutoOk(h, day) {
+  if (h.auto === 'workout') { const k = dayKey(day); return S.workouts.some(w => dayKey(w.start) === k); }
+  if (h.auto === 'supp') return (S.profile.supps || []).length > 0 && supDay(S.profile, day).full;
+  return false;
+}
+// automatic habits follow the real data of the last week; idempotent, called from derive()
+function habSyncAuto() {
+  const p = S.profile; if (!p || !Array.isArray(p.habits) || !p.habits.some(h => h.auto)) return;
+  const today = startOfDay(Date.now());
+  for (let i = 0; i < 8; i++) {
+    const day = addDays(today, -i), k = dayKey(day); let chg = false;
+    p.habits.forEach(h => {
+      if (!h.auto) return;
+      const t = p.hlog[k] || (p.hlog[k] = {}), has = t[h.id] != null, ok = habDue(h, day) && habAutoOk(h, day);
+      if (ok && !has) { t[h.id] = 0; chg = true; } else if (!ok && has) { delete t[h.id]; chg = true; }
+      if (!Object.keys(t).length) delete p.hlog[k];
+    });
+    if (chg) habFullFix(p, day);
+  }
+}
+function habStreak(p, h, now = Date.now()) {
+  const start = h.ts ? startOfDay(h.ts) : 0, L = p.hlog || {}, done = d => { const t = L[dayKey(d)]; return !!t && t[h.id] != null; };
+  let day = startOfDay(now), n = 0;
+  if (!done(day)) day = addDays(day, -1); // today is still in progress
+  for (let i = 0; i < 800 && day >= start; i++) { if (done(day)) n++; else if (habDue(h, day)) break; day = addDays(day, -1); }
+  return n;
+}
+function habFullStreak(p, now = Date.now()) {
+  const full = new Set(p.hfull || []); if (!full.size) return 0;
+  const first = keyDay([...full].sort()[0]); let day = startOfDay(now), n = 0;
+  if (!full.has(dayKey(day))) day = addDays(day, -1);
+  for (let i = 0; i < 800 && day >= first; i++) { const k = dayKey(day); if (full.has(k)) n++; else if ((p.habits || []).some(h => habDue(h, day))) break; day = addDays(day, -1); }
+  return n;
+}
+// cloud / second phone: add what the other phone has, never remove
+function habMerge(l, r) {
+  const have = new Set(l.habits.map(o => o.id)); r.habits.forEach(o => { if (!have.has(o.id)) l.habits.push(o); });
+  Object.entries(r.hlog || {}).forEach(([k, v]) => { if (v && typeof v === 'object') l.hlog[k] = Object.assign({}, v, l.hlog[k] || {}); });
+  l.hfull = [...new Set([...(l.hfull || []), ...(r.hfull || [])])].sort();
+}
+const habSub = (p, h, day) => {
+  const parts = [habCat(h.cat)[1]], n = habStreak(p, h, day === startOfDay(Date.now()) ? Date.now() : day + DAY - 1);
+  if (n >= 2) parts.push(`${n} ${plural(n, ['день', 'дня', 'дней'])} подряд`);
+  if (h.auto) parts.push(h.auto === 'workout' ? 'по тренировке' : 'по добавкам'); else parts.push('+' + HAB_DIFF[h.d || 0][1]);
+  if (Array.isArray(h.days) && h.days.length && h.days.length < 7) parts.push(WD_ORDER.filter(d => h.days.includes(d)).map(d => WD[d]).join(', '));
+  return parts.join(' · ');
+};
+const habDots = (p, h, day) => Array.from({ length:7 }, (_, i) => {
+  const d = addDays(day, i - 6), t = (p.hlog || {})[dayKey(d)], on = !!t && t[h.id] != null;
+  return `<i class="${on ? 'on' : habDue(h, d) && d < day ? 'miss' : ''}"></i>`;
+}).join('');
+
+/* ---------- the plan of the day ---------- */
+function dayPlan() {
+  const p = S.profile, today = startOfDay(Date.now()), k = dayKey(today), hs = habDay(p, today), ss = p.supps.length ? supDay(p, today) : { due:[], done:0, full:false };
+  const planned = !!(p.plan && p.plan[new Date(today).getDay()] && p.templates.some(t => t.id === p.plan[new Date(today).getDay()]));
+  const trained = S.workouts.some(w => dayKey(w.start) === k), wk = (planned || trained) ? 1 : 0;
+  const xp = habTodayXP(p, today) + S.workouts.filter(w => dayKey(w.start) === k).reduce((a, w) => a + workoutXP(w, D), 0) + (ss.full ? 10 : 0);
+  return { total:hs.due.length + ss.due.length + wk, done:hs.done + ss.done + (trained ? wk : 0), xp, habits:hs };
+}
+const ringSVG = (pct, sz = 58, w = 6) => { const r = (sz - w) / 2, c = 2 * Math.PI * r; return `<svg class="dring" width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" aria-hidden="true"><circle cx="${sz / 2}" cy="${sz / 2}" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="${w}"/><circle cx="${sz / 2}" cy="${sz / 2}" r="${r}" fill="none" stroke="var(--accent)" stroke-width="${w}" stroke-linecap="round" stroke-dasharray="${(c * Math.max(0, Math.min(100, pct)) / 100).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${sz / 2} ${sz / 2})"/><text x="50%" y="50%" dy=".35em" text-anchor="middle" class="dring-t">${Math.round(pct)}%</text></svg>`; };
+function dayCardHTML() {
+  const pl = dayPlan(); if (!pl.total) return '';
+  return `<section class="day-card${pl.done >= pl.total ? ' full' : ''}" aria-label="Сегодня: выполнено ${pl.done} из ${pl.total}">${ringSVG(pl.done / pl.total * 100)}<div class="dc-t"><b>${pl.done} из ${pl.total}</b><span>${pl.done >= pl.total ? 'день закрыт' : 'за сегодня'}${pl.xp ? ` · +${pl.xp} XP` : ''}</span></div></section>`;
+}
+function heroMini() {
+  const L = levelOf(totalXP()), kind = charOf(curProf()), m = moodNow(), mt = mateOf(S.profile, S.workouts);
+  if (S.ateAt && !S.sheets.length) { S.eatUntil = Date.now() + 2600; S.ateAt = 0; const fd = S.wasHungry; S.wasHungry = false; setTimeout(() => sfx(fd ? 'fed' : 'nom'), 300); }
+  if (S.profile.chest && !S.sheets.length && (S.profile.chest.rk == null || L.rank > S.profile.chest.rk)) setTimeout(() => { const nr = rankSync(); if (nr != null && !S.sheets.length) { openSheet({ type:'rankup', r:nr }); sfx('rank'); confetti(innerWidth / 2, innerHeight * .35, 110); } else render(); }, 0);
+  return `<button class="hmini" data-act="nav" data-v="hero" aria-label="Герой: ${esc(L.title)}, уровень ${L.k}">${charSVG(kind, m.mood, { stage:mt.stage.k, gear:mt.gear })}<span class="hm-t"><b>${esc(L.title)}</b><span class="lvl-bar"><i style="width:${L.pct.toFixed(1)}%"></i></span></span><span class="lvl-xp">${L.cur}/${L.need} XP</span></button>`;
+}
+function habCardHTML() {
+  const p = S.profile, today = startOfDay(Date.now()), live = p.habits.filter(h => !h.ar && !h.off);
+  if (!live.length) return `<section class="sec"><div class="sec-head"><h2 class="h2">Привычки</h2></div><button class="prog prog-new hab-new" data-act="nav" data-v="path">${icon('plus')}<span>Добавьте первую привычку</span><small>Вода, чтение, сон — отмечайте и растите серию</small></button></section>`;
+  const st = habDay(p, today); if (!st.due.length) return '';
+  const rows = st.due.map(h => habRow(p, h, today, st.taken[h.id] != null)).join('');
+  return `<section class="sec" data-key="hab-card"><div class="sec-head"><h2 class="h2">Привычки · ${st.done} из ${st.due.length}</h2><button class="btn btn-sm btn-ghost" data-act="nav" data-v="path">Все ${icon('chevron')}</button></div><div class="panel sup-list hab-list">${rows}</div></section>`;
+}
+function habRow(p, h, day, on) {
+  const c = habCat(h.cat);
+  return `<div class="sup-row hab-row${on ? ' on' : ''}" data-key="hb-${esc(h.id)}" style="--hc:${c[2]}"><button class="sup-check" data-act="habTake" data-id="${esc(h.id)}" data-day="${day}" aria-pressed="${on}"${h.auto ? ' disabled' : ''} aria-label="${h.auto ? 'Отмечается само' : on ? 'Отменить' : 'Сделал'}: ${esc(h.name)}">${icon(on ? 'check' : h.ic || 'check')}</button><button class="sup-main" data-act="habEdit" data-id="${esc(h.id)}" aria-label="Изменить: ${esc(h.name)}"><b>${esc(h.name)}</b><small>${esc(habSub(p, h, day))}</small></button><span class="hab-dots" aria-hidden="true">${habDots(p, h, day)}</span></div>`;
+}
+
+/* ---------- tab «Путь» ---------- */
+function viewPath() {
+  const head = headHTML('Путь', `${icon('repeat')} Привычки`);
+  if (!ready()) return head + loadingHTML();
+  const p = S.profile, today = startOfDay(Date.now()), hs = p.habits.filter(h => !h.ar);
+  if (!hs.length) {
+    return `${head}<div class="empty sup-empty"><h3>Первая привычка</h3><p>Вода, чтение, сон, растяжка — всё, что хотите делать каждый день. Отмечайте галочкой, растите серию, получайте опыт и прокачивайте героя. Привычки видите только вы.</p></div>
+      <section class="sec"><div class="sec-head"><h2 class="h2">Быстрый старт</h2></div><div class="sup-quick">${HAB_QUICK.map(([n, ic], i) => `<button class="chip" data-act="habQuick" data-i="${i}">${icon(ic)} ${esc(n)}</button>`).join('')}</div>
+      <button class="btn btn-primary btn-block" style="margin-top:14px" data-act="habNew">${icon('plus')} Своя привычка</button></section>`;
+  }
+  const day = Math.max(addDays(today, -6), Math.min(today, S.habDay || today)), st = habDay(p, day), streak = habFullStreak(p), pct = st.due.length ? st.done / st.due.length * 100 : 0;
+  const lbl = day === today ? 'Сегодня' : day === addDays(today, -1) ? 'Вчера' : `${WD_FULL[new Date(day).getDay()]}, ${dayMonth(day)}`;
+  const live = hs.filter(h => !h.off && !st.due.includes(h)), paused = hs.filter(h => h.off);
+  const off = (h, ic) => `<div class="sup-row off hab-row" data-key="hx-${esc(h.id)}"><span class="sup-check" aria-hidden="true">${icon(ic)}</span><button class="sup-main" data-act="habEdit" data-id="${esc(h.id)}"><b>${esc(h.name)}</b><small>${ic === 'moon' ? 'не в этот день' : 'на паузе'}</small></button></div>`;
+  return `${head}
+    <div class="sup-day"><button class="icon-btn" data-act="habDayShift" data-d="-1" aria-label="Предыдущий день"${day <= addDays(today, -6) ? ' disabled' : ''}>${icon('back')}</button><b>${lbl}</b><button class="icon-btn" data-act="habDayShift" data-d="1" aria-label="Следующий день"${day >= today ? ' disabled' : ''}>${icon('chevron')}</button></div>
+    <section class="panel sup-sum${st.full ? ' full' : ''}"><div class="sup-sum-top"><div class="hs"><b>${st.done}<small>/${st.due.length}</small></b><span>сделано</span></div><div class="hs"><b>${icon('flame')}${streak}</b><span>${plural(streak, ['день', 'дня', 'дней'])} подряд</span></div><div class="hs"><b>+${habTodayXP(p, day)}</b><span>XP за день</span></div></div>
+      <span class="q-bar"><i style="width:${pct.toFixed(1)}%"></i></span>${st.full ? `<p class="sup-done">${icon('check')} Все привычки ${day === today ? 'на сегодня' : 'этого дня'} выполнены</p>` : !st.due.length ? '<p class="sup-done muted">В этот день привычек по плану нет</p>' : ''}</section>
+    ${st.due.length ? `<section class="sec" data-key="hab-due"><div class="sec-head"><h2 class="h2">По плану</h2><span class="h2">${st.done}/${st.due.length}</span></div><div class="panel sup-list hab-list">${st.due.map(h => habRow(p, h, day, st.taken[h.id] != null)).join('')}</div></section>` : ''}
+    ${live.length || paused.length ? `<section class="sec" data-key="hab-rest"><div class="sec-head"><h2 class="h2">Остальные</h2></div><div class="panel sup-list">${live.map(h => off(h, 'moon')).join('')}${paused.map(h => off(h, 'snow')).join('')}</div></section>` : ''}
+    <div class="row sup-actions"><button class="btn btn-add" data-act="habNew">${icon('plus')} Добавить</button></div>
+    <p class="fine">Привычки видите только вы — партнёру уходит лишь общий опыт. Сделанная привычка даёт 5, 10 или 15 XP (не больше ${HAB_CAP} в день), полный день — ещё +${HAB_FULL}.</p>`;
+}
+
+/* ---------- tab «Герой» ---------- */
+function viewHero() {
+  const head = headHTML('Герой', `${icon('shield')} Уровень и напарник`);
+  if (!ready()) return head + loadingHTML();
+  return `${head}${hungerHTML()}${heroHTML()}${questsHTML()}
+    <section class="sec"><div class="more-list"><button class="more-row" data-act="awards">${icon('trophy')}<span><b>Достижения</b><small>Награды за серии, рекорды и дисциплину</small></span>${icon('chevron')}</button></div></section>`;
+}
+
+/* ---------- tab «Ещё» ---------- */
+function viewMore() {
+  const head = headHTML('Ещё', `${icon('more')} Разделы и настройки`);
+  if (!ready()) return head + loadingHTML();
+  const n = chatUnread();
+  const row = (act, v, ic, t, sub, badge) => `<button class="more-row" data-act="${act}"${v ? ` data-v="${v}"` : ''}>${icon(ic)}<span><b>${t}</b><small>${sub}</small></span>${badge ? `<i class="cnt" aria-label="${badge} непрочитанных">${badge > 9 ? '9+' : badge}</i>` : ''}${icon('chevron')}</button>`;
+  return `${head}<section class="sec"><div class="more-list">
+    ${pairOn() ? row('nav', 'chat', 'chat', 'Чат', 'Переписка с партнёром', n) : ''}
+    ${row('nav', 'body', 'body', 'Тело', 'Вес, замеры и фото')}
+    ${row('nav', 'supp', 'pill', 'Добавки', 'Свой план приёма')}
+    ${row('awards', '', 'trophy', 'Достижения', 'Награды и ранги')}
+    ${row('settings', '', 'settings', 'Настройки', 'Профиль, вид, облако, копии')}
+  </div></section>`;
+}
+const trainSeg = () => `<div class="seg train-seg" role="group" aria-label="Раздел">${[['log', 'Журнал'], ['progress', 'Прогресс']].map(([v, l]) => `<button data-act="nav" data-v="${v}" aria-pressed="${S.view === v}">${l}</button>`).join('')}</div>`;
+
+/* ---------- sheet, actions ---------- */
+function habDraft(h) { return { name:h ? h.name : '', ic:h ? (h.ic || 'check') : 'check', cat:h ? h.cat : 'd', d:h ? (h.d || 0) : 1, days:h && Array.isArray(h.days) ? [...h.days] : [], auto:h ? (h.auto || '') : '', off:!!(h && h.off) }; }
+SHEETS.hab = sh => {
+  const d = sh.d;
+  return `${sheetHead(sh.isNew ? 'Новая привычка' : 'Привычка')}<div class="sheet-body">
+    <label class="lbl">Название<input class="field" id="hab-name" data-in="habF" data-f="name" value="${esc(d.name)}" placeholder="Например, чтение 20 минут" autocomplete="off" maxlength="40"></label>
+    <div class="lbl" style="margin-top:12px">Значок<div class="hab-ics" role="group" aria-label="Значок">${HAB_ICONS.map(i => `<button class="hab-ic" data-act="habSet" data-f="ic" data-v="${i}" aria-pressed="${d.ic === i}" aria-label="${i}">${icon(i)}</button>`).join('')}</div></div>
+    <div class="lbl" style="margin-top:12px">Что прокачивает<div class="chips wrap" role="group" aria-label="Атрибут">${HAB_CATS.map(c => `<button class="chip" data-act="habSet" data-f="cat" data-v="${c[0]}" aria-pressed="${d.cat === c[0]}"><i class="hab-dot" style="background:${c[2]}"></i>${c[1]}</button>`).join('')}</div></div>
+    <div class="lbl" style="margin-top:12px">Сложность<div class="chips wrap" role="group" aria-label="Сложность">${HAB_DIFF.map(([n, x], i) => `<button class="chip" data-act="habSet" data-f="d" data-v="${i}" aria-pressed="${+d.d === i}">${n} · +${x}</button>`).join('')}</div></div>
+    <div class="lbl" style="margin-top:12px">Дни недели<div class="chips wrap" role="group" aria-label="Дни недели"><button class="chip" data-act="habAllDays" aria-pressed="${!d.days.length}">Каждый день</button>${WD_ORDER.map(n => `<button class="chip" data-act="habDayT" data-v="${n}" aria-pressed="${d.days.includes(n)}">${WD[n]}</button>`).join('')}</div></div>
+    <div class="lbl" style="margin-top:12px">Как отмечать<div class="chips wrap" role="group" aria-label="Как отмечать">${HAB_AUTO.map(([k, l]) => `<button class="chip" data-act="habSet" data-f="auto" data-v="${k}" aria-pressed="${d.auto === k}">${l}</button>`).join('')}</div></div>
+    ${d.auto ? `<p class="fine" style="margin-top:6px">${d.auto === 'workout' ? 'Отметится сама, когда запишете тренировку.' : 'Отметится сама, когда отметите все добавки за день.'} Опыт даёт сама тренировка или план добавок.</p>` : ''}
+    ${sh.isNew ? '' : `<div class="srow"><div class="srow-t"><b>Пауза</b><span>Не показывать в плане, пока не включите снова</span></div><button class="switch" role="switch" aria-checked="${!!d.off}" aria-label="Пауза" data-act="habOffT"></button></div>`}
+  </div><footer class="sheet-foot">${sh.isNew ? '' : `<button class="btn ${sh.confirm ? 'btn-danger' : 'btn-danger-soft'}" data-act="habDel">${sh.confirm ? 'Точно удалить' : 'Удалить'}</button>`}<button class="btn btn-primary" data-act="habSave">${sh.isNew ? 'Добавить' : 'Сохранить'}</button></footer>`;
+};
+Object.assign(IN, { habF: el => { const sh = top(); if (sh && sh.d) sh.d[el.dataset.f] = el.value; } });
+Object.assign(A, {
+  habTake: el => {
+    const r = habToggle(el.dataset.id, +el.dataset.day || startOfDay(Date.now())); if (!r) return;
+    if (r.on) buzz(r.full ? [10, 40, 10] : 10); sfx(r.full ? 'supFull' : r.on ? 'sup' : 'unset'); if (r.full && r.on) toast(`Все привычки за день · +${HAB_FULL} XP`);
+    S.bubble = null; render();
+  },
+  habDayShift: el => { const today = startOfDay(Date.now()), cur = Math.min(today, S.habDay || today); S.habDay = Math.max(addDays(today, -6), Math.min(today, addDays(cur, +el.dataset.d))); render(); },
+  habNew: () => openSheet({ type:'hab', isNew:true, id:uid(), d:habDraft(null), confirm:false }),
+  habQuick: el => { const q = HAB_QUICK[+el.dataset.i]; if (!q) return; const d = habDraft(null); d.name = q[0]; d.ic = q[1]; d.cat = q[2]; d.d = q[3]; openSheet({ type:'hab', isNew:true, id:uid(), d, confirm:false }); },
+  habEdit: el => { const h = S.profile.habits.find(x => x.id === el.dataset.id); if (h) openSheet({ type:'hab', isNew:false, id:h.id, d:habDraft(h), confirm:false }); },
+  habSet: el => { const sh = top(); sh.d[el.dataset.f] = el.dataset.f === 'd' ? +el.dataset.v : el.dataset.v; render(); },
+  habAllDays: () => { top().d.days = []; render(); },
+  habDayT: el => { const d = top().d, v = +el.dataset.v, i = d.days.indexOf(v); if (i >= 0) d.days.splice(i, 1); else d.days.push(v); if (d.days.length === 7) d.days = []; render(); },
+  habOffT: () => { const d = top().d; d.off = !d.off; render(); },
+  habSave: () => {
+    const sh = top(), d = sh.d, name = (d.name || '').trim();
+    if (!name) { toast('Введите название'); const n = $('#hab-name'); if (n) n.focus(); return; }
+    const list = S.profile.habits, i = list.findIndex(x => x.id === sh.id), old = i >= 0 ? list[i] : null;
+    const h = { id:sh.id, name:name.slice(0, 40), ic:HAB_ICONS.includes(d.ic) ? d.ic : 'check', cat:habCat(d.cat)[0], d:Math.max(0, Math.min(2, +d.d || 0)), days:[...d.days].sort(), auto:d.auto === 'workout' || d.auto === 'supp' ? d.auto : '', ts:old ? old.ts : Date.now() };
+    if (d.off) h.off = true;
+    if (old && old.ar) h.ar = true;
+    if (i >= 0) list[i] = h; else list.push(h);
+    habSyncAuto();
+    const today = startOfDay(Date.now()); habFullFix(S.profile, today); // the plan for today may have changed; past days stay as they were
+    saveProfile(); S.sheets.pop(); buzz(10); toast(i >= 0 ? 'Сохранено' : `«${h.name}» в привычках`); render();
+  },
+  habDel: () => {
+    const sh = top(); if (!sh.confirm) { sh.confirm = true; render(); return; }
+    const p = S.profile, used = Object.values(p.hlog).some(t => t && t[sh.id] != null);
+    if (used) { const h = p.habits.find(x => x.id === sh.id); if (h) h.ar = true; } // keep the history and the xp already earned
+    else p.habits = p.habits.filter(x => x.id !== sh.id);
+    habFullFix(p, startOfDay(Date.now()));
+    saveProfile(); S.sheets.pop(); toast('Привычка удалена'); render();
+  },
 });
 /* ================= events ================= */
 document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const fn = A[el.dataset.act]; if (fn) { e.preventDefault(); SFXN.n = 0; fn(el, e); if (!SFXN.n) sfx(el.dataset.act === 'nav' ? 'tab' : el.dataset.act === 'closeSheet' ? 'close' : el.getAttribute('role') === 'switch' ? 'toggle' : 'tap'); } });
