@@ -1,5 +1,12 @@
 /* ================= events ================= */
 document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (!el || el.disabled) return; const fn = A[el.dataset.act]; if (fn) { e.preventDefault(); SFXN.n = 0; fn(el, e); if (!SFXN.n) sfx(el.dataset.act === 'nav' ? 'tab' : el.dataset.act === 'closeSheet' ? 'close' : el.getAttribute('role') === 'switch' ? 'toggle' : 'tap'); } });
+// buttons without data-act, checkboxes and selects get the same soft sound (the data-act handler above already plays its own)
+document.addEventListener('click', e => {
+  const el = e.target.closest && e.target.closest('button,[role="button"],summary,input[type="checkbox"],input[type="radio"]');
+  if (!el || el.disabled || el.closest('[data-act]') || performance.now() - SFXN.t < 80) return;
+  sfx(el.getAttribute('role') === 'switch' || /^(checkbox|radio)$/.test(el.type || '') ? 'toggle' : 'tap');
+});
+document.addEventListener('change', e => { const el = e.target; if (el && el.tagName === 'SELECT' && performance.now() - SFXN.t > 80) sfx('tap'); });
 document.addEventListener('input', e => { const el = e.target; if (el.dataset && el.dataset.in && IN[el.dataset.in]) IN[el.dataset.in](el, e); });
 document.addEventListener('change', e => { const el = e.target; if (el.dataset && el.dataset.ch && CHG[el.dataset.ch]) CHG[el.dataset.ch](el, e); });
 document.addEventListener('focusin', e => {

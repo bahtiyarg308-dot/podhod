@@ -10,14 +10,14 @@
     if ((e.pointerType === 'mouse' && e.button > 0) || !e.target.closest('.tab') || S.sheets.length) return;
     st = { id:e.pointerId, x0:e.clientX, moved:false, idx:idxAt(e.clientX), raf:0 };
     try { tb.setPointerCapture(e.pointerId); } catch (err) { /* capture unsupported */ }
-    tb.style.setProperty('--ti', fracAt(e.clientX)); tb.classList.add('press'); buzz(4);
+    tb.style.setProperty('--ti', fracAt(e.clientX)); tb.classList.add('press'); buzz(4); sfx('lens', st.idx);
   });
   tb.addEventListener('pointermove', e => {
     if (!st || e.pointerId !== st.id) return;
     if (!st.moved && Math.abs(e.clientX - st.x0) > 6) st.moved = true;
     tb.style.setProperty('--ti', fracAt(e.clientX));
     const i = idxAt(e.clientX);
-    if (i !== st.idx) { st.idx = i; buzz(5); sfx('tab'); if (!st.raf) st.raf = requestAnimationFrame(go2); }
+    if (i !== st.idx) { st.idx = i; buzz(5); sfx('lens', i); if (!st.raf) st.raf = requestAnimationFrame(go2); }
   });
   const end = e => {
     if (!st || e.pointerId !== st.id) return;

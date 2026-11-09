@@ -1,9 +1,9 @@
 /* ================= sounds: synthesised on the phone, no files, no internet ================= */
 const SND_DEF = { on:true, vol:2, train:true, game:true, ui:true };
 const sndCfg = () => Object.assign({}, SND_DEF, (S.meta && S.meta.snd) || {});
-const SFX_CAT = { tap:'ui', tab:'ui', toggle:'ui', close:'ui', send:'ui', set:'train', unset:'train', tick:'train', count:'train', pr:'train', start:'train', finish:'train', level:'train',
+const SFX_CAT = { tap:'ui', lens:'ui', tab:'ui', toggle:'ui', close:'ui', send:'ui', set:'train', unset:'train', tick:'train', count:'train', pr:'train', start:'train', finish:'train', level:'train',
   shake:'game', openc:'game', openr:'game', opene:'game', openl:'game', gift:'game', rank:'game', equip:'game', locked:'game', buy:'game', grow:'game', mate:'game', nom:'game', like:'game', sup:'game', supFull:'game' };
-const SFXN = { n:0 };
+const SFXN = { n:0, t:0 };
 let sfxOut = null, noiseBuf = null;
 function sfxBus() {
   if (!actx) return null;
@@ -41,8 +41,10 @@ const VOICE = {
   plate:(o, k) => { [523, 1393, 2257, 3011].forEach((f, i) => tone(o, f * k, 0, .7 - i * .12, .14 / (i + 1), 'sine')); hiss(o, 0, .04, .1, 5000, null, 2); },
 };
 const SFX = {
-  tap:o => { hiss(o, 0, .014, .1, 3800, null, 1.5, 'highpass'); tone(o, 1650, 0, .02, .045); },
-  tab:o => { tone(o, 1046, 0, .035, .07); hiss(o, 0, .012, .06, 4200, null, 1.5, 'highpass'); },
+  tap:o => { tone(o, 1180, 0, .06, .07, 'sine', 960, .004); tone(o, 2360, 0, .03, .02, 'sine', null, .003); hiss(o, 0, .01, .03, 4500, null, 1.2, 'highpass'); },
+  // a soft glass «tink»; every tab has its own note of a pentatonic scale, so sliding along the bar plays a little run
+  lens:(o, a) => { const f = [659.25, 783.99, 880, 1046.5, 1174.66][(+a || 0) % 5]; tone(o, f, 0, .22, .085, 'sine', null, .004); tone(o, f * 2.005, 0, .11, .03, 'sine', null, .003); tone(o, f * 3.01, 0, .05, .012, 'sine', null, .002); hiss(o, 0, .008, .035, 5200, null, 1.5, 'highpass'); },
+  tab:(o, a) => { if (a != null) return SFX.lens(o, a); tone(o, 1046, 0, .035, .07); hiss(o, 0, .012, .06, 4200, null, 1.5, 'highpass'); },
   toggle:o => { tone(o, 1200, 0, .025, .07); tone(o, 1600, .045, .03, .07); },
   close:o => tone(o, 900, 0, .05, .05, 'sine', 650),
   send:o => hiss(o, 0, .16, .12, 700, 2600, 2),
@@ -71,11 +73,11 @@ const SFX = {
   supFull:o => { SFX.sup(o); tone(o, 1319, .12, .35, .15); tone(o, 1760, .22, .45, .15); },
   mate:o => { const p = curProf(), k = charOf(p), st = stageOf(S.workouts.length).k; (VOICE[k] || VOICE.cat)(o, [1.35, 1.15, 1, .95, .9][st] || 1); },
 };
-function sfx(name) {
-  SFXN.n++;
+function sfx(name, a) {
+  SFXN.n++; SFXN.t = performance.now();
   const c = sndCfg(), cat = SFX_CAT[name];
   if (!c.on || !c.vol || (cat && !c[cat]) || document.visibilityState === 'hidden') return;
   unlockAudio(); const o = sfxBus(); if (!o || !SFX[name]) return;
-  try { SFX[name](o); } catch (e) { /* audio unavailable */ }
+  try { SFX[name](o, a); } catch (e) { /* audio unavailable */ }
 }
 

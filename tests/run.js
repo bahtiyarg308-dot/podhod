@@ -16,7 +16,7 @@ const hook = '\nboot();'; if (!html.includes(hook)) { console.error('boot line n
 const T = 'window.__T = { get S() { return S; }, totalXP, normP, normW, habMerge, habXP, payload, saveProfile, render, dayKey };';
 fs.writeFileSync(path.join(SITE, 'index.html'), html.replace(gate, 'const gateOk = () => true;').replace(hook, '\n' + T + hook));
 for (const d of ['shots', 'shots28', 'shots271']) fs.mkdirSync(path.join(__dirname, 'scenarios', d), { recursive: true });
-const QUICK = ['smoke22', 'smoke22b', 'smoke22c', 'smoke23', 'smoke24', 'smoke25', 'smoke26', 'smoke27', 'acc29', 'lens29', 'safe30', 'presets30', 'habits31'];
+const QUICK = ['smoke22', 'smoke22b', 'smoke22c', 'smoke23', 'smoke24', 'smoke25', 'smoke26', 'smoke27', 'acc29', 'lens29', 'safe30', 'presets30', 'habits31', 'sound31'];
 const FULL = ['audit-320-dark', 'audit-375-light', 'audit-432-dark'];
 const KNOWN = { smoke24: [/dbgDay/] };                              // a known quirk of that script's view, not an app error
 const want = process.argv.slice(2).filter(a => !a.startsWith('--'));
