@@ -170,6 +170,7 @@ function viewMore() {
   const row = (act, v, ic, t, sub, badge) => `<button class="more-row" data-act="${act}"${v ? ` data-v="${v}"` : ''}>${icon(ic)}<span><b>${t}</b><small>${sub}</small></span>${badge ? `<i class="cnt" aria-label="${badge} непрочитанных">${badge > 9 ? '9+' : badge}</i>` : ''}${icon('chevron')}</button>`;
   return `${head}<section class="sec"><div class="more-list">
     ${pairOn() ? row('nav', 'chat', 'chat', 'Чат', 'Переписка с партнёром', n) : ''}
+    ${row('nav', 'coach', 'spark', 'ИИ-тренер', aiOn() ? 'Вопросы, программа, разбор недели' : 'Подключить умного помощника')}
     ${row('nav', 'body', 'body', 'Тело', 'Вес, замеры и фото')}
     ${row('nav', 'supp', 'pill', 'Добавки', 'Свой план приёма')}
     ${row('awards', '', 'trophy', 'Достижения', 'Награды и ранги')}

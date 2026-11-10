@@ -8,20 +8,21 @@ if (check.status) { console.error(check.stderr || check.stdout); process.exit(1)
 console.log('✓ index.html, app.js and sw.js are built from src/');
 fs.rmSync(SITE, { recursive: true, force: true }); fs.mkdirSync(SITE, { recursive: true });
 for (const f of ['index.html', 'app.js', 'sw.js', 'manifest.webmanifest']) fs.copyFileSync(path.join(ROOT, f), path.join(SITE, f));
-for (const d of ['icons', 'fonts']) fs.cpSync(path.join(ROOT, d), path.join(SITE, d), { recursive: true });
+for (const d of ['icons', 'fonts', 'worker']) fs.cpSync(path.join(ROOT, d), path.join(SITE, d), { recursive: true });
 const gate = 'const gateOk = () => Object.values(accs()).some(verOk);';
 let html = fs.readFileSync(path.join(SITE, 'app.js'), 'utf8'); if (!html.includes(gate)) { console.error('gate line not found'); process.exit(1); }
 const hook = '\nboot();'; if (!html.includes(hook)) { console.error('boot line not found'); process.exit(1); }
 // test-only window into the app's internals (exists only in tests/.tmp/site, never in the shipped app.js)
-const T = 'window.__T = { get S() { return S; }, totalXP, normP, normW, habMerge, habXP, payload, saveProfile, render, dayKey };';
+const T = 'window.__T = { get S() { return S; }, totalXP, normP, normW, habMerge, habXP, payload, saveProfile, saveMeta, allExercises, render, dayKey };';
 fs.writeFileSync(path.join(SITE, 'app.js'), html.replace(gate, 'const gateOk = () => true;').replace(hook, '\n' + T + hook));
 for (const d of ['shots', 'shots28', 'shots271']) fs.mkdirSync(path.join(__dirname, 'scenarios', d), { recursive: true });
-const QUICK = ['smoke22', 'smoke22b', 'smoke22c', 'smoke23', 'smoke24', 'smoke25', 'smoke26', 'smoke27', 'acc29', 'lens29', 'safe30', 'presets30', 'habits31', 'sound31', 'swipe32', 'sw33'];
+const QUICK = ['smoke22', 'smoke22b', 'smoke22c', 'smoke23', 'smoke24', 'smoke25', 'smoke26', 'smoke27', 'acc29', 'lens29', 'safe30', 'presets30', 'habits31', 'sound31', 'swipe32', 'sw33', 'ai34'];
 const FULL = ['audit-320-dark', 'audit-375-light', 'audit-432-dark'];
 const KNOWN = { smoke24: [/dbgDay/] };                              // a known quirk of that script's view, not an app error
 const want = process.argv.slice(2).filter(a => !a.startsWith('--'));
 const list = want.length ? want : (process.argv.includes('--full') ? QUICK.concat(FULL) : QUICK);
 let bad = 0;
+if (!want.length) { const t0 = Date.now(), r = spawnSync('node', [path.join(ROOT, 'worker', 'test.mjs')], { encoding: 'utf8' }), ok = r.status === 0, m = (r.stdout.match(/(\d+) из (\d+) проверок/) || []); console.log(`${ok ? '✓' : '✗'} worker (${((Date.now() - t0) / 1000).toFixed(0)}s) · ${m[1] || '?'}/${m[2] || '?'}`); if (!ok) { bad++; console.log((r.stdout || '').split('\n').filter(l => l.startsWith('✗')).join('\n') || r.stderr.slice(-600)); } }
 for (const name of list) {
   const m = name.match(/^audit-(\d+)-(dark|light)$/), file = m ? 'audit.js' : name + '.js';
   const env = Object.assign({}, process.env, { SITE, REPO: ROOT, SHOTS: '0' }, m ? { W: m[1], SCHEME: m[2] } : {});

@@ -29,7 +29,8 @@ const SERVER = require('../lib/server'), SITE = process.env.SITE, SEED = require
   await tap('[data-act="weekShift"][data-d="-1"]', 400); say('5 previous week:', (await txt('.sheet .sup-day') || '').slice(0, 40), '|', (await txt('.sheet .kv') || '').slice(0, 50));
   await p.keyboard.press('Escape'); await p.waitForTimeout(400);
   // Monday banner
-  await ctx.clock.setFixedTime(new Date(Date.now() + 864e5)); const d = await p.evaluate(() => new Date().getDay());
+  // the Monday after the week of the newest workout, so the test does not depend on the weekday it is run on
+  const nd = new Date(newest + sh); nd.setDate(nd.getDate() - ((nd.getDay() + 6) % 7) + 7); nd.setHours(10, 0, 0, 0); await ctx.clock.setFixedTime(nd); const d = await p.evaluate(() => new Date().getDay());
   await p.reload(); await p.waitForTimeout(1500); await tap('.tab[data-v="today"]', 600); say('6 fake day of week:', d, '| banner:', (await txt('.banner b') || '').slice(0, 40));
   await tap('[data-act="weekOpen"][data-w]', 700); say('6 opened from banner:', await txt('#sheet-title'));
   await p.keyboard.press('Escape'); await p.waitForTimeout(400); await p.reload(); await p.waitForTimeout(1200); say('6 banner after opening:', await p.$$eval('[data-act="weekOpen"][data-w]', e => e.length));

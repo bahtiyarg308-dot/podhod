@@ -1,6 +1,6 @@
 /* «Подход» — офлайн-кеш. При каждом обновлении приложения меняйте VERSION. */
-const VERSION = 'podhod-3.3.0';
-const APP_JS = './app.js?v=b3bbfd793f'; // rewritten by tools/build.js
+const VERSION = 'podhod-3.4.0';
+const APP_JS = './app.js?v=8f78169321'; // rewritten by tools/build.js
 const ASSETS = [
   './',
   './index.html',
@@ -30,7 +30,8 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
-  if (req.mode === 'navigate') {
+  const ROOT = new URL('./', self.registration.scope).pathname;
+  if (req.mode === 'navigate' && (url.pathname === ROOT || url.pathname === ROOT + 'index.html')) { // other pages of the site (e.g. worker/) open as they are
     e.respondWith(caches.match('./index.html').then(r => r || fetch(req)));
     return;
   }

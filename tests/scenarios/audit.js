@@ -73,8 +73,8 @@ const SHOTS = process.env.SHOTS !== '0', SEX = process.env.SEX || '';
     const t0 = Date.now();
     console.log('tabs:', await tabs());
     await audit('today'); await shot('01-today'); await shot('01b-today-full', { full: true });
-    const HOME = { progress:'log', supp:'more', chat:'more', body:'more' };
-    for (const v of ['path', 'log', 'progress', 'hero', 'more', 'supp', 'chat', 'body']) {
+    const HOME = { progress:'log', supp:'more', chat:'more', body:'more', coach:'more' };
+    for (const v of ['path', 'log', 'progress', 'hero', 'more', 'supp', 'chat', 'body', 'coach']) {
       let ok = true;
       if (HOME[v]) { await tap(`.tab[data-v="${HOME[v]}"]`, { w: 400 }); ok = await tap(HOME[v] === 'log' ? `.train-seg [data-v="${v}"]` : `.more-row[data-v="${v}"]`, { opt: v === 'chat' && MODE === 'solo', w: 650 }); }
       else ok = await tap(`.tab[data-v="${v}"]`, { w: 650 });

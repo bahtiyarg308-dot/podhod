@@ -39,6 +39,7 @@
   "css/36-presets.css",
   "css/37-habits.css",
   "css/38-swipe.css",
+  "css/39-coach.css",
   "body.html",
   "js/00-start.js",
   "js/01-helpers.js",
@@ -87,6 +88,7 @@
   "js/45-presets-and-week.js",
   "js/46-habits-path-hero-more.js",
   "js/47-swipe-delete.js",
+  "js/48-ai-coach.js",
   "js/44-events.js",
   "tail.html"
 ]

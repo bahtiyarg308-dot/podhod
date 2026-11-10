@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>ИИ-посредник для «Подхода»</title>
+<style>
+:root{color-scheme:dark light;--bg:#070708;--s:#0e0e10;--l:#232326;--ink:#e9e7e2;--mut:#8e9095;--acc:#e9e7e2}
+@media (prefers-color-scheme:light){:root{--bg:#e8e7e3;--s:#f2f1ed;--l:#cbcac4;--ink:#0f0f10;--mut:#6a6a6c;--acc:#0f0f10}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:28px 16px 80px}
+h1{font-size:26px;margin:0 0 6px;letter-spacing:.02em}h2{font-size:18px;margin:30px 0 8px}
+p,li{color:var(--ink)}.mut{color:var(--mut);font-size:14px}
+ol{padding-left:22px}li{margin:10px 0}
+code{font:13.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--s);border:1px solid var(--l);border-radius:6px;padding:1px 6px;word-break:break-all}
+.box{background:var(--s);border:1px solid var(--l);border-radius:14px;padding:14px 16px;margin:14px 0}
+button{font:600 15px system-ui,sans-serif;background:var(--acc);color:var(--bg);border:0;border-radius:12px;padding:12px 18px;cursor:pointer}
+pre{margin:10px 0 0;max-height:360px;overflow:auto;background:var(--s);border:1px solid var(--l);border-radius:12px;padding:12px;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;word-break:break-word}
+a{color:inherit}
+</style></head><body><main>
+<h1>ИИ-посредник для «Подхода»</h1>
+<p class="mut">Нужен один раз, примерно 10 минут. Бесплатно, карта не нужна. Ключи ИИ живут только у вас в Cloudflare, а не в приложении.</p>
+<h2>Что это</h2>
+<p>Приложение открыто всем, поэтому хранить в нём ключи нельзя. Маленькая программа («воркер») стоит между приложением и ИИ: пускает только вошедших в «Подход», считает дневной лимит и спрашивает ИИ по цепочке <b>Groq → Gemini → Cloudflare Workers AI</b> (первый, который ответил). Что не настроено — пропускается, поэтому минимум — один Cloudflare без ключей.</p>
+<h2>Шаги</h2>
+<ol>
+<li><b>Аккаунт.</b> Зарегистрируйтесь на <a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">dash.cloudflare.com/sign-up</a> (почта и пароль, карта не нужна).</li>
+<li><b>Воркер.</b> Слева «Workers &amp; Pages» → «Create» → «Create Worker». Имя: <code>podhod-ai</code> → «Deploy».</li>
+<li><b>Код.</b> На странице воркера нажмите «Edit code», удалите всё, вставьте код (кнопка ниже) и нажмите «Deploy».</li>
+<li><b>Хранилище лимитов.</b> Слева «Storage &amp; Databases» → «KV» → «Create a namespace». Имя: <code>podhod-limits</code>.</li>
+<li><b>Привязки.</b> Воркер → «Settings» → «Bindings» → «Add» → «KV namespace»: имя переменной <code>LIMITS</code>, хранилище <code>podhod-limits</code>. Ещё раз «Add» → «Workers AI»: имя переменной <code>AI</code>. Сохраните.</li>
+<li><b>Ключи (по желанию, для самых умных и быстрых моделей).</b> «Settings» → «Variables and Secrets» → «Add», тип <b>Secret</b>: <code>GROQ_API_KEY</code> (ключ с <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a>) и/или <code>GEMINI_API_KEY</code> (с <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>). Ключи вводите только здесь и никому их не присылайте. Если сервис недоступен в вашей стране, не обходите ограничение: оставьте только Cloudflare.</li>
+<li><b>Проверка.</b> Откройте <code>https://podhod-ai.<i>ваше-имя</i>.workers.dev/health</code>. Должно быть <code>"ok":true</code>, <code>"kv":true</code> и список <code>providers</code> (минимум <code>cf</code>).</li>
+<li><b>Подключение.</b> В приложении: «Ещё» → «ИИ-тренер» → вставьте адрес воркера → «Подключить».</li>
+</ol>
+<h2>Код воркера</h2>
+<div class="box"><button id="copy" type="button">Скопировать код</button> <span id="ok" class="mut"></span><pre id="code">{{CODE}}</pre></div>
+<h2>Настройки (необязательно)</h2>
+<p class="mut">Переменные в «Variables and Secrets»: <code>DAILY_LIMIT</code> (вопросов в день на человека, по умолчанию 30), <code>GLOBAL_DAILY</code> (на всех, 300), <code>PROVIDERS</code> (порядок, по умолчанию <code>groq,gemini,cf</code>), <code>MODEL_GROQ</code>, <code>MODEL_GEMINI</code>, <code>MODEL_CF</code> (названия моделей, если сервис их сменил), <code>ALLOWED_ORIGIN</code> (если приложение откроется по другому адресу).</p>
+<h2>Если что-то не так</h2>
+<ul><li><b>«ИИ-посредник ещё не настроен»</b> — не добавлена привязка <code>LIMITS</code> или <code>AI</code> (шаг 5).</li><li><b>«Сервер не принял вход»</b> — выйдите из аккаунта в приложении и войдите заново.</li><li><b>«Лимит»</b> — вопросы на сегодня кончились, обновятся завтра (по UTC).</li><li>Бесплатные тарифы ИИ меняются: если один перестал отвечать, воркер сам перейдёт к следующему.</li></ul>
+<script>
+document.getElementById('copy').onclick=async function(){var t=document.getElementById('code').textContent,o=document.getElementById('ok');
+try{await navigator.clipboard.writeText(t);o.textContent='Скопировано';}catch(e){var r=document.createRange();r.selectNodeContents(document.getElementById('code'));var s=getSelection();s.removeAllRanges();s.addRange(r);o.textContent='Выделено: нажмите «Копировать» в меню телефона';}}
+</script>
+</main></body></html>

@@ -30,6 +30,7 @@ function render0() {
   }
   renderNav(); renderSheet(); renderRest();
   if (S.chartsLater) { S.chartsLater = false; requestAnimationFrame(() => setTimeout(() => drawCharts(), 0)); } else drawCharts();
+  if (S.view === 'coach' && S.coachScroll) { S.coachScroll = false; requestAnimationFrame(() => window.scrollTo(0, document.documentElement.scrollHeight)); }
   if (S.view === 'chat' && S.chatScroll) { S.chatScroll = false; requestAnimationFrame(() => window.scrollTo(0, document.documentElement.scrollHeight)); }
   if (S.countUp) { S.countUp = false; countUp(main); }
   S.justKey = null;
@@ -72,6 +73,7 @@ function viewHTML() {
   if (S.view === 'path') return viewPath();
   if (S.view === 'hero') return viewHero();
   if (S.view === 'more') return viewMore();
+  if (S.view === 'coach') return viewCoach();
   return viewToday();
 }
 function headHTML(title, eyebrow, extra = '') {

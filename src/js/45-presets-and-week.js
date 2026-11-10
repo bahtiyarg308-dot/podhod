@@ -47,6 +47,7 @@ SHEETS.weekrep = sh => {
       ${lag ? `<li>${icon('up')}<span><b>Чего не хватило:</b> ${MUS[lag[0]][0].toLowerCase()} — ${nf(lag[1], 1)} подх. в неделю в среднем за месяц</span></li>` : ''}
     </ul>
     ${w.prs.length ? `<div class="sblock" style="border:0;padding-bottom:0"><b>Рекорды недели</b><ul class="prs">${w.prs.slice(0, 6).map(x => { const e = exById(x.ex); return `<li><span class="d">${dShort(x.start)}</span><span class="nv"><span class="n">${esc(e.name)}</span><span class="v">${esc(setLong(x.set, e.kind))}</span></span></li>`; }).join('')}</ul></div>` : ''}
+  ${live && aiOn() && w.list.length ? `<button class="btn btn-block" style="margin-top:14px" data-act="coachWeek">${icon('spark')} Разобрать с ИИ-тренером</button>` : ''}
   </div>`;
 };
 function weekBanner() {

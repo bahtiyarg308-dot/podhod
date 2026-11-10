@@ -11,6 +11,10 @@ const SERVER = require('../lib/server'), SITE = process.env.SITE, DIR = path.joi
   await p.goto('http://127.0.0.1:8834/'); await p.evaluate(() => navigator.serviceWorker.ready); await p.waitForTimeout(1500);
   const swA = fs.readFileSync(path.join(DIR, 'sw.js'), 'utf8'), verA = (swA.match(/const VERSION = '([^']+)'/) || [])[1];
   say('1 installed. script in the page:', await appUrl(), '| caches:', JSON.stringify(await caches()), '| app started:', await p.evaluate(() => window.__podhod));
+  // other pages of the site open as themselves, the service worker does not replace them with the app
+  await p.goto('http://127.0.0.1:8834/worker/'); await p.waitForTimeout(800);
+  say('1b page of the site next to the app:', await p.title(), '| app code on it:', await p.evaluate(() => !!window.__podhod));
+  await p.goto('http://127.0.0.1:8834/'); await p.waitForTimeout(1000);
   // offline start from the cache
   await ctx.setOffline(true); await p.reload(); await p.waitForTimeout(1500);
   say('2 offline start works:', await p.evaluate(() => window.__podhod === 1 && !!document.querySelector('#main .view, .page-head')), '| server was not needed');
