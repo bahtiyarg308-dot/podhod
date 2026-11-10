@@ -1,6 +1,6 @@
 /* «Подход» — офлайн-кеш. При каждом обновлении приложения меняйте VERSION. */
-const VERSION = 'podhod-3.5.0';
-const APP_JS = './app.js?v=e66bcb74e6'; // rewritten by tools/build.js
+const VERSION = 'podhod-3.5.2';
+const APP_JS = './app.js?v=8d10b8557f'; // rewritten by tools/build.js
 const ASSETS = [
   './',
   './index.html',

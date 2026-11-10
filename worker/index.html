@@ -19,13 +19,17 @@ a{color:inherit}
 <p class="mut">Нужен один раз, примерно 10 минут. Бесплатно, карта не нужна. Ключи ИИ живут только у вас в Cloudflare, а не в приложении.</p>
 <h2>Что это</h2>
 <p>Приложение открыто всем, поэтому хранить в нём ключи нельзя. Маленькая программа («воркер») стоит между приложением и ИИ: пускает только вошедших в «Подход», считает дневной лимит и спрашивает ИИ по цепочке <b>Groq → Gemini → Cloudflare Workers AI</b> (первый, который ответил). Что не настроено — пропускается, поэтому минимум — один Cloudflare без ключей.</p>
-<h2>Шаги</h2>
+<h2>Быстрый путь (попробуйте сначала его)</h2>
+<div class="box"><p style="margin-top:0">Кнопка сама создаст воркер, хранилище лимитов и подключит Workers AI. Cloudflare попросит войти и разрешить доступ к GitHub. Я не мог проверить это отсюда: если что-то не получится, идите по ручным шагам ниже.</p><a href="https://deploy.workers.cloudflare.com/?url=https://github.com/bahtiyarg308-dot/podhod/tree/main/worker" target="_blank" rel="noopener"><button type="button">Развернуть на Cloudflare</button></a></div>
+<p class="mut"><b>После кнопки добавьте переменную <code>ALLOWED_EMAILS</code></b> (шаг «Кто может пользоваться» ниже): она нужна и при быстром пути. <b>Токены API не нужны</b> ни для быстрого, ни для ручного пути: воркер работает внутри вашего аккаунта и сам обращается к ИИ. Никому не присылайте токены и ключи.</p>
+<h2>Ручные шаги</h2>
 <ol>
 <li><b>Аккаунт.</b> Зарегистрируйтесь на <a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">dash.cloudflare.com/sign-up</a> (почта и пароль, карта не нужна).</li>
 <li><b>Воркер.</b> Слева «Workers &amp; Pages» → «Create» → «Create Worker». Имя: <code>podhod-ai</code> → «Deploy».</li>
 <li><b>Код.</b> На странице воркера нажмите «Edit code», удалите всё, вставьте код (кнопка ниже) и нажмите «Deploy».</li>
 <li><b>Хранилище лимитов.</b> Слева «Storage &amp; Databases» → «KV» → «Create a namespace». Имя: <code>podhod-limits</code>.</li>
 <li><b>Привязки.</b> Откройте воркер → вкладка «Bindings» (в старом виде панели: «Settings» → «Bindings») → «Add binding» → «KV namespace»: имя переменной <code>LIMITS</code>, хранилище <code>podhod-limits</code>. Ещё раз «Add binding» → «Workers AI»: имя переменной <code>AI</code>. Названия пунктов могут чуть отличаться: ищите слова KV и Workers AI.</li>
+<li><b>Кто может пользоваться (обязательно).</b> «Settings» → «Variables and Secrets» → «Add», тип Text: <code>ALLOWED_EMAILS</code> = ваша почта из приложения и почта девушки через запятую. Без этого воркер никого не пускает. Это защита: иначе любой, кто зарегистрируется в приложении, мог бы тратить ваш бесплатный лимит ИИ.</li>
 <li><b>Ключи — только если сервис доступен в вашей стране, иначе пропустите этот шаг.</b> По данным самого Groq, он не работает из России, а Gemini по описаниям недоступен в ряде стран, включая Россию: не обходите ограничения, оставьте только Cloudflare. Если у вас доступ есть: «Settings» → «Variables and Secrets» → «Add», тип <b>Secret</b>: <code>GROQ_API_KEY</code> (<a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a>) и/или <code>GEMINI_API_KEY</code> (<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>). Ключи вводите только здесь и никому их не присылайте.</li>
 <li><b>Проверка.</b> Откройте <code>https://podhod-ai.<i>ваше-имя</i>.workers.dev/health</code>. Должно быть <code>"ok":true</code>, <code>"kv":true</code> и список <code>providers</code> (минимум <code>cf</code>).</li>
 <li><b>Подключение.</b> В приложении: «Ещё» → «ИИ-тренер» → вставьте адрес воркера → «Подключить».</li>
@@ -37,6 +41,7 @@ a{color:inherit}
 //   2. считает дневной лимит на человека и общий, чтобы бесплатные тарифы не кончились (нужен KV «LIMITS»);
 //   3. сам задаёт роль и правила ИИ (приложение шлёт только вопрос и краткую сводку по тренировкам);
 //   4. спрашивает ИИ по цепочке и берёт первый ответ: Groq → Gemini → Cloudflare Workers AI (что настроено, то и работает).
+//   0. пускает только почты из списка ALLOWED_EMAILS (обязательная настройка);
 // Настройки — в панели Cloudflare (Settings → Variables and Secrets / Bindings), см. worker/README.md.
 
 const DEFAULTS = {
@@ -47,7 +52,7 @@ const DEFAULTS = {
   PROVIDERS: 'groq,gemini,cf',
   MODEL_GROQ: 'openai/gpt-oss-120b',
   MODEL_GEMINI: 'gemini-2.5-flash',
-  MODEL_CF: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+  MODEL_CF: '@cf/nvidia/nemotron-3-120b-a12b,@cf/meta/llama-3.3-70b-instruct-fp8-fast', // через запятую: пробуются по очереди, пока одна не ответит
   TIMEOUT_MS: '14000',
 };
 const MODES = { chat: { tokens: 700, temp: .6, json: false }, week: { tokens: 600, temp: .5, json: false }, program: { tokens: 1500, temp: .4, json: true }, goal: { tokens: 1000, temp: .4, json: true } };
@@ -111,8 +116,10 @@ async function verifyToken(token, project) {
   let key = await jwk(head.kid); if (!key) key = await jwk(head.kid, true); if (!key) throw new Error('kid');
   const ck = await crypto.subtle.importKey('jwk', { kty: key.kty, n: key.n, e: key.e, alg: 'RS256', ext: true }, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
   if (!(await crypto.subtle.verify('RSASSA-PKCS1-v1_5', ck, b64u(p[2]), enc.encode(p[0] + '.' + p[1])))) throw new Error('signature');
-  return body.sub;
+  return { uid: body.sub, email: typeof body.email === 'string' ? body.email : '' };
 }
+// кто вообще может пользоваться: только почты из ALLOWED_EMAILS (через запятую). Без списка воркер никого не пускает, иначе любой, кто зарегистрируется в приложении, тратил бы ваш бесплатный лимит
+const allowList = env =&gt; String(env.ALLOWED_EMAILS || '').split(/[,\s;]+/).map(s =&gt; s.trim().toLowerCase()).filter(Boolean);
 
 /* ---------- дневной лимит ---------- */
 async function takeQuota(env, uid) {
@@ -169,10 +176,18 @@ async function viaGemini(env, q, m, ms) {
   const j = await r.json(), parts = (j.candidates &amp;&amp; j.candidates[0] &amp;&amp; j.candidates[0].content &amp;&amp; j.candidates[0].content.parts) || [];
   return { text: tidy(parts.map(p =&gt; p.text || '').join('')), model };
 }
+const REASONING = /nemotron|gpt-oss|deepseek-r1|qwq|qwen3/i; // модели, которые сначала «думают»: им нужен запас токенов
 async function viaCf(env, q, m, ms) {
-  const model = cfg(env, 'MODEL_CF'), r = await withTimeout(env.AI.run(model, { messages: [{ role: 'system', content: buildSystem(q) }, ...q.messages], max_tokens: m.tokens, temperature: m.temp }), ms + 8000);
-  const t = r &amp;&amp; (r.response ?? (r.choices &amp;&amp; r.choices[0] &amp;&amp; r.choices[0].message &amp;&amp; r.choices[0].message.content) ?? (r.result &amp;&amp; r.result.response));
-  return { text: tidy(typeof t === 'string' ? t : ''), model };
+  const models = cfg(env, 'MODEL_CF').split(',').map(x =&gt; x.trim()).filter(Boolean); let last;
+  for (const model of models) {
+    try {
+      const r = await withTimeout(env.AI.run(model, { messages: [{ role: 'system', content: buildSystem(q) }, ...q.messages], max_tokens: m.tokens + (REASONING.test(model) ? 1500 : 0), temperature: m.temp }), ms + 2000);
+      const t = r &amp;&amp; (r.response ?? (r.choices &amp;&amp; r.choices[0] &amp;&amp; r.choices[0].message &amp;&amp; r.choices[0].message.content) ?? (r.result &amp;&amp; r.result.response)), text = tidy(typeof t === 'string' ? t : '');
+      if (text) return { text, model };
+      last = new Error('empty ' + model);
+    } catch (e) { last = e; }
+  }
+  throw last || new Error('cf');
 }
 const PROVIDERS = {
   groq: { ok: env =&gt; !!env.GROQ_API_KEY, run: viaGroq },
@@ -195,13 +210,16 @@ export default {
   async fetch(req, env) {
     const url = new URL(req.url), origin = req.headers.get('Origin');
     if (req.method === 'OPTIONS') return allowedOrigin(env, origin) ? reply(env, req, 204, null) : new Response(null, { status: 403 });
-    if (url.pathname === '/' || url.pathname === '/health') return reply(env, req, 200, { ok: true, service: 'podhod-ai', providers: chain(env), kv: !!env.LIMITS });
+    if (url.pathname === '/' || url.pathname === '/health') return reply(env, req, 200, { ok: true, service: 'podhod-ai', providers: chain(env), kv: !!env.LIMITS, allowlist: allowList(env).length &gt; 0 });
     if (url.pathname !== '/ask' || req.method !== 'POST') return reply(env, req, 404, { error: 'not_found' });
     if (origin &amp;&amp; !allowedOrigin(env, origin)) return reply(env, req, 403, { error: 'origin' });
     if (!env.LIMITS) return reply(env, req, 503, { error: 'not_configured', detail: 'нет хранилища LIMITS' });
     if (!chain(env).length) return reply(env, req, 503, { error: 'not_configured', detail: 'нет ни одного ИИ' });
+    const allow = allowList(env); if (!allow.length) return reply(env, req, 503, { error: 'not_configured', detail: 'не заполнен список ALLOWED_EMAILS' });
     const auth = req.headers.get('Authorization') || '';
-    let uid; try { uid = await verifyToken(auth.replace(/^Bearer\s+/i, ''), cfg(env, 'FIREBASE_PROJECT')); } catch (e) { return reply(env, req, 401, { error: 'auth', detail: String(e &amp;&amp; e.message || e) }); }
+    let who; try { who = await verifyToken(auth.replace(/^Bearer\s+/i, ''), cfg(env, 'FIREBASE_PROJECT')); } catch (e) { return reply(env, req, 401, { error: 'auth', detail: String(e &amp;&amp; e.message || e) }); }
+    if (!who.email || !allow.includes(who.email.toLowerCase())) return reply(env, req, 403, { error: 'not_allowed' });
+    const uid = who.uid;
     const raw = await req.text(); if (raw.length &gt; 48000) return reply(env, req, 413, { error: 'too_big' });
     const q = parseBody(raw); if (q.err) return reply(env, req, 400, { error: 'bad_request', detail: q.err });
     const quota = await takeQuota(env, uid);
@@ -215,7 +233,7 @@ export default {
 <h2>Настройки (необязательно)</h2>
 <p class="mut">Переменные в «Variables and Secrets»: <code>DAILY_LIMIT</code> (вопросов в день на человека, по умолчанию 30), <code>GLOBAL_DAILY</code> (на всех, 50: с полной сводкой бесплатного Cloudflare крупной модели хватает примерно на 40–60 ответов в сутки; если взять лёгкую модель, можно поднять лимит), <code>PROVIDERS</code> (порядок, по умолчанию <code>groq,gemini,cf</code>), <code>MODEL_GROQ</code>, <code>MODEL_GEMINI</code>, <code>MODEL_CF</code> (названия моделей: если сервис их сменил или хотите другую; список моделей Cloudflare — в разделе Workers AI → Models; лёгкая модель отвечает быстрее и позволяет задать больше вопросов в сутки), <code>ALLOWED_ORIGIN</code> (если приложение откроется по другому адресу).</p>
 <h2>Если что-то не так</h2>
-<ul><li><b>«ИИ-посредник ещё не настроен»</b> — не добавлена привязка <code>LIMITS</code> или <code>AI</code> (шаг 5).</li><li><b>«Сервер не принял вход»</b> — выйдите из аккаунта в приложении и войдите заново.</li><li><b>«Лимит»</b> — вопросы на сегодня кончились, обновятся завтра (по UTC).</li><li>Бесплатные тарифы ИИ меняются: если один перестал отвечать, воркер сам перейдёт к следующему.</li></ul>
+<ul><li><b>«ИИ-посредник ещё не настроен»</b> — не добавлена привязка <code>LIMITS</code> или <code>AI</code> (шаг 5).</li><li><b>«Этот аккаунт не допущен»</b> — его почты нет в <code>ALLOWED_EMAILS</code>.</li><li><b>«Сервер не принял вход»</b> — выйдите из аккаунта в приложении и войдите заново.</li><li><b>«Лимит»</b> — вопросы на сегодня кончились, обновятся завтра (по UTC).</li><li>Бесплатные тарифы ИИ меняются: если один перестал отвечать, воркер сам перейдёт к следующему.</li></ul>
 <script>
 document.getElementById('copy').onclick=async function(){var t=document.getElementById('code').textContent,o=document.getElementById('ok');
 try{await navigator.clipboard.writeText(t);o.textContent='Скопировано';}catch(e){var r=document.createRange();r.selectNodeContents(document.getElementById('code'));var s=getSelection();s.removeAllRanges();s.addRange(r);o.textContent='Выделено: нажмите «Копировать» в меню телефона';}}

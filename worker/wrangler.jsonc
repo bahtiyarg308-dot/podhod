@@ -1,0 +1,9 @@
+{
+  // Конфигурация для кнопки «Deploy to Cloudflare» и для wrangler: воркер + хранилище лимитов + Workers AI
+  "name": "podhod-ai",
+  "main": "podhod-ai.js",
+  "compatibility_date": "2025-09-01",
+  "workers_dev": true,
+  "ai": { "binding": "AI" },
+  "kv_namespaces": [{ "binding": "LIMITS" }]
+}

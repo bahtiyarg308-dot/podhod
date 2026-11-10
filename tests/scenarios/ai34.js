@@ -1,4 +1,4 @@
-// 3.4: AI coach: setup, consent (versioned), what is sent (everything except the partner chat), chat, program, goal and habits, errors, stored conversation (the worker is a stand-in)
+// 3.5: AI coach: setup, versioned consent, what is sent (everything except the partner chat), only the profile own account, chat, program, goal and habits, errors, stored conversation (the worker is a stand-in)
 const { chromium } = require('playwright'); const fs = require('fs');
 const SERVER = require('../lib/server'), SITE = process.env.SITE, SEED = require('path').join(__dirname, '..', 'fixtures', 'seed.json');
 (async () => {
@@ -78,6 +78,7 @@ const SERVER = require('../lib/server'), SITE = process.env.SITE, SEED = require
   next = 'abort'; await sendText('без сети'); say('17 no network:', (await errText() || '').slice(0, 30));
   next = { status: 401, body: { error: 'auth' } }; await sendText('токен'); say('18 rejected login:', (await errText() || '').slice(0, 40), '| no retry button:', !(await p.$('[data-act="coachRetry"]')));
   next = { status: 503, body: { error: 'not_configured' } }; await sendText('настройка'); say('19 worker not configured:', (await errText() || '').slice(0, 40));
+  next = { status: 403, body: { error: 'not_allowed' } }; await sendText('чужой'); say('19b account not on the worker list:', (await errText() || '').slice(0, 60), '| no retry button:', !(await p.$('[data-act="coachRetry"]')));
   next = { status: 200, body: { text: '<img src=x onerror="window.__xss=1"> **ok**', left: 3 } }; await sendText('xss'); say('20 HTML from the AI is shown as text:', await p.$$eval('.ai-msg:not(.me) .ai-b img', e => e.length) === 0, '| script did not run:', !(await p.evaluate(() => window.__xss)), '| text visible:', (await p.$$eval('.ai-msg:not(.me)', e => e[e.length - 1].innerText)).includes('<img'));
   next = { status: 200, body: { text: 'это не JSON', left: 2 } }; await p.evaluate(() => { document.querySelector('.ai-chips .chip:nth-child(2)').click(); }); await p.waitForTimeout(900);
   say('21 program answer that is not JSON: calm fallback, no card:', (await p.$$eval('.ai-msg:not(.me)', e => e[e.length - 1].innerText)).includes('не в том виде'), '|', !(await p.$('.ai-card [data-act="coachAddProg"]:last-of-type')) || true);
@@ -93,5 +94,11 @@ const SERVER = require('../lib/server'), SITE = process.env.SITE, SEED = require
   // a long history: the summary stays within what the worker accepts
   await ev(() => { const base = S.workouts.slice(); let n = 0; for (let k = 1; k <= 20; k++) base.forEach(w => { const c = JSON.parse(JSON.stringify(w)); c.id = 'big' + (n++); c.start -= k * 40 * 864e5; c.end -= k * 40 * 864e5; c.note = 'заметка '.repeat(20); S.workouts.push(normW(c, c.id)); }); S.workouts.sort((a, b) => b.start - a.start); saveProfile(); });
   await tap('[data-act="aiCtxOpen"]', 900); const big = (await txt('.ai-pre') || ''); say('25 with', await ev(() => S.workouts.length), 'workouts the summary is', big.length, 'chars (limit 20000), still has the newest workout:', big.includes('workouts'));
+  // the AI works only for the profile that has its own linked account
+  await esc(); await ev(() => { S.meta.aiOk = 2; saveMeta(); }); const acc0 = await ev(() => S.meta.accs.main);
+  await ev(() => { S.meta.accs = { other: S.meta.accs.main }; saveMeta(); render(); }); await p.waitForTimeout(600); const b2 = calls.length;
+  say('26 profile without its own account: chat closed, account of another profile is NOT borrowed:', !(await p.$('#coach-in')), '| card:', await txt('.ai-setup h3'), '| login button:', !!(await p.$('[data-act="accOpen"]')), '| requests:', calls.length - b2);
+  await p.evaluate(`(() => { const { S, saveMeta, render } = window.__T; S.meta.accs = { main: ${JSON.stringify(acc0)} }; saveMeta(); render(); })()`); await p.waitForTimeout(600);
+  await p.fill('#coach-in', 'снова с аккаунтом'); await tap('[data-act="coachSend"]', 900); say('27 account linked again: question goes out with that account\'s token:', calls.length - b2, '|', calls[calls.length - 1].auth);
   console.log('ERRORS', JSON.stringify(errs)); await b.close(); srv.kill();
 })();

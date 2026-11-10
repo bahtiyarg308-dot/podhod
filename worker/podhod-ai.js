@@ -4,6 +4,7 @@
 //   2. считает дневной лимит на человека и общий, чтобы бесплатные тарифы не кончились (нужен KV «LIMITS»);
 //   3. сам задаёт роль и правила ИИ (приложение шлёт только вопрос и краткую сводку по тренировкам);
 //   4. спрашивает ИИ по цепочке и берёт первый ответ: Groq → Gemini → Cloudflare Workers AI (что настроено, то и работает).
+//   0. пускает только почты из списка ALLOWED_EMAILS (обязательная настройка);
 // Настройки — в панели Cloudflare (Settings → Variables and Secrets / Bindings), см. worker/README.md.
 
 const DEFAULTS = {
@@ -14,7 +15,7 @@ const DEFAULTS = {
   PROVIDERS: 'groq,gemini,cf',
   MODEL_GROQ: 'openai/gpt-oss-120b',
   MODEL_GEMINI: 'gemini-2.5-flash',
-  MODEL_CF: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+  MODEL_CF: '@cf/nvidia/nemotron-3-120b-a12b,@cf/meta/llama-3.3-70b-instruct-fp8-fast', // через запятую: пробуются по очереди, пока одна не ответит
   TIMEOUT_MS: '14000',
 };
 const MODES = { chat: { tokens: 700, temp: .6, json: false }, week: { tokens: 600, temp: .5, json: false }, program: { tokens: 1500, temp: .4, json: true }, goal: { tokens: 1000, temp: .4, json: true } };
@@ -78,8 +79,10 @@ async function verifyToken(token, project) {
   let key = await jwk(head.kid); if (!key) key = await jwk(head.kid, true); if (!key) throw new Error('kid');
   const ck = await crypto.subtle.importKey('jwk', { kty: key.kty, n: key.n, e: key.e, alg: 'RS256', ext: true }, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
   if (!(await crypto.subtle.verify('RSASSA-PKCS1-v1_5', ck, b64u(p[2]), enc.encode(p[0] + '.' + p[1])))) throw new Error('signature');
-  return body.sub;
+  return { uid: body.sub, email: typeof body.email === 'string' ? body.email : '' };
 }
+// кто вообще может пользоваться: только почты из ALLOWED_EMAILS (через запятую). Без списка воркер никого не пускает, иначе любой, кто зарегистрируется в приложении, тратил бы ваш бесплатный лимит
+const allowList = env => String(env.ALLOWED_EMAILS || '').split(/[,\s;]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
 
 /* ---------- дневной лимит ---------- */
 async function takeQuota(env, uid) {
@@ -136,10 +139,18 @@ async function viaGemini(env, q, m, ms) {
   const j = await r.json(), parts = (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || [];
   return { text: tidy(parts.map(p => p.text || '').join('')), model };
 }
+const REASONING = /nemotron|gpt-oss|deepseek-r1|qwq|qwen3/i; // модели, которые сначала «думают»: им нужен запас токенов
 async function viaCf(env, q, m, ms) {
-  const model = cfg(env, 'MODEL_CF'), r = await withTimeout(env.AI.run(model, { messages: [{ role: 'system', content: buildSystem(q) }, ...q.messages], max_tokens: m.tokens, temperature: m.temp }), ms + 8000);
-  const t = r && (r.response ?? (r.choices && r.choices[0] && r.choices[0].message && r.choices[0].message.content) ?? (r.result && r.result.response));
-  return { text: tidy(typeof t === 'string' ? t : ''), model };
+  const models = cfg(env, 'MODEL_CF').split(',').map(x => x.trim()).filter(Boolean); let last;
+  for (const model of models) {
+    try {
+      const r = await withTimeout(env.AI.run(model, { messages: [{ role: 'system', content: buildSystem(q) }, ...q.messages], max_tokens: m.tokens + (REASONING.test(model) ? 1500 : 0), temperature: m.temp }), ms + 2000);
+      const t = r && (r.response ?? (r.choices && r.choices[0] && r.choices[0].message && r.choices[0].message.content) ?? (r.result && r.result.response)), text = tidy(typeof t === 'string' ? t : '');
+      if (text) return { text, model };
+      last = new Error('empty ' + model);
+    } catch (e) { last = e; }
+  }
+  throw last || new Error('cf');
 }
 const PROVIDERS = {
   groq: { ok: env => !!env.GROQ_API_KEY, run: viaGroq },
@@ -162,13 +173,16 @@ export default {
   async fetch(req, env) {
     const url = new URL(req.url), origin = req.headers.get('Origin');
     if (req.method === 'OPTIONS') return allowedOrigin(env, origin) ? reply(env, req, 204, null) : new Response(null, { status: 403 });
-    if (url.pathname === '/' || url.pathname === '/health') return reply(env, req, 200, { ok: true, service: 'podhod-ai', providers: chain(env), kv: !!env.LIMITS });
+    if (url.pathname === '/' || url.pathname === '/health') return reply(env, req, 200, { ok: true, service: 'podhod-ai', providers: chain(env), kv: !!env.LIMITS, allowlist: allowList(env).length > 0 });
     if (url.pathname !== '/ask' || req.method !== 'POST') return reply(env, req, 404, { error: 'not_found' });
     if (origin && !allowedOrigin(env, origin)) return reply(env, req, 403, { error: 'origin' });
     if (!env.LIMITS) return reply(env, req, 503, { error: 'not_configured', detail: 'нет хранилища LIMITS' });
     if (!chain(env).length) return reply(env, req, 503, { error: 'not_configured', detail: 'нет ни одного ИИ' });
+    const allow = allowList(env); if (!allow.length) return reply(env, req, 503, { error: 'not_configured', detail: 'не заполнен список ALLOWED_EMAILS' });
     const auth = req.headers.get('Authorization') || '';
-    let uid; try { uid = await verifyToken(auth.replace(/^Bearer\s+/i, ''), cfg(env, 'FIREBASE_PROJECT')); } catch (e) { return reply(env, req, 401, { error: 'auth', detail: String(e && e.message || e) }); }
+    let who; try { who = await verifyToken(auth.replace(/^Bearer\s+/i, ''), cfg(env, 'FIREBASE_PROJECT')); } catch (e) { return reply(env, req, 401, { error: 'auth', detail: String(e && e.message || e) }); }
+    if (!who.email || !allow.includes(who.email.toLowerCase())) return reply(env, req, 403, { error: 'not_allowed' });
+    const uid = who.uid;
     const raw = await req.text(); if (raw.length > 48000) return reply(env, req, 413, { error: 'too_big' });
     const q = parseBody(raw); if (q.err) return reply(env, req, 400, { error: 'bad_request', detail: q.err });
     const quota = await takeQuota(env, uid);

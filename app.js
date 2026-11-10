@@ -2,7 +2,7 @@
 (() => {
 'use strict';
 window.__podhod = 1; // the page tells that this file was loaded (index.html shows a message otherwise)
-const APP_VERSION = '3.5.0';
+const APP_VERSION = '3.5.2';
 
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
@@ -5492,6 +5492,7 @@ const AI_URL_DEFAULT = ''; // адрес воркера (https://…workers.dev)
 const AI_KEEP = 30;
 const aiUrl = () => { const u = String((S.meta && S.meta.aiUrl) || AI_URL_DEFAULT || '').trim().replace(/\/+$/, ''); return /^https:\/\/[^\s/]+(\/[^\s]*)?$/.test(u) ? u : ''; };
 const aiOn = () => !!aiUrl();
+const aiAcc = () => { const a = accOf(); return a && verOk(a) ? a : null; }; // только аккаунт ЭТОГО профиля: чужой аккаунт с этого телефона не подставляется
 const AI_QUICK = [
   ['week', 'Разбор недели', 'Разберите мою прошлую и текущую неделю.'],
   ['program', 'Программа по моим данным', 'Составьте мне программу на неделю под мой уровень и цель.'],
@@ -5499,9 +5500,9 @@ const AI_QUICK = [
   ['chat', 'Что тренировать сегодня?', 'Что мне лучше потренировать сегодня и почему?'],
 ];
 const AI_ERR = {
-  nourl: 'Адрес ИИ-посредника не указан.', noacc: 'Для ИИ-тренера нужно войти в аккаунт.', relogin: 'Нужно войти в аккаунт заново (настройки → аккаунт).', auth: 'Сервер не принял вход. Выйдите и войдите в аккаунт заново.',
+  nourl: 'Адрес ИИ-посредника не указан.', noacc: 'ИИ-тренер работает только в профиле, привязанном к аккаунту. Войдите в аккаунт для этого профиля.', relogin: 'Нужно войти в аккаунт заново (настройки → аккаунт).', auth: 'Сервер не принял вход. Выйдите и войдите в аккаунт заново.',
   net: 'Нет связи. Проверьте интернет и повторите.', slow: 'ИИ отвечает слишком долго. Попробуйте ещё раз.', limit: 'На сегодня вопросы закончились. Они обновятся завтра.', limitAll: 'Сегодня ИИ-тренер уже ответил слишком многим. Загляните завтра.',
-  down: 'ИИ сейчас не отвечает. Попробуйте через минуту.', conf: 'ИИ-посредник ещё не настроен до конца (см. инструкцию).', bad: 'Не получилось отправить вопрос. Сократите его и повторите.',
+  forbidden: 'Этот аккаунт не допущен к ИИ-тренеру. Владелец воркера должен добавить вашу почту в список ALLOWED_EMAILS.', down: 'ИИ сейчас не отвечает. Попробуйте через минуту.', conf: 'ИИ-посредник ещё не настроен до конца (см. инструкцию).', bad: 'Не получилось отправить вопрос. Сократите его и повторите.',
 };
 
 /* ---------- сводка для ИИ: всё о вас, кроме переписки; без имени и почты, без фото и данных партнёра ---------- */
@@ -5542,13 +5543,13 @@ const aiCtxText = () => JSON.stringify(aiContext(), null, 1);
 /* ---------- запрос ---------- */
 async function aiAsk(mode, messages, extra = {}) {
   const url = aiUrl(); if (!url) throw { code: 'nourl' };
-  const acc = accOf() || Object.values(accs()).find(verOk); if (!acc || !verOk(acc)) throw { code: 'noacc' };
+  const acc = aiAcc(); if (!acc) throw { code: 'noacc' };
   let tok; try { tok = await accToken(acc); } catch (e) { throw { code: e && e.code === 'relogin' ? 'relogin' : 'net' }; }
   const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 35000); let r;
   try { r = await fetch(url + '/ask', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok }, body: JSON.stringify({ mode, messages, context: aiContext(), ...extra }), signal: ctl.signal }); }
   catch (e) { throw { code: ctl.signal.aborted ? 'slow' : 'net' }; } finally { clearTimeout(timer); }
   const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw { code: r.status === 429 ? (j.why === 'global' ? 'limitAll' : 'limit') : r.status === 401 ? 'auth' : r.status === 502 ? 'down' : r.status === 503 ? 'conf' : 'bad' };
+  if (!r.ok) throw { code: r.status === 429 ? (j.why === 'global' ? 'limitAll' : 'limit') : r.status === 401 ? 'auth' : (r.status === 403 && j.error === 'not_allowed') ? 'forbidden' : r.status === 502 ? 'down' : r.status === 503 ? 'conf' : 'bad' };
   if (typeof j.text !== 'string' || !j.text.trim()) throw { code: 'down' };
   return j;
 }
@@ -5593,7 +5594,7 @@ function coachLoad() {
 }
 const coachSave = () => { const c = coachS(); KV.set('coach:' + c.pid, c.msgs.slice(-AI_KEEP).map(m => ({ r: m.r, t: m.t, at: m.at, mode: m.mode, data: m.data }))); };
 async function coachSend(text, mode) {
-  const c = coachS(); text = String(text || '').trim().slice(0, 1000); if (!text || c.busy || !(S.meta && S.meta.aiOk === AI_CONSENT) || !aiOn()) return;
+  const c = coachS(); text = String(text || '').trim().slice(0, 1000); if (!text || c.busy || !(S.meta && S.meta.aiOk === AI_CONSENT) || !aiOn() || !aiAcc()) return;
   await coachLoad(); if (c.busy) return;
   c.mode = mode || 'chat'; c.err = ''; c.draft = ''; c.msgs.push({ r: 'u', t: text, at: Date.now() }); c.busy = true; S.coachScroll = true; sfx('send'); render();
   const hist = c.msgs.slice(-8).map(m => ({ role: m.r === 'u' ? 'user' : 'assistant', content: m.t.slice(0, 1500) })); while (hist.length && hist[0].role !== 'user') hist.shift();
@@ -5624,11 +5625,12 @@ function viewCoach() {
     <div class="row" style="margin-top:12px"><button class="btn btn-primary" data-act="aiSaveUrl">Подключить</button>${on ? '<button class="btn" data-act="aiCfgToggle">Отмена</button>' : ''}</div>
     <p class="fine"><a href="worker/" target="_blank" rel="noopener">Как создать посредника</a></p></section>`;
   if (!on || c.cfg) return head + setup;
-  if (!ok) return `${head}<section class="panel ai-setup"><h3>Перед началом</h3><p>Чтобы ИИ видел вашу картину целиком, с каждым вопросом в сервис уходит сводка о вас: уровень, вся история тренировок (последние подробно, остальное цифрами), рекорды, программы и расписание, привычки, добавки, замеры, вес и ваши заметки к тренировкам. <b>Не отправляются:</b> переписка с партнёром, фото, данные партнёра, имя и почта.</p><p>Ответы могут быть неточными и не заменяют врача или тренера.</p><button class="btn btn-block" data-act="aiCtxOpen">Посмотреть, что именно уйдёт</button><button class="btn btn-primary btn-block" data-act="aiConsent">Понятно, включить</button><p class="fine"><button class="btn btn-ghost btn-sm" data-act="aiCfgToggle">Изменить адрес посредника</button></p></section>`;
+  if (!aiAcc()) return `${head}<section class="panel ai-setup"><h3>Нужен аккаунт</h3><p>ИИ-тренер видит только данные этого профиля и только если профиль привязан к вашему аккаунту. Другие профили на телефоне, чужие аккаунты и облако приложения ему недоступны.</p><button class="btn btn-primary btn-block" data-act="accOpen">Войти в аккаунт</button></section>`;
+  if (!ok) return `${head}<section class="panel ai-setup"><h3>Перед началом</h3><p>Чтобы ИИ видел вашу картину целиком, с каждым вопросом в сервис уходит сводка о вас: уровень, вся история тренировок (последние подробно, остальное цифрами), рекорды, программы и расписание, привычки, добавки, замеры, вес и ваши заметки к тренировкам. <b>Не отправляются:</b> переписка с партнёром, фото, данные партнёра, имя и почта. Тренер видит только данные этого профиля, привязанного к вашему аккаунту: другие профили на телефоне, чужие аккаунты и облако приложения ему недоступны.</p><p>Ответы могут быть неточными и не заменяют врача или тренера.</p><button class="btn btn-block" data-act="aiCtxOpen">Посмотреть, что именно уйдёт</button><button class="btn btn-primary btn-block" data-act="aiConsent">Понятно, включить</button><p class="fine"><button class="btn btn-ghost btn-sm" data-act="aiCfgToggle">Изменить адрес посредника</button></p></section>`;
   const msgs = c.msgs.map((m, i) => `<div class="msg ai-msg${m.r === 'u' ? ' me' : ''}" data-key="am-${m.at}-${i}">${m.r === 'u' ? '' : `<span class="ai-ava">${icon('spark')}</span>`}<div class="msg-b ai-b">${m.r === 'u' ? esc(m.t) : aiMd(m.t)}${m.r === 'a' ? coachCard(m, i) : ''}</div></div>`).join('');
   const empty = !c.msgs.length && !c.busy ? `<div class="empty ai-empty"><h3>Спросите что угодно о тренировках</h3><p>Тренер видит вашу историю: упражнения, веса, привычки. Выберите готовый вопрос или напишите свой.</p></div>` : '';
   const chips = `<div class="chips ai-chips" role="group" aria-label="Готовые вопросы">${AI_QUICK.map(([m, l, t], i) => `<button class="chip" data-act="coachQuick" data-i="${i}"${c.busy ? ' disabled' : ''}>${esc(l)}</button>`).join('')}</div>`;
-  const err = c.err ? `<div class="ai-err" role="alert">${esc(c.err)}${c.retry && !['limit', 'limitAll', 'noacc', 'relogin', 'auth', 'conf', 'nourl'].includes(c.errCode) ? ' <button class="btn btn-sm" data-act="coachRetry">Повторить</button>' : ''}</div>` : '';
+  const err = c.err ? `<div class="ai-err" role="alert">${esc(c.err)}${c.retry && !['limit', 'limitAll', 'noacc', 'relogin', 'auth', 'conf', 'nourl', 'forbidden'].includes(c.errCode) ? ' <button class="btn btn-sm" data-act="coachRetry">Повторить</button>' : ''}</div>` : '';
   return `${head}<div class="chat ai-chat" id="coach-list">${empty}${msgs}${c.busy ? `<div class="msg ai-msg" data-key="am-busy"><span class="ai-ava">${icon('spark')}</span><div class="msg-b ai-b ai-dots" aria-label="Тренер думает"><i></i><i></i><i></i></div></div>` : ''}${err}</div>
     <div class="ai-foot">${chips}<div class="ai-meta"><span>${c.left != null ? `Осталось вопросов сегодня: ${c.left}` : 'ИИ может ошибаться'}</span><span><button class="btn btn-ghost btn-sm" data-act="aiCtxOpen">Что видит тренер</button><button class="btn btn-ghost btn-sm" data-act="coachClear"${c.msgs.length ? '' : ' disabled'}>Очистить</button><button class="btn btn-ghost btn-sm" data-act="aiCfgToggle">Адрес</button></span></div></div>
     <div class="composer ai-composer"><textarea id="coach-in" data-in="coachText" rows="1" placeholder="Вопрос тренеру" aria-label="Вопрос тренеру" enterkeyhint="send" maxlength="1000">${esc(c.draft)}</textarea><button class="btn btn-primary" data-act="coachSend" aria-label="Отправить"${c.busy ? ' disabled' : ''}>${icon('send')}</button></div>`;
@@ -5636,7 +5638,7 @@ function viewCoach() {
 
 /* ---------- действия ---------- */
 SHEETS.aictx = sh => `${sheetHead('Что видит тренер', 'уходит с каждым вопросом')}<div class="sheet-body">
-  <p class="fine" style="margin:0 0 10px">Это сводка, которую приложение прикладывает к вопросу (${nf(sh.text.length, 0)} знаков). Имя и почта в неё не входят, переписки с партнёром, фото и данных партнёра в ней нет. Ничего из этого не хранится в сервисе: он использует сводку, чтобы ответить.</p>
+  <p class="fine" style="margin:0 0 10px">Это сводка, которую приложение прикладывает к вопросу (${nf(sh.text.length, 0)} знаков). Имя и почта в неё не входят, переписки с партнёром, фото, данных партнёра и других профилей в ней нет. Ничего из этого не хранится в сервисе: он использует сводку, чтобы ответить.</p>
   <pre class="ai-pre">${esc(sh.text)}</pre></div>`;
 Object.assign(IN, { coachText: el => { coachS().draft = el.value; }, aiUrl: el => { coachS().cfgUrl = el.value; } });
 Object.assign(A, {
