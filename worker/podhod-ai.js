@@ -10,7 +10,7 @@ const DEFAULTS = {
   ALLOWED_ORIGIN: 'https://bahtiyarg308-dot.github.io', // откуда можно обращаться (адрес приложения); несколько — через запятую
   FIREBASE_PROJECT: 'podhod-5d27f',
   DAILY_LIMIT: '30',        // вопросов в день на человека
-  GLOBAL_DAILY: '300',      // вопросов в день на всех (KV на бесплатном тарифе даёт ~1000 записей в сутки, по две на вопрос)
+  GLOBAL_DAILY: '80',       // вопросов в день на всех: бесплатных 10 000 «нейронов» Cloudflare в сутки хватает примерно на 60–100 ответов крупной модели (KV даёт ~1000 записей в сутки, по две на вопрос)
   PROVIDERS: 'groq,gemini,cf',
   MODEL_GROQ: 'openai/gpt-oss-120b',
   MODEL_GEMINI: 'gemini-2.5-flash',
