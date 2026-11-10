@@ -1,4 +1,4 @@
-// 3.4: AI coach: setup, consent, chat, program, goal and habits, errors, privacy, stored conversation (the worker is a stand-in)
+// 3.4: AI coach: setup, consent (versioned), what is sent (everything except the partner chat), chat, program, goal and habits, errors, stored conversation (the worker is a stand-in)
 const { chromium } = require('playwright'); const fs = require('fs');
 const SERVER = require('../lib/server'), SITE = process.env.SITE, SEED = require('path').join(__dirname, '..', 'fixtures', 'seed.json');
 (async () => {
@@ -34,6 +34,11 @@ const SERVER = require('../lib/server'), SITE = process.env.SITE, SEED = require
   });
   await ctx.route(/googleapis\.com/, r => r.abort('failed')); // the fake account must not be judged by the real Firebase in the background
   await ev(() => { S.meta.accs = { main: { uid: 'u1', email: 'secret.person@example.com', it: 'fake.jwt.token', exp: Date.now() + 36e5, rt: 'x', ver: 1 } }; saveMeta(); S.profile.habits = []; });
+  await ev(() => { const t = Date.now(), D = 864e5; S.profile.supps = [{ id: 's1', name: 'Креатин', dose: 5, unit: 'г', when: 'am', days: [] }]; S.profile.slog = { [dayKey(t - D)]: ['s1'], [dayKey(t - 2 * D)]: ['s1'] };
+    S.profile.meas = [{ id: 'm1', d: t - 3 * D, waist: 82, chest: 101 }]; S.profile.body = [{ id: 'b1', d: t - 2 * D, w: 81.4 }, { id: 'b2', d: t - 9 * D, w: 82.0 }];
+    S.profile.habits = [{ id: 'h1', name: 'Вода 2 литра', ic: 'heart', cat: 'v', d: 0, days: [], auto: '', ts: t - 30 * D }]; S.profile.hlog[dayKey(t - D)] = { h1: 5 };
+    S.workouts[0].note = 'Колено слегка болело на приседе'; S.workouts[0].feel = 3;
+    S.chatAll = [{ id: 'c1', t: t - 1000, a: 'partner', text: 'СЕКРЕТНАЯ-ПЕРЕПИСКА-С-ПАРТНЁРОМ' }]; S.chatMine = {}; S.profile.templates = [{ id: 'tp1', name: 'Верх А', items: [{ ex: allExercises()[0].id, sets: 3, reps: 8 }] }]; S.profile.plan = { 1: 'tp1' }; saveProfile(); });
   const sendText = async t => { await p.fill('#coach-in', t); await tap('[data-act="coachSend"]', 900); };
   const rows = () => p.$$eval('.ai-msg', e => e.length);
   const errText = () => txt('.ai-err');
@@ -43,12 +48,16 @@ const SERVER = require('../lib/server'), SITE = process.env.SITE, SEED = require
   await tap('[data-act="aiSaveUrl"]', 400); say('3 empty address refused:', await p.$$eval('.ai-setup', e => e.length) === 1 && !(await ev(() => S.meta.aiUrl)));
   await p.fill('#ai-url', 'http://insecure.example'); await tap('[data-act="aiSaveUrl"]', 300); say('3 plain http refused:', !(await ev(() => S.meta.aiUrl)));
   await p.fill('#ai-url', 'https://ai.example/'); await tap('[data-act="aiSaveUrl"]', 700); say('4 address saved without trailing slash:', await ev(() => S.meta.aiUrl), '| consent card:', !!(await p.$('[data-act="aiConsent"]')), '| composer before consent:', !!(await p.$('#coach-in')));
+  await tap('[data-act="aiCtxOpen"]', 700); const shown = await txt('.ai-pre'); say('4b before consent you can see exactly what would go out:', (shown || '').length > 500, '| includes supplements, measurements, weight, habits, note:', ['Креатин', 'waist', 'kg', 'Вода 2 литра', 'Колено слегка'].every(k => (shown || '').includes(k)), '| partner chat text absent:', !(shown || '').includes('СЕКРЕТНАЯ'), '| e-mail absent:', !(shown || '').includes('secret.person'));
+  await esc();
   await tap('[data-act="aiConsent"]', 700); say('5 after consent the chat is open:', !!(await p.$('#coach-in')), '| quick chips:', await p.$$eval('.ai-chips .chip', e => e.length), '| empty hint:', !!(await p.$('.ai-empty')));
 
   await sendText('Как улучшить жим лёжа?');
   const c0 = calls[0]; const ctxStr = JSON.stringify(c0.body.context);
-  say('6 request: mode', c0.body.mode, '| token sent:', c0.auth, '| last message:', c0.body.messages[c0.body.messages.length - 1].content, '| level in summary:', typeof c0.body.context.level, '| recent workouts:', (c0.body.context.recent || []).length);
-  say('6 privacy: name and e-mail are not in the request:', !ctxStr.includes('Дима') && !JSON.stringify(c0.body).includes('secret.person') && !JSON.stringify(c0.body).includes('example.com'));
+  say('6 request: mode', c0.body.mode, '| token sent:', c0.auth, '| last message:', c0.body.messages[c0.body.messages.length - 1].content, '| level in summary:', typeof (c0.body.context.profile || {}).level, '| workouts in summary:', (c0.body.context.workouts || []).length);
+  const all = JSON.stringify(c0.body);
+  say('6 privacy: name, e-mail, partner chat are not in the request:', !all.includes('Дима') && !all.includes('secret.person') && !all.includes('example.com') && !all.includes('СЕКРЕТНАЯ'));
+  say('6b full picture is in the request: supplements', !!c0.body.context.supplements, '| measurements', !!c0.body.context.measurementsCm, '| weight', !!c0.body.context.weight, '| habits', !!c0.body.context.habits, '| months', (c0.body.context.months || []).length, '| exercises summary', (c0.body.context.exercises || []).length, '| plan', JSON.stringify(c0.body.context.weeklyPlan), '| programs', (c0.body.context.programs || []).length, '| note kept', all.includes('Колено слегка'), '| size', all.length, 'chars (worker accepts 48000)');
   say('7 answer shown, **bold** and list rendered:', await p.$$eval('.ai-msg:not(.me) .ai-b b', e => e.length), 'bold |', await p.$$eval('.ai-msg:not(.me) .ai-b li', e => e.length), 'items | left hint:', (await txt('.ai-meta') || '').slice(0, 40), '| dots gone:', !(await p.$('.ai-dots')));
   await sendText('А с чего начать разминку?'); say('8 history goes along:', calls[1].body.messages.map(m => m.role[0]).join(''), '(u a u)');
   await tap('.ai-chips .chip:nth-child(1)', 900); say('9 chip «Разбор недели» → mode', calls[2].body.mode);
@@ -78,6 +87,11 @@ const SERVER = require('../lib/server'), SITE = process.env.SITE, SEED = require
   say('22 after reload the conversation is restored:', await rows(), 'of', total, 'messages (the typing/error rows are not kept)');
   await tap('[data-act="coachClear"]', 500); say('23 clear empties it:', await rows(), '| stored:', await ev(() => 1));
   await ev(() => { S.meta.aiOk = false; saveMeta(); }); await p.reload(); await p.waitForTimeout(1500); await esc(); await tap('.tab[data-v="more"]', 700); await tap('.more-row[data-v="coach"]', 900);
+  await ev(() => { S.meta.aiOk = 1; saveMeta(); }); await p.reload(); await p.waitForTimeout(1500); await esc(); await tap('.tab[data-v="more"]', 700); await tap('.more-row[data-v="coach"]', 900);
+  say('24b an old (narrower) consent is not enough, the question is asked again:', !(await p.$('#coach-in')) && !!(await p.$('[data-act="aiConsent"]')));
   const callsBefore = calls.length; say('24 without consent: no chat and nothing is sent:', !(await p.$('#coach-in')), '| consent card:', !!(await p.$('[data-act="aiConsent"]')), '| requests:', calls.length - callsBefore);
+  // a long history: the summary stays within what the worker accepts
+  await ev(() => { const base = S.workouts.slice(); let n = 0; for (let k = 1; k <= 20; k++) base.forEach(w => { const c = JSON.parse(JSON.stringify(w)); c.id = 'big' + (n++); c.start -= k * 40 * 864e5; c.end -= k * 40 * 864e5; c.note = 'заметка '.repeat(20); S.workouts.push(normW(c, c.id)); }); S.workouts.sort((a, b) => b.start - a.start); saveProfile(); });
+  await tap('[data-act="aiCtxOpen"]', 900); const big = (await txt('.ai-pre') || ''); say('25 with', await ev(() => S.workouts.length), 'workouts the summary is', big.length, 'chars (limit 20000), still has the newest workout:', big.includes('workouts'));
   console.log('ERRORS', JSON.stringify(errs)); await b.close(); srv.kill();
 })();

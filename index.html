@@ -1505,12 +1505,13 @@ html[data-oled="1"][data-look="noir"]:not([data-theme="light"]){--bg:#000;--surf
 .ai-err{margin:6px 0;padding:10px 12px;border-radius:12px;background:var(--bad-soft);color:var(--bad);font-size:13.5px;line-height:1.4}
 .ai-foot{display:grid;gap:8px;padding:10px 0 84px}
 .ai-chips{padding-bottom:0;flex-wrap:wrap;overflow:visible}
-.ai-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--muted);font-size:12px}
+.ai-meta{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 8px;color:var(--muted);font-size:12px}.ai-meta .btn-sm{padding:0 8px}
 .ai-composer textarea{font-size:16px}
 .ai-setup{display:grid;gap:10px}
 .ai-setup h3{margin:0}.ai-setup p{margin:0;color:var(--ink-2);font-size:14px;line-height:1.5}
 .ai-setup a{color:var(--accent)}
 .ai-empty{padding:28px 6px 8px}
+.ai-pre{margin:0;white-space:pre-wrap;word-break:break-word;font:11.5px/1.5 var(--f-mono);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--ink-2)}
 </style>
 </head>
 <body>
@@ -1529,7 +1530,7 @@ html[data-oled="1"][data-look="noir"]:not([data-theme="light"]){--bg:#000;--surf
 <div id="sheet-root"></div>
 <input type="file" id="imp-file" accept=".json,application/json" data-ch="imp" hidden>
 
-<script src="app.js?v=8f78169321"></script>
+<script src="app.js?v=e66bcb74e6"></script>
 <script>window.__podhod||document.body.insertAdjacentHTML('beforeend','<p style="padding:28px 20px;font:16px/1.5 system-ui,sans-serif;color:#999">Не удалось загрузить приложение. Проверьте интернет и обновите страницу.</p>')</script>
 
 </body>

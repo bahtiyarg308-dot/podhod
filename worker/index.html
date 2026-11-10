@@ -43,7 +43,7 @@ const DEFAULTS = {
   ALLOWED_ORIGIN: 'https://bahtiyarg308-dot.github.io', // откуда можно обращаться (адрес приложения); несколько — через запятую
   FIREBASE_PROJECT: 'podhod-5d27f',
   DAILY_LIMIT: '30',        // вопросов в день на человека
-  GLOBAL_DAILY: '80',       // вопросов в день на всех: бесплатных 10 000 «нейронов» Cloudflare в сутки хватает примерно на 60–100 ответов крупной модели (KV даёт ~1000 записей в сутки, по две на вопрос)
+  GLOBAL_DAILY: '50',       // вопросов в день на всех: с полной сводкой бесплатных 10 000 «нейронов» Cloudflare в сутки хватает примерно на 40–60 ответов крупной модели (KV даёт ~1000 записей в сутки, по две на вопрос)
   PROVIDERS: 'groq,gemini,cf',
   MODEL_GROQ: 'openai/gpt-oss-120b',
   MODEL_GEMINI: 'gemini-2.5-flash',
@@ -55,6 +55,7 @@ const MODES = { chat: { tokens: 700, temp: .6, json: false }, week: { tokens: 60
 const PERSONA = `Ты — тренер в приложении-дневнике тренировок «Подход». Пишешь по-русски, на «вы», тепло и по делу, без воды и без канцелярита.
 Опирайся только на данные пользователя из блока ДАННЫЕ (JSON). Если чего-то в данных нет — так и скажи или задай один уточняющий вопрос, ничего не выдумывай.
 Ты не врач: при боли, травмах, беременности, хронических болезнях и жёстких диетах советуй обратиться к врачу. Не предлагай опасных практик (голодание, обезвоживание, запрещённые препараты).
+Ключи ДАННЫХ: profile (уровень, цель тренировок в неделю, серия недель, всего тренировок), thisWeek и lastWeek (итоги недель), months (по месяцам), weight (вес по датам, кг), measurementsCm (замеры, см), workouts (последние тренировки; ex — «упражнение: подходы вес x повторы», «3x(82.5x8)» значит три одинаковых подхода), exercises (сводка по любимым упражнениям: sessions — сколько раз делали, maxKg, e1rmBest — лучший расчётный максимум, e1rmLast — в последний раз), records (последние рекорды), programs и weeklyPlan (программы и расписание), habits (привычки: streak — серия дней, last14 — последние 14 дней, 1 сделано, 0 нет), supplements (добавки: takenLast7 — в сколько из 7 последних дней приняты), laggingMuscle (что отстаёт). Переписки с партнёром, фото и данных других людей у тебя нет.
 Не повторяй данные целиком, выбирай главное. Не используй таблицы и заголовки с решётками; можно короткие списки через «-» и выделение **жирным**.`;
 const TASKS = {
   chat: `Отвечай на вопрос пользователя. Обычно хватает 80–180 слов. Если вопрос про тренировки — учитывай его историю из ДАННЫХ.`,
@@ -137,7 +138,7 @@ function parseBody(raw) {
   }
   if (!messages.length || total &gt; 9000 || messages[messages.length - 1].role !== 'user') return { err: 'messages' };
   let context = b.context == null ? {} : b.context; if (typeof context !== 'object') return { err: 'context' };
-  const ctx = clean(JSON.stringify(context)); if (ctx.length &gt; 8000) return { err: 'context' };
+  const ctx = clean(JSON.stringify(context)); if (ctx.length &gt; 24000) return { err: 'context' };
   let names = []; if (b.mode === 'program') { if (!Array.isArray(b.names) || b.names.length &gt; 500) return { err: 'names' }; names = b.names.filter(x =&gt; typeof x === 'string').map(x =&gt; clean(x).slice(0, 60)); }
   return { mode: b.mode, messages, ctx, names };
 }
@@ -201,7 +202,7 @@ export default {
     if (!chain(env).length) return reply(env, req, 503, { error: 'not_configured', detail: 'нет ни одного ИИ' });
     const auth = req.headers.get('Authorization') || '';
     let uid; try { uid = await verifyToken(auth.replace(/^Bearer\s+/i, ''), cfg(env, 'FIREBASE_PROJECT')); } catch (e) { return reply(env, req, 401, { error: 'auth', detail: String(e &amp;&amp; e.message || e) }); }
-    const raw = await req.text(); if (raw.length &gt; 24000) return reply(env, req, 413, { error: 'too_big' });
+    const raw = await req.text(); if (raw.length &gt; 48000) return reply(env, req, 413, { error: 'too_big' });
     const q = parseBody(raw); if (q.err) return reply(env, req, 400, { error: 'bad_request', detail: q.err });
     const quota = await takeQuota(env, uid);
     if (!quota.ok) return reply(env, req, 429, { error: 'limit', why: quota.why });
@@ -212,7 +213,7 @@ export default {
 };
 </pre></div>
 <h2>Настройки (необязательно)</h2>
-<p class="mut">Переменные в «Variables and Secrets»: <code>DAILY_LIMIT</code> (вопросов в день на человека, по умолчанию 30), <code>GLOBAL_DAILY</code> (на всех, 80: на бесплатном Cloudflare крупной модели хватает примерно на столько ответов в сутки), <code>PROVIDERS</code> (порядок, по умолчанию <code>groq,gemini,cf</code>), <code>MODEL_GROQ</code>, <code>MODEL_GEMINI</code>, <code>MODEL_CF</code> (названия моделей: если сервис их сменил или хотите другую; список моделей Cloudflare — в разделе Workers AI → Models; лёгкая модель отвечает быстрее и позволяет задать больше вопросов в сутки), <code>ALLOWED_ORIGIN</code> (если приложение откроется по другому адресу).</p>
+<p class="mut">Переменные в «Variables and Secrets»: <code>DAILY_LIMIT</code> (вопросов в день на человека, по умолчанию 30), <code>GLOBAL_DAILY</code> (на всех, 50: с полной сводкой бесплатного Cloudflare крупной модели хватает примерно на 40–60 ответов в сутки; если взять лёгкую модель, можно поднять лимит), <code>PROVIDERS</code> (порядок, по умолчанию <code>groq,gemini,cf</code>), <code>MODEL_GROQ</code>, <code>MODEL_GEMINI</code>, <code>MODEL_CF</code> (названия моделей: если сервис их сменил или хотите другую; список моделей Cloudflare — в разделе Workers AI → Models; лёгкая модель отвечает быстрее и позволяет задать больше вопросов в сутки), <code>ALLOWED_ORIGIN</code> (если приложение откроется по другому адресу).</p>
 <h2>Если что-то не так</h2>
 <ul><li><b>«ИИ-посредник ещё не настроен»</b> — не добавлена привязка <code>LIMITS</code> или <code>AI</code> (шаг 5).</li><li><b>«Сервер не принял вход»</b> — выйдите из аккаунта в приложении и войдите заново.</li><li><b>«Лимит»</b> — вопросы на сегодня кончились, обновятся завтра (по UTC).</li><li>Бесплатные тарифы ИИ меняются: если один перестал отвечать, воркер сам перейдёт к следующему.</li></ul>
 <script>

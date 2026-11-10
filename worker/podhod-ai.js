@@ -10,7 +10,7 @@ const DEFAULTS = {
   ALLOWED_ORIGIN: 'https://bahtiyarg308-dot.github.io', // откуда можно обращаться (адрес приложения); несколько — через запятую
   FIREBASE_PROJECT: 'podhod-5d27f',
   DAILY_LIMIT: '30',        // вопросов в день на человека
-  GLOBAL_DAILY: '80',       // вопросов в день на всех: бесплатных 10 000 «нейронов» Cloudflare в сутки хватает примерно на 60–100 ответов крупной модели (KV даёт ~1000 записей в сутки, по две на вопрос)
+  GLOBAL_DAILY: '50',       // вопросов в день на всех: с полной сводкой бесплатных 10 000 «нейронов» Cloudflare в сутки хватает примерно на 40–60 ответов крупной модели (KV даёт ~1000 записей в сутки, по две на вопрос)
   PROVIDERS: 'groq,gemini,cf',
   MODEL_GROQ: 'openai/gpt-oss-120b',
   MODEL_GEMINI: 'gemini-2.5-flash',
@@ -22,6 +22,7 @@ const MODES = { chat: { tokens: 700, temp: .6, json: false }, week: { tokens: 60
 const PERSONA = `Ты — тренер в приложении-дневнике тренировок «Подход». Пишешь по-русски, на «вы», тепло и по делу, без воды и без канцелярита.
 Опирайся только на данные пользователя из блока ДАННЫЕ (JSON). Если чего-то в данных нет — так и скажи или задай один уточняющий вопрос, ничего не выдумывай.
 Ты не врач: при боли, травмах, беременности, хронических болезнях и жёстких диетах советуй обратиться к врачу. Не предлагай опасных практик (голодание, обезвоживание, запрещённые препараты).
+Ключи ДАННЫХ: profile (уровень, цель тренировок в неделю, серия недель, всего тренировок), thisWeek и lastWeek (итоги недель), months (по месяцам), weight (вес по датам, кг), measurementsCm (замеры, см), workouts (последние тренировки; ex — «упражнение: подходы вес x повторы», «3x(82.5x8)» значит три одинаковых подхода), exercises (сводка по любимым упражнениям: sessions — сколько раз делали, maxKg, e1rmBest — лучший расчётный максимум, e1rmLast — в последний раз), records (последние рекорды), programs и weeklyPlan (программы и расписание), habits (привычки: streak — серия дней, last14 — последние 14 дней, 1 сделано, 0 нет), supplements (добавки: takenLast7 — в сколько из 7 последних дней приняты), laggingMuscle (что отстаёт). Переписки с партнёром, фото и данных других людей у тебя нет.
 Не повторяй данные целиком, выбирай главное. Не используй таблицы и заголовки с решётками; можно короткие списки через «-» и выделение **жирным**.`;
 const TASKS = {
   chat: `Отвечай на вопрос пользователя. Обычно хватает 80–180 слов. Если вопрос про тренировки — учитывай его историю из ДАННЫХ.`,
@@ -104,7 +105,7 @@ function parseBody(raw) {
   }
   if (!messages.length || total > 9000 || messages[messages.length - 1].role !== 'user') return { err: 'messages' };
   let context = b.context == null ? {} : b.context; if (typeof context !== 'object') return { err: 'context' };
-  const ctx = clean(JSON.stringify(context)); if (ctx.length > 8000) return { err: 'context' };
+  const ctx = clean(JSON.stringify(context)); if (ctx.length > 24000) return { err: 'context' };
   let names = []; if (b.mode === 'program') { if (!Array.isArray(b.names) || b.names.length > 500) return { err: 'names' }; names = b.names.filter(x => typeof x === 'string').map(x => clean(x).slice(0, 60)); }
   return { mode: b.mode, messages, ctx, names };
 }
@@ -168,7 +169,7 @@ export default {
     if (!chain(env).length) return reply(env, req, 503, { error: 'not_configured', detail: 'нет ни одного ИИ' });
     const auth = req.headers.get('Authorization') || '';
     let uid; try { uid = await verifyToken(auth.replace(/^Bearer\s+/i, ''), cfg(env, 'FIREBASE_PROJECT')); } catch (e) { return reply(env, req, 401, { error: 'auth', detail: String(e && e.message || e) }); }
-    const raw = await req.text(); if (raw.length > 24000) return reply(env, req, 413, { error: 'too_big' });
+    const raw = await req.text(); if (raw.length > 48000) return reply(env, req, 413, { error: 'too_big' });
     const q = parseBody(raw); if (q.err) return reply(env, req, 400, { error: 'bad_request', detail: q.err });
     const quota = await takeQuota(env, uid);
     if (!quota.ok) return reply(env, req, 429, { error: 'limit', why: quota.why });
